@@ -5,12 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>SMS Commission Mandi</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
 *{box-sizing:border-box}
+html,body{margin:0;padding:0}
 body{
-margin:0;
 font-family:Arial,Helvetica,sans-serif;
 background:#f3f5f8;
 color:#172033
@@ -25,19 +23,20 @@ text-align:center;
 padding:17px;
 position:sticky;
 top:0;
-z-index:20
+z-index:100
 }
 .header h1{margin:0;font-size:23px}
 .header p{margin:5px 0 0;color:#cbd5e1;font-size:12px}
 
 .nav{
 display:flex;
-overflow:auto;
+overflow-x:auto;
 background:#fff;
 position:sticky;
 top:72px;
-z-index:19;
-border-bottom:1px solid #ddd
+z-index:99;
+border-bottom:1px solid #ddd;
+-webkit-overflow-scrolling:touch
 }
 .nav button{
 min-width:105px;
@@ -45,7 +44,8 @@ padding:13px 8px;
 border:0;
 background:#fff;
 color:#64748b;
-font-weight:bold
+font-weight:bold;
+white-space:nowrap
 }
 .nav button.active{
 color:#111827;
@@ -65,7 +65,7 @@ background:#fff;
 border-radius:14px;
 padding:15px;
 margin-bottom:15px;
-box-shadow:0 3px 15px #0000000d
+box-shadow:0 3px 15px rgba(0,0,0,.06)
 }
 
 .grid{
@@ -116,7 +116,7 @@ font-weight:bold
 .btn.red{background:#dc2626}
 .btn.gray{background:#64748b}
 .btn.orange{background:#d97706}
-.btn.wa{background:#16a34a}
+.btn.blue{background:#2563eb}
 .btn.small{
 padding:7px 9px;
 font-size:12px
@@ -133,7 +133,7 @@ margin-top:12px
 background:#fff;
 padding:14px;
 border-radius:13px;
-box-shadow:0 3px 12px #0000000d
+box-shadow:0 3px 12px rgba(0,0,0,.06)
 }
 .stat small{
 display:block;
@@ -224,9 +224,7 @@ text-align:left;
 font-size:12px;
 vertical-align:top
 }
-th{
-background:#f8fafc
-}
+th{background:#f8fafc}
 
 .billrow{
 display:grid;
@@ -241,12 +239,13 @@ border-radius:10px;
 padding:12px;
 margin-top:10px
 }
+
 .line{
 display:flex;
 justify-content:space-between;
-padding:5px 0;
-gap:10px
+padding:5px 0
 }
+
 .total{
 border-top:2px solid #cbd5e1;
 margin-top:5px;
@@ -290,6 +289,7 @@ background:#f8fafc;
 padding:10px;
 border-radius:8px
 }
+
 .receive-box input{
 margin-top:5px
 }
@@ -300,14 +300,13 @@ grid-template-columns:repeat(4,1fr);
 gap:10px;
 margin-top:12px
 }
+
 .rent-stat{
 background:#f8fafc;
 border-radius:10px;
 padding:12px
 }
-.rent-stat small{
-color:#64748b
-}
+.rent-stat small{color:#64748b}
 .rent-stat b{
 display:block;
 font-size:18px;
@@ -331,55 +330,73 @@ font-weight:bold
 display:none;
 position:fixed;
 inset:0;
-background:#0009;
+background:rgba(0,0,0,.65);
 z-index:500;
 padding:15px;
 overflow:auto
 }
 .modal.show{display:block}
+
 .modal-box{
 background:#fff;
-max-width:650px;
+max-width:700px;
 margin:30px auto;
 border-radius:14px;
-padding:18px
+padding:20px
 }
+
 .bill-preview{
 background:#fff;
 padding:20px;
 border:1px solid #ddd
 }
-.bill-preview h2{
-margin:0;
-text-align:center
+
+.danger{
+border:2px solid #fecaca;
+background:#fffafa
 }
-.bill-preview table{
-min-width:0;
-margin-top:15px
-}
-.bill-preview th,
-.bill-preview td{
-font-size:11px
+
+.success-box{
+background:#ecfdf5;
+border:1px solid #bbf7d0;
+padding:12px;
+border-radius:10px
 }
 
 @media(max-width:700px){
-.grid,.grid3,.grid4{
+
+.grid,
+.grid3,
+.grid4{
 grid-template-columns:1fr
 }
+
 .receive-grid{
 grid-template-columns:repeat(2,1fr)
 }
+
 .billrow{
 grid-template-columns:1fr 1fr
 }
+
 .billrow>div:first-child{
 grid-column:1/-1
 }
+
 .billrow button{
 grid-column:1/-1
 }
+
 .rent-summary{
 grid-template-columns:1fr 1fr
+}
+
+.nav{
+top:72px
+}
+
+.card{
+padding:12px
 }
 }
 </style>
@@ -394,43 +411,43 @@ grid-template-columns:1fr 1fr
 
 <nav class="nav">
 
-<button class="active" type="button"
-onclick="page('dashboard',this)">
+<button type="button" class="active"
+onclick="goPage('dashboard',this)">
 Dashboard
 </button>
 
 <button type="button"
-onclick="page('customers',this)">
+onclick="goPage('customers',this)">
 Customers
 </button>
 
 <button type="button"
-onclick="page('billing',this)">
+onclick="goPage('billing',this)">
 Sales Bill
 </button>
 
 <button type="button"
-onclick="page('purchases',this)">
+onclick="goPage('purchases',this)">
 Purchase
 </button>
 
 <button type="button"
-onclick="page('vehicleRent',this)">
+onclick="goPage('vehicleRent',this)">
 🚚 Vehicle Rent
 </button>
 
 <button type="button"
-onclick="page('receipts',this)">
+onclick="goPage('receipts',this)">
 Receipts
 </button>
 
 <button type="button"
-onclick="page('history',this)">
+onclick="goPage('history',this)">
 History
 </button>
 
 <button type="button"
-onclick="page('backup',this)">
+onclick="goPage('backup',this)">
 Backup
 </button>
 
@@ -438,6 +455,7 @@ Backup
 
 
 <!-- DASHBOARD -->
+
 <section id="dashboard" class="page active">
 
 <div class="grid4">
@@ -484,25 +502,38 @@ Backup
 
 </div>
 
+
 <div class="card">
+
 <h2>🚚 Vehicle Rent Summary</h2>
+
 <div id="dashboardRent"></div>
+
 </div>
 
+
 <div class="card">
+
 <h2>Weekly Customer Intimation</h2>
+
 <div id="weeklyBox"></div>
+
 </div>
 
+
 <div class="card">
+
 <h2>Purchase Party Payable</h2>
+
 <div id="partyBalanceBox"></div>
+
 </div>
 
 </section>
 
 
 <!-- CUSTOMERS -->
+
 <section id="customers" class="page">
 
 <div class="card">
@@ -518,11 +549,13 @@ Backup
 
 <div>
 <label>Type</label>
+
 <select id="cType">
-<option>Regular</option>
-<option>Weekly</option>
-<option>Purchase Party</option>
+<option value="Regular">Regular</option>
+<option value="Weekly">Weekly</option>
+<option value="Purchase Party">Purchase Party</option>
 </select>
+
 </div>
 
 <div>
@@ -544,12 +577,14 @@ Backup
 
 <div class="actions">
 
-<button class="btn green" type="button"
+<button type="button"
+class="btn green"
 onclick="saveCustomer()">
-Save
+Save Customer
 </button>
 
-<button class="btn gray" type="button"
+<button type="button"
+class="btn gray"
 onclick="clearCustomer()">
 Clear
 </button>
@@ -567,7 +602,8 @@ Clear
 
 <div class="tabs">
 
-<button class="active" type="button"
+<button type="button"
+class="active"
 onclick="filterCustomers('All',this)">
 All
 </button>
@@ -589,8 +625,9 @@ Purchase Parties
 
 </div>
 
-<input id="cSearch"
-placeholder="Search..."
+<input
+id="cSearch"
+placeholder="Search customer..."
 oninput="renderCustomers()">
 
 <div id="customerList"></div>
@@ -601,6 +638,7 @@ oninput="renderCustomers()">
 
 
 <!-- SALES BILL -->
+
 <section id="billing" class="page">
 
 <div class="card">
@@ -611,9 +649,12 @@ oninput="renderCustomers()">
 
 <div>
 <label>Customer</label>
-<select id="billCustomer"
+
+<select
+id="billCustomer"
 onchange="loadCustomerBalance()">
 </select>
+
 </div>
 
 <div>
@@ -628,7 +669,8 @@ onchange="loadCustomerBalance()">
 
 <div>
 <label>Previous Balance</label>
-<input id="previousBalance"
+<input
+id="previousBalance"
 type="number"
 oninput="calcBill()">
 </div>
@@ -644,10 +686,10 @@ oninput="calcBill()">
 
 <h2>Vegetables</h2>
 
-<button class="btn small"
-type="button"
+<button type="button"
+class="btn small"
 onclick="addVeg()">
-+ Add
++ Add Vegetable
 </button>
 
 </div>
@@ -662,7 +704,7 @@ onclick="addVeg()">
 <h2>Grade / Crate Details</h2>
 
 <p class="muted">
-Crates have NO rate and NO amount. Issued and received quantities are maintained separately.
+Crates have NO rate and NO amount. Only issued and received quantity is maintained.
 </p>
 
 <div class="receive-grid">
@@ -745,11 +787,13 @@ Crates have NO rate and NO amount. Issued and received quantities are maintained
 
 </div>
 
+
 <div class="grid" style="margin-top:10px">
 
 <div>
 <label>Amount Received</label>
-<input id="billReceived"
+<input
+id="billReceived"
 type="number"
 value="0"
 oninput="calcBill()">
@@ -757,15 +801,18 @@ oninput="calcBill()">
 
 <div>
 <label>Payment Mode</label>
+
 <select id="billMode">
 <option>Cash</option>
 <option>UPI</option>
 <option>Bank</option>
 <option>Other</option>
 </select>
+
 </div>
 
 </div>
+
 
 <div class="summary">
 
@@ -776,16 +823,17 @@ oninput="calcBill()">
 
 </div>
 
+
 <div class="actions">
 
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 onclick="saveBill()">
 Save Bill
 </button>
 
-<button class="btn gray"
-type="button"
+<button type="button"
+class="btn gray"
 onclick="newBill()">
 Clear
 </button>
@@ -800,6 +848,7 @@ Clear
 
 
 <!-- PURCHASE -->
+
 <section id="purchases" class="page">
 
 <div class="card">
@@ -825,10 +874,7 @@ Clear
 
 <div>
 <label>Previous Payable</label>
-<input id="pPrevious"
-type="number"
-value="0"
-oninput="calcPurchase()">
+<input id="pPrevious" type="number" value="0">
 </div>
 
 <div>
@@ -838,7 +884,8 @@ oninput="calcPurchase()">
 
 <div>
 <label>Quantity</label>
-<input id="pQty"
+<input
+id="pQty"
 type="number"
 oninput="calcPurchase()">
 </div>
@@ -855,7 +902,8 @@ oninput="calcPurchase()">
 
 <div>
 <label>Rate</label>
-<input id="pRate"
+<input
+id="pRate"
 type="number"
 oninput="calcPurchase()">
 </div>
@@ -867,7 +915,8 @@ oninput="calcPurchase()">
 
 <div>
 <label>Amount Paid</label>
-<input id="pPaid"
+<input
+id="pPaid"
 type="number"
 value="0"
 oninput="calcPurchase()">
@@ -889,6 +938,7 @@ oninput="calcPurchase()">
 </div>
 
 </div>
+
 
 <div class="summary">
 
@@ -914,16 +964,17 @@ oninput="calcPurchase()">
 
 </div>
 
+
 <div class="actions">
 
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 onclick="savePurchase()">
 Save Purchase
 </button>
 
-<button class="btn gray"
-type="button"
+<button type="button"
+class="btn gray"
 onclick="newPurchase()">
 Clear
 </button>
@@ -973,8 +1024,8 @@ Clear
 
 </div>
 
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 onclick="savePartyPayment()">
 Save Payment
 </button>
@@ -994,6 +1045,7 @@ Save Payment
 
 
 <!-- VEHICLE RENT -->
+
 <section id="vehicleRent" class="page">
 
 <div class="card">
@@ -1013,14 +1065,7 @@ Vehicle / Driver / Trip Rent & Payment Details
 
 <div>
 <label>Vehicle Number</label>
-<input id="vrVehicleNo"
-placeholder="TN 00 AB 0000">
-</div>
-
-<div>
-<label>Vehicle Type</label>
-<input id="vrVehicleType"
-placeholder="Lorry / Mini Truck / Tempo">
+<input id="vrVehicleNo" placeholder="TN 00 AB 0000">
 </div>
 
 <div>
@@ -1030,38 +1075,36 @@ placeholder="Lorry / Mini Truck / Tempo">
 
 <div>
 <label>Driver Phone</label>
-<input id="vrDriverPhone"
-inputmode="tel">
+<input id="vrDriverPhone" inputmode="tel">
 </div>
 
 <div>
 <label>From / எந்த ஊரிலிருந்து</label>
-<input id="vrFrom"
-placeholder="Kolar">
+<input id="vrFrom" placeholder="Kolar">
 </div>
 
 <div>
 <label>To / எந்த ஊருக்கு</label>
-<input id="vrTo"
-placeholder="Pattukkottai">
+<input id="vrTo" placeholder="Pattukkottai">
 </div>
 
 <div>
 <label>Trip / Purpose</label>
-<input id="vrPurpose"
-placeholder="Tomato Load">
+<input id="vrPurpose" placeholder="Tomato Load">
 </div>
 
 <div>
 <label>Rent Amount</label>
-<input id="vrRent"
+<input
+id="vrRent"
 type="number"
 oninput="calcRent()">
 </div>
 
 <div>
 <label>Amount Paid</label>
-<input id="vrPaid"
+<input
+id="vrPaid"
 type="number"
 oninput="calcRent()">
 </div>
@@ -1083,6 +1126,7 @@ oninput="calcRent()">
 
 </div>
 
+
 <div class="summary">
 
 <div class="line">
@@ -1102,17 +1146,18 @@ oninput="calcRent()">
 
 </div>
 
+
 <div class="actions">
 
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 id="vrSaveBtn"
 onclick="saveVehicleRent()">
 Save Vehicle Rent
 </button>
 
-<button class="btn gray"
-type="button"
+<button type="button"
+class="btn gray"
 onclick="clearVehicleRent()">
 Clear
 </button>
@@ -1132,14 +1177,16 @@ Clear
 
 <div>
 <label>Search</label>
-<input id="vrSearch"
+<input
+id="vrSearch"
 placeholder="Vehicle / Driver / Place"
 oninput="renderVehicleRent()">
 </div>
 
 <div>
 <label>Date Filter</label>
-<input id="vrFilterDate"
+<input
+id="vrFilterDate"
 type="date"
 onchange="renderVehicleRent()">
 </div>
@@ -1162,7 +1209,6 @@ onchange="renderVehicleRent()">
 <th>Rent</th>
 <th>Paid</th>
 <th>Balance</th>
-<th>Status</th>
 <th>Action</th>
 </tr>
 </thead>
@@ -1179,6 +1225,7 @@ onchange="renderVehicleRent()">
 
 
 <!-- RECEIPTS -->
+
 <section id="receipts" class="page">
 
 <div class="card">
@@ -1221,14 +1268,14 @@ onchange="renderVehicleRent()">
 
 <div class="actions">
 
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 onclick="saveReceipt()">
 Save Receipt
 </button>
 
-<button class="btn gray"
-type="button"
+<button type="button"
+class="btn gray"
 onclick="clearReceipt()">
 Clear
 </button>
@@ -1244,7 +1291,8 @@ Clear
 
 <h2>Receipt History</h2>
 
-<input id="rSearch"
+<input
+id="rSearch"
 placeholder="Search customer"
 oninput="renderReceipts()">
 
@@ -1256,13 +1304,15 @@ oninput="renderReceipts()">
 
 
 <!-- HISTORY -->
+
 <section id="history" class="page">
 
 <div class="card">
 
 <h2>Customer Full History</h2>
 
-<select id="historyCustomer"
+<select
+id="historyCustomer"
 onchange="renderCustomerHistory()">
 </select>
 
@@ -1275,7 +1325,8 @@ onchange="renderCustomerHistory()">
 
 <h2>All Sales Bills</h2>
 
-<input id="billSearch"
+<input
+id="billSearch"
 placeholder="Search bill/customer"
 oninput="renderBills()">
 
@@ -1287,6 +1338,7 @@ oninput="renderBills()">
 
 
 <!-- BACKUP -->
+
 <section id="backup" class="page">
 
 <div class="card">
@@ -1295,25 +1347,22 @@ oninput="renderBills()">
 
 <div class="actions">
 
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 onclick="backup()">
 Download JSON Backup
 </button>
 
 <label class="btn gray">
 Restore JSON
-<input type="file"
-accept=".json,application/json"
+<input
+type="file"
+accept=".json"
 onchange="restore(event)"
 style="display:none">
 </label>
 
 </div>
-
-<p class="muted">
-Always keep a backup copy. Browser storage is device/browser based.
-</p>
 
 </div>
 
@@ -1323,28 +1372,29 @@ Always keep a backup copy. Browser storage is device/browser based.
 <h2>Google Sheets Cloud Sync</h2>
 
 <p class="muted">
-Paste your Google Apps Script Web App URL below.
+Paste your Google Apps Script Web App URL.
 </p>
 
-<input id="apiUrl"
+<input
+id="apiUrl"
 placeholder="https://script.google.com/macros/s/XXXXX/exec">
 
 <div class="actions">
 
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 onclick="saveApi()">
 Save URL
 </button>
 
-<button class="btn orange"
-type="button"
+<button type="button"
+class="btn orange"
 onclick="cloudPush()">
 Upload / Sync
 </button>
 
-<button class="btn gray"
-type="button"
+<button type="button"
+class="btn gray"
 onclick="cloudPull()">
 Download
 </button>
@@ -1382,25 +1432,25 @@ Download
 
 </div>
 
-<div class="actions">
-
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 onclick="saveSettings()">
-Save
+Save Settings
 </button>
 
 </div>
 
-</div>
 
-
-<div class="card">
+<div class="card danger">
 
 <h2>Danger Zone</h2>
 
-<button class="btn red"
-type="button"
+<p class="muted">
+Delete All Data permanently removes data stored in this browser.
+</p>
+
+<button type="button"
+class="btn red"
 onclick="deleteAll()">
 Delete All Data
 </button>
@@ -1411,34 +1461,37 @@ Delete All Data
 
 
 <!-- BILL MODAL -->
+
 <div id="billModal" class="modal">
 
 <div class="modal-box">
 
 <div class="section-title">
-<h2>Sales Bill</h2>
 
-<button class="btn red small"
-type="button"
-onclick="closeBillModal()">
+<h2>Bill Preview</h2>
+
+<button type="button"
+class="btn red small"
+onclick="closeModal()">
 Close
 </button>
+
 </div>
 
 <div id="billPreview" class="bill-preview"></div>
 
 <div class="actions">
 
-<button class="btn green"
-type="button"
-onclick="printBill()">
-Print
+<button type="button"
+class="btn green"
+onclick="printCurrentBill()">
+Print Bill
 </button>
 
-<button class="btn orange"
-type="button"
-onclick="downloadBillPDF()">
-PDF
+<button type="button"
+class="btn blue"
+onclick="downloadBillText()">
+Download Bill
 </button>
 
 </div>
@@ -1453,12 +1506,14 @@ PDF
 
 <script>
 
-/* =========================================================
-   SMS COMMISSION MANDI
-   COMPLETE WORKING VERSION
-   ========================================================= */
+"use strict";
 
-const KEY="SMS_COMMISSION_MANDI_COMPLETE_V2";
+
+/* ================================
+   DATABASE
+================================ */
+
+const KEY="SMS_COMMISSION_MANDI_FINAL_V2";
 
 let db={
 customers:[],
@@ -1476,34 +1531,29 @@ footer:"Thank You"
 };
 
 let cFilter="All";
-let currentBillPreviewId="";
 
+const $=id=>document.getElementById(id);
 
-/* BASIC HELPERS */
+const uid=()=>{
+return Date.now().toString(36)+
+Math.random().toString(36).substring(2,10);
+};
 
-function $(id){
-return document.getElementById(id);
-}
-
-function uid(){
-return Date.now().toString(36)+Math.random().toString(36).slice(2,9);
-}
-
-function n(v){
-let x=parseFloat(v);
+const n=v=>{
+const x=parseFloat(v);
 return Number.isFinite(x)?x:0;
-}
+};
 
-function money(v){
+const money=v=>{
 return "₹"+n(v).toLocaleString("en-IN",{
 minimumFractionDigits:2,
 maximumFractionDigits:2
 });
-}
+};
 
 function today(){
 
-let d=new Date();
+const d=new Date();
 
 return d.getFullYear()+"-"+
 String(d.getMonth()+1).padStart(2,"0")+"-"+
@@ -1527,25 +1577,35 @@ return {
 
 }
 
+
+/* ================================
+   TOAST
+================================ */
+
 function toast(msg){
 
-let t=$("toast");
+const el=$("toast");
 
-if(!t)return;
+if(!el){
+alert(msg);
+return;
+}
 
-t.textContent=msg;
-t.classList.add("show");
+el.textContent=msg;
+el.classList.add("show");
 
 clearTimeout(window.__toastTimer);
 
-window.__toastTimer=setTimeout(function(){
-t.classList.remove("show");
+window.__toastTimer=setTimeout(()=>{
+el.classList.remove("show");
 },2200);
 
 }
 
 
-/* STORAGE */
+/* ================================
+   STORAGE
+================================ */
 
 function save(){
 
@@ -1556,9 +1616,12 @@ KEY,
 JSON.stringify(db)
 );
 
+return true;
+
 }catch(e){
 
-toast("Storage error");
+toast("Storage error: "+e.message);
+return false;
 
 }
 
@@ -1569,16 +1632,11 @@ function load(){
 
 try{
 
-let x=JSON.parse(
-localStorage.getItem(KEY)||"null"
-);
+const raw=localStorage.getItem(KEY);
 
-if(x){
+if(raw){
 
-db={
-...db,
-...x
-};
+const x=JSON.parse(raw);
 
 db.customers=Array.isArray(x.customers)?x.customers:[];
 db.bills=Array.isArray(x.bills)?x.bills:[];
@@ -1597,10 +1655,11 @@ db.billSettings={
 }catch(e){
 
 console.error(e);
+toast("Saved data could not be loaded");
 
 }
 
-let api=$("apiUrl");
+const api=$("apiUrl");
 
 if(api){
 api.value=
@@ -1610,73 +1669,67 @@ localStorage.getItem("SMS_API_URL")||"";
 }
 
 
-/* MASTER */
+/* ================================
+   BASIC HELPERS
+================================ */
 
 function customer(id){
+
 return db.customers.find(x=>x.id===id);
+
 }
 
 function cname(id){
-return customer(id)?.name||"Unknown";
+
+const c=customer(id);
+
+return c?c.name:"Unknown";
+
 }
 
 function salesCustomers(){
+
 return db.customers.filter(
 x=>x.type!=="Purchase Party"
 );
+
 }
 
 function parties(){
+
 return db.customers.filter(
 x=>x.type==="Purchase Party"
 );
+
 }
 
 
-/* PAGE NAVIGATION */
+/* ================================
+   PAGE NAVIGATION
+================================ */
 
-function page(name,btn){
+function goPage(name,button){
 
 document.querySelectorAll(".page")
-.forEach(function(x){
-x.classList.remove("active");
+.forEach(p=>{
+p.classList.remove("active");
 });
 
-let target=$(name);
+const target=$(name);
 
-if(target){
+if(!target){
+toast("Page not found");
+return;
+}
+
 target.classList.add("active");
-}
 
-if(btn){
-
-document.querySelectorAll(".nav button")
-.forEach(function(x){
-x.classList.remove("active");
-});
-
-btn.classList.add("active");
-
-}else{
+if(button){
 
 document.querySelectorAll(".nav button")
-.forEach(function(x){
-x.classList.remove("active");
-});
+.forEach(b=>b.classList.remove("active"));
 
-let navButtons=
-document.querySelectorAll(".nav button");
-
-navButtons.forEach(function(b){
-
-if(
-b.getAttribute("onclick")&&
-b.getAttribute("onclick").includes("'"+name+"'")
-){
-b.classList.add("active");
-}
-
-});
+button.classList.add("active");
 
 }
 
@@ -1690,42 +1743,44 @@ behavior:"smooth"
 }
 
 
-/* ACCOUNT */
+/* ================================
+   ACCOUNT
+================================ */
 
 function account(cid){
 
-let c=customer(cid);
+const c=customer(cid);
 
-let bills=db.bills.filter(
+const bills=db.bills.filter(
 x=>x.customerId===cid
 );
 
-let receipts=db.receipts.filter(
+const receipts=db.receipts.filter(
 x=>x.customerId===cid
 );
 
-let sales=bills.reduce(
+const sales=bills.reduce(
 (a,x)=>a+n(x.total),0
 );
 
-let billReceived=bills.reduce(
+const billReceived=bills.reduce(
 (a,x)=>a+n(x.paymentAmount),0
 );
 
-let receiptReceived=receipts.reduce(
+const receiptReceived=receipts.reduce(
 (a,x)=>a+n(x.amount),0
 );
 
-let received=billReceived+receiptReceived;
+const opening=n(c?.openingBalance);
 
-let opening=n(c?.openingBalance);
+const received=
+billReceived+
+receiptReceived;
 
 return{
 bills,
 receipts,
 sales,
-billReceived,
-receiptReceived,
 received,
 opening,
 outstanding:opening+sales-received
@@ -1734,22 +1789,25 @@ outstanding:opening+sales-received
 }
 
 
-/* =========================================================
-   CUSTOMERS
-   ========================================================= */
+/* ================================
+   CUSTOMER
+================================ */
 
 function saveCustomer(){
 
-let name=$("cName").value.trim();
+const name=$("cName").value.trim();
 
 if(!name){
+
 toast("Enter customer name");
+$("cName").focus();
 return;
+
 }
 
-let edit=$("cEdit").value;
+const edit=$("cEdit").value;
 
-let data={
+const data={
 name:name,
 type:$("cType").value,
 phone:$("cPhone").value.trim(),
@@ -1759,13 +1817,14 @@ openingBalance:n($("cOpening").value)
 
 if(edit){
 
-let c=customer(edit);
+const c=customer(edit);
 
 if(c){
-Object.assign(c,data);
-}
 
+Object.assign(c,data);
 toast("Customer updated");
+
+}
 
 }else{
 
@@ -1800,11 +1859,11 @@ $("cEdit").value="";
 
 function editCustomer(id){
 
-let c=customer(id);
+const c=customer(id);
 
 if(!c)return;
 
-page("customers");
+goPage("customers");
 
 $("cName").value=c.name||"";
 $("cType").value=c.type||"Regular";
@@ -1813,40 +1872,37 @@ $("cAddress").value=c.address||"";
 $("cOpening").value=n(c.openingBalance);
 $("cEdit").value=id;
 
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
+window.scrollTo({top:0,behavior:"smooth"});
 
 }
 
 
 function deleteCustomer(id){
 
-if(!confirm("Delete customer?"))return;
+if(!confirm("Delete this customer?"))return;
 
-db.customers=
-db.customers.filter(x=>x.id!==id);
+db.customers=db.customers.filter(
+x=>x.id!==id
+);
 
 save();
 refresh();
-
 toast("Customer deleted");
 
 }
 
 
-function filterCustomers(f,b){
+function filterCustomers(filter,button){
 
-cFilter=f;
+cFilter=filter;
 
 document.querySelectorAll(
 "#customers .tabs button"
-).forEach(function(x){
+).forEach(x=>{
 x.classList.remove("active");
 });
 
-if(b)b.classList.add("active");
+if(button)button.classList.add("active");
 
 renderCustomers();
 
@@ -1855,48 +1911,45 @@ renderCustomers();
 
 function renderCustomers(){
 
-let search=
-($("cSearch").value||"").toLowerCase();
+const search=(
+$("cSearch").value||""
+).toLowerCase();
 
-let list=db.customers.filter(function(c){
+const list=db.customers.filter(c=>{
 
-let typeOK=
+const matchFilter=
 cFilter==="All"||
 c.type===cFilter;
 
-let searchOK=
+const matchSearch=
 !search||
 (c.name||"").toLowerCase().includes(search)||
-(c.phone||"").toLowerCase().includes(search)||
-(c.address||"").toLowerCase().includes(search);
+(c.phone||"").includes(search);
 
-return typeOK&&searchOK;
+return matchFilter&&matchSearch;
 
 });
 
 if(!list.length){
 
 $("customerList").innerHTML=
-'<div class="empty">No records</div>';
+'<div class="empty">No customers found</div>';
 
 return;
 
 }
 
-$("customerList").innerHTML=
-list.map(function(c){
+$("customerList").innerHTML=list.map(c=>{
 
-let a=
-c.type==="Purchase Party"
-?null
-:account(c.id);
+const isParty=c.type==="Purchase Party";
+const a=isParty?null:account(c.id);
 
-let badgeClass=
+const badgeClass=
 c.type==="Weekly"
 ?"weekly":
-c.type==="Purchase Party"
-?"party":
-"reg";
+isParty
+?"party"
+:"reg";
 
 return`
 
@@ -1906,7 +1959,9 @@ return`
 
 <div>
 
-<h3>${esc(c.name)}</h3>
+<h3 style="margin:0 0 6px">
+${esc(c.name)}
+</h3>
 
 <span class="badge ${badgeClass}">
 ${esc(c.type)}
@@ -1916,20 +1971,20 @@ ${esc(c.type)}
 
 <div class="actions">
 
-<button class="btn small"
-type="button"
+<button type="button"
+class="btn small"
 onclick="showHistory('${c.id}')">
 History
 </button>
 
-<button class="btn small gray"
-type="button"
+<button type="button"
+class="btn small gray"
 onclick="editCustomer('${c.id}')">
 Edit
 </button>
 
-<button class="btn small red"
-type="button"
+<button type="button"
+class="btn small red"
 onclick="deleteCustomer('${c.id}')">
 Delete
 </button>
@@ -1938,7 +1993,7 @@ Delete
 
 </div>
 
-<div class="muted">
+<div class="muted" style="margin-top:8px">
 ${esc(c.phone||"")}
 ${c.phone&&c.address?" • ":""}
 ${esc(c.address||"")}
@@ -1954,7 +2009,7 @@ ${a?`
 </div>
 
 <div class="line">
-<span>Received</span>
+<span>Total Received</span>
 <b>${money(a.received)}</b>
 </div>
 
@@ -1976,57 +2031,53 @@ ${a?`
 }
 
 
-/* SELECTS */
+/* ================================
+   SELECT
+================================ */
 
 function fillSelect(id,list,placeholder){
 
-let el=$(id);
+const el=$(id);
 
 if(!el)return;
 
-let old=el.value;
+const old=el.value;
 
 el.innerHTML=
 `<option value="">${esc(placeholder||"Select")}</option>`+
-list.map(function(c){
-
-return`
-<option value="${esc(c.id)}">
+list.map(c=>
+`<option value="${esc(c.id)}">
 ${esc(c.name)}
-</option>
-`;
+</option>`
+).join("");
 
-}).join("");
-
-if(list.some(function(c){
-return c.id===old;
-})){
+if(list.some(c=>c.id===old)){
 el.value=old;
 }
 
 }
 
 
-/* =========================================================
-   SALES BILL
-   ========================================================= */
+/* ================================
+   SALES
+================================ */
 
 function loadCustomerBalance(){
 
-let cid=$("billCustomer").value;
+const cid=$("billCustomer").value;
 
 if(!cid){
 
-$("previousBalance").value=0;
+$("previousBalance").value="0";
 calcBill();
 return;
 
 }
 
-let a=account(cid);
+const a=account(cid);
 
 $("previousBalance").value=
-Math.max(0,a.outstanding);
+Math.max(0,a.outstanding).toFixed(2);
 
 calcBill();
 
@@ -2037,20 +2088,22 @@ function addVeg(data){
 
 data=data||{};
 
-let row=document.createElement("div");
+const row=document.createElement("div");
 
 row.className="billrow";
 
 row.innerHTML=`
 
 <div>
-<input class="vname"
+<input
+class="vname"
 placeholder="Vegetable"
 value="${esc(data.name||"Tomato")}">
 </div>
 
 <div>
-<input class="vqty"
+<input
+class="vqty"
 type="number"
 min="0"
 placeholder="Qty"
@@ -2059,7 +2112,8 @@ oninput="calcBill()">
 </div>
 
 <div>
-<input class="vrate"
+<input
+class="vrate"
 type="number"
 min="0"
 placeholder="Rate"
@@ -2068,15 +2122,17 @@ oninput="calcBill()">
 </div>
 
 <div>
-<input class="vamount"
+<input
+class="vamount"
 type="number"
 readonly
 value="${n(data.amount).toFixed(2)}">
 </div>
 
-<button class="btn red small"
+<button
 type="button"
-onclick="this.parentElement.remove();calcBill()">
+class="btn red small"
+onclick="removeVeg(this)">
 Remove
 </button>
 
@@ -2089,34 +2145,43 @@ calcBill();
 }
 
 
+function removeVeg(button){
+
+const row=button.closest(".billrow");
+
+if(row)row.remove();
+
+if(!$("vegRows").children.length){
+addVeg();
+}else{
+calcBill();
+}
+
+}
+
+
 function getVeg(){
 
-let rows=[
+const rows=[
 ...document.querySelectorAll("#vegRows .billrow")
 ];
 
-return rows.map(function(r){
+return rows.map(row=>{
 
-let qty=n(
-r.querySelector(".vqty").value
-);
-
-let rate=n(
-r.querySelector(".vrate").value
-);
+const name=row.querySelector(".vname").value.trim();
+const qty=n(row.querySelector(".vqty").value);
+const rate=n(row.querySelector(".vrate").value);
 
 return{
-name:r.querySelector(".vname").value.trim(),
-qty:qty,
-rate:rate,
+name,
+qty,
+rate,
 amount:qty*rate
 };
 
-}).filter(function(x){
-
-return x.name||x.qty||x.rate;
-
-});
+}).filter(x=>
+x.name||x.qty||x.rate
+);
 
 }
 
@@ -2169,126 +2234,125 @@ $("rE2").value=n(r.E2);
 
 function calcBill(){
 
-let rows=[
+const rows=getVeg();
+
+const total=rows.reduce(
+(a,x)=>a+x.amount,
+0
+);
+
+const domRows=[
 ...document.querySelectorAll("#vegRows .billrow")
 ];
 
-let total=0;
+domRows.forEach((row,i)=>{
 
-rows.forEach(function(r){
+if(rows[i]){
 
-let qty=n(
-r.querySelector(".vqty").value
-);
+row.querySelector(".vamount").value=
+rows[i].amount.toFixed(2);
 
-let rate=n(
-r.querySelector(".vrate").value
-);
-
-let amount=qty*rate;
-
-total+=amount;
-
-r.querySelector(".vamount").value=
-amount.toFixed(2);
+}
 
 });
 
-let prev=n(
-$("previousBalance").value
-);
-
-let received=n(
-$("billReceived").value
-);
+const prev=n($("previousBalance").value);
+const received=n($("billReceived").value);
 
 $("sPrev").textContent=money(prev);
 $("sCurrent").textContent=money(total);
 $("sTotal").textContent=money(prev+total);
 
 $("sOut").textContent=
-money(
-Math.max(0,prev+total-received)
-);
+money(Math.max(0,prev+total-received));
 
 }
 
 
 function saveBill(){
 
-let cid=$("billCustomer").value;
+const cid=$("billCustomer").value;
 
 if(!cid){
+
 toast("Select customer");
 return;
+
 }
 
-let veg=getVeg();
+const vegetables=getVeg();
 
-let total=veg.reduce(
-function(a,x){
-return a+x.amount;
-},0);
+if(!vegetables.length){
 
-let rec=n(
-$("billReceived").value
-);
-
-let prev=n(
-$("previousBalance").value
-);
-
-if(total<=0){
-
-toast("Add vegetable and rate");
+toast("Add at least one vegetable");
 return;
 
 }
 
-if(rec>prev+total){
+const total=vegetables.reduce(
+(a,x)=>a+x.amount,
+0
+);
 
-toast("Received amount is higher than total");
+const received=n($("billReceived").value);
+
+if(received>n($("previousBalance").value)+total){
+
+toast("Received amount is greater than total");
 return;
 
 }
 
-let edit=$("billEdit").value;
+const edit=$("billEdit").value;
 
-let data={
+const data={
 
 customerId:cid,
+
 date:$("billDate").value||today(),
+
 billNo:$("billNo").value.trim(),
-previousBalance:prev,
-vegetables:veg,
-total:total,
-paymentAmount:rec,
+
+previousBalance:n(
+$("previousBalance").value
+),
+
+vegetables,
+
+total,
+
+paymentAmount:received,
+
 paymentMode:$("billMode").value,
+
 grades:getGrades(),
+
 gradeReceived:getGradeReceived(),
-createdAt:Date.now()
+
+updatedAt:Date.now()
 
 };
 
 if(edit){
 
-let b=db.bills.find(
+const bill=db.bills.find(
 x=>x.id===edit
 );
 
-if(b){
+if(bill){
 
-Object.assign(b,data);
-
-}
+Object.assign(bill,data);
 
 toast("Bill updated");
+
+}
 
 }else{
 
 db.bills.unshift({
 id:uid(),
-...data
+...data,
+createdAt:Date.now()
 });
 
 toast("Bill saved");
@@ -2306,8 +2370,8 @@ function newBill(){
 
 $("billDate").value=today();
 $("billNo").value="";
-$("previousBalance").value=0;
-$("billReceived").value=0;
+$("previousBalance").value="0";
+$("billReceived").value="0";
 $("billMode").value="Cash";
 $("billEdit").value="";
 
@@ -2324,13 +2388,13 @@ calcBill();
 
 function editBill(id){
 
-let b=db.bills.find(
+const b=db.bills.find(
 x=>x.id===id
 );
 
 if(!b)return;
 
-page("billing");
+goPage("billing");
 
 $("billCustomer").value=b.customerId||"";
 $("billDate").value=b.date||today();
@@ -2347,12 +2411,14 @@ b.gradeReceived||{}
 
 $("vegRows").innerHTML="";
 
-(b.vegetables||[]).forEach(function(v){
-addVeg(v);
-});
+if((b.vegetables||[]).length){
 
-if(!(b.vegetables||[]).length){
+b.vegetables.forEach(v=>addVeg(v));
+
+}else{
+
 addVeg();
+
 }
 
 calcBill();
@@ -2364,8 +2430,9 @@ function deleteBill(id){
 
 if(!confirm("Delete this bill?"))return;
 
-db.bills=
-db.bills.filter(x=>x.id!==id);
+db.bills=db.bills.filter(
+x=>x.id!==id
+);
 
 save();
 refresh();
@@ -2375,83 +2442,68 @@ toast("Bill deleted");
 }
 
 
-/* =========================================================
+/* ================================
    PURCHASE
-   ========================================================= */
+================================ */
 
 function calcPurchase(){
 
-let amount=
-n($("pQty").value)*
-n($("pRate").value);
+const qty=n($("pQty").value);
+const rate=n($("pRate").value);
+const amount=qty*rate;
+const previous=n($("pPrevious").value);
+const paid=n($("pPaid").value);
 
-let prev=n(
-$("pPrevious").value
-);
+$("pAmount").value=amount.toFixed(2);
 
-let paid=n(
-$("pPaid").value
-);
-
-$("pAmount").value=
-amount.toFixed(2);
-
-$("pPrevShow").textContent=money(prev);
+$("pPrevShow").textContent=money(previous);
 $("pCurrentShow").textContent=money(amount);
-$("pTotalShow").textContent=money(prev+amount);
+$("pTotalShow").textContent=money(previous+amount);
 
 $("pBalanceShow").textContent=
-money(
-Math.max(0,prev+amount-paid)
-);
+money(Math.max(0,previous+amount-paid));
 
 }
 
 
 function savePurchase(){
 
-let party=$("pParty").value;
+const party=$("pParty").value;
 
 if(!party){
+
 toast("Select purchase party");
 return;
+
 }
 
-let qty=n($("pQty").value);
-let rate=n($("pRate").value);
-let amount=qty*rate;
-let paid=n($("pPaid").value);
+const qty=n($("pQty").value);
+const rate=n($("pRate").value);
+const amount=qty*rate;
+const paid=n($("pPaid").value);
+const edit=$("pEdit").value;
 
-if(amount<=0){
-toast("Enter quantity and rate");
-return;
-}
+const data={
 
-if(paid>n($("pPrevious").value)+amount){
-toast("Paid amount is higher than payable");
-return;
-}
-
-let edit=$("pEdit").value;
-
-let data={
 partyId:party,
 date:$("pDate").value||today(),
 billNo:$("pBillNo").value.trim(),
 previous:n($("pPrevious").value),
-product:$("pProduct").value.trim(),
-qty:qty,
+product:$("pProduct").value.trim()||"Tomato",
+qty,
 unit:$("pUnit").value,
-rate:rate,
-amount:amount,
-paid:paid,
+rate,
+amount,
+paid,
 paymentMode:$("pMode").value,
-note:$("pNote").value.trim()
+note:$("pNote").value.trim(),
+updatedAt:Date.now()
+
 };
 
 if(edit){
 
-let p=db.purchases.find(
+const p=db.purchases.find(
 x=>x.id===edit
 );
 
@@ -2482,12 +2534,12 @@ function newPurchase(){
 
 $("pDate").value=today();
 $("pBillNo").value="";
-$("pPrevious").value=0;
+$("pPrevious").value="0";
 $("pProduct").value="Tomato";
 $("pQty").value="";
 $("pRate").value="";
 $("pAmount").value="";
-$("pPaid").value=0;
+$("pPaid").value="0";
 $("pMode").value="Cash";
 $("pNote").value="";
 $("pEdit").value="";
@@ -2499,39 +2551,35 @@ calcPurchase();
 
 function partyAccount(id){
 
-let purchases=
-db.purchases.filter(
+const purchases=db.purchases.filter(
 x=>x.partyId===id
 );
 
-let payments=
-db.partyPayments.filter(
+const payments=db.partyPayments.filter(
 x=>x.partyId===id
 );
 
-let purchaseTotal=
-purchases.reduce(
-(a,x)=>a+n(x.amount),0
+const purchaseTotal=purchases.reduce(
+(a,x)=>a+n(x.amount),
+0
 );
 
-let purchasePaid=
-purchases.reduce(
-(a,x)=>a+n(x.paid),0
+const purchasePaid=purchases.reduce(
+(a,x)=>a+n(x.paid),
+0
 );
 
-let settlement=
-payments.reduce(
-(a,x)=>a+n(x.amount),0
+const extraPaid=payments.reduce(
+(a,x)=>a+n(x.amount),
+0
 );
 
-let opening=n(
-customer(id)?.openingBalance
-);
+const opening=n(customer(id)?.openingBalance);
 
 return{
 purchase:purchaseTotal,
-paid:purchasePaid+settlement,
-balance:opening+purchaseTotal-purchasePaid-settlement
+paid:purchasePaid+extraPaid,
+balance:opening+purchaseTotal-purchasePaid-extraPaid
 };
 
 }
@@ -2539,20 +2587,22 @@ balance:opening+purchaseTotal-purchasePaid-settlement
 
 function savePartyPayment(){
 
-let id=$("payParty").value;
-let amt=n($("payAmount").value);
+const party=$("payParty").value;
+const amount=n($("payAmount").value);
 
-if(!id||amt<=0){
+if(!party||amount<=0){
+
 toast("Enter party and amount");
 return;
+
 }
 
 db.partyPayments.unshift({
 
 id:uid(),
-partyId:id,
+partyId:party,
 date:$("payDate").value||today(),
-amount:amt,
+amount,
 mode:$("payMode").value,
 note:$("payNote").value.trim(),
 createdAt:Date.now()
@@ -2573,13 +2623,13 @@ toast("Party payment saved");
 
 function editPurchase(id){
 
-let p=db.purchases.find(
+const p=db.purchases.find(
 x=>x.id===id
 );
 
 if(!p)return;
 
-page("purchases");
+goPage("purchases");
 
 $("pParty").value=p.partyId||"";
 $("pDate").value=p.date||today();
@@ -2603,8 +2653,7 @@ function deletePurchase(id){
 
 if(!confirm("Delete purchase?"))return;
 
-db.purchases=
-db.purchases.filter(
+db.purchases=db.purchases.filter(
 x=>x.id!==id
 );
 
@@ -2616,93 +2665,80 @@ toast("Purchase deleted");
 }
 
 
-function deletePartyPayment(id){
+function renderPurchaseHistory(){
 
-if(!confirm("Delete party payment?"))return;
-
-db.partyPayments=
-db.partyPayments.filter(
-x=>x.id!==id
+const arr=[...db.purchases].sort(
+(a,b)=>
+String(b.date).localeCompare(String(a.date))
 );
 
-save();
-refresh();
+if(!arr.length){
 
-toast("Party payment deleted");
+$("purchaseHistory").innerHTML=
+'<div class="empty">No purchase records</div>';
+
+return;
 
 }
 
-
-function renderPurchaseHistory(){
-
-let arr=[
-...db.purchases
-].sort(function(a,b){
-
-return (b.date||"").localeCompare(a.date||"");
-
-});
-
-let payments=[
-...db.partyPayments
-].sort(function(a,b){
-
-return (b.date||"").localeCompare(a.date||"");
-
-});
-
-let html="";
-
-if(arr.length){
-
-html+=`
+$("purchaseHistory").innerHTML=`
 
 <div class="table">
 
 <table>
 
+<thead>
 <tr>
 <th>Date</th>
 <th>Party</th>
 <th>Bill</th>
 <th>Product</th>
 <th>Qty</th>
-<th>Rate</th>
 <th>Amount</th>
 <th>Paid</th>
 <th>Balance</th>
 <th>Action</th>
 </tr>
+</thead>
 
-${arr.map(function(p){
+<tbody>
 
-let bal=
-n(p.previous)+n(p.amount)-n(p.paid);
-
-return`
+${arr.map(p=>`
 
 <tr>
 
 <td>${esc(p.date)}</td>
+
 <td>${esc(cname(p.partyId))}</td>
+
 <td>${esc(p.billNo||"-")}</td>
+
 <td>${esc(p.product||"-")}</td>
+
 <td>${n(p.qty)} ${esc(p.unit||"")}</td>
-<td>${money(p.rate)}</td>
+
 <td>${money(p.amount)}</td>
+
 <td>${money(p.paid)}</td>
-<td>${money(bal)}</td>
+
+<td>
+${money(
+n(p.previous)+
+n(p.amount)-
+n(p.paid)
+)}
+</td>
 
 <td>
 
-<button class="btn small gray"
-type="button"
+<button type="button"
+class="btn small gray"
 onclick="editPurchase('${p.id}')">
 Edit
 </button>
 
-<button class="btn small red"
-type="button"
+<button type="button"
+class="btn small red"
 onclick="deletePurchase('${p.id}')">
 Delete
 </button>
@@ -2711,69 +2747,9 @@ Delete
 
 </tr>
 
-`;
+`).join("")}
 
-}).join("")}
-
-</table>
-
-</div>
-
-`;
-
-}else{
-
-html+=
-'<div class="empty">No purchase records</div>';
-
-}
-
-html+=`<h3>Party Payments</h3>`;
-
-if(payments.length){
-
-html+=`
-
-<div class="table">
-
-<table>
-
-<tr>
-<th>Date</th>
-<th>Party</th>
-<th>Amount</th>
-<th>Mode</th>
-<th>Note</th>
-<th>Action</th>
-</tr>
-
-${payments.map(function(p){
-
-return`
-
-<tr>
-
-<td>${esc(p.date)}</td>
-<td>${esc(cname(p.partyId))}</td>
-<td>${money(p.amount)}</td>
-<td>${esc(p.mode||"")}</td>
-<td>${esc(p.note||"")}</td>
-
-<td>
-
-<button class="btn small red"
-type="button"
-onclick="deletePartyPayment('${p.id}')">
-Delete
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-}).join("")}
+</tbody>
 
 </table>
 
@@ -2781,45 +2757,41 @@ Delete
 
 `;
 
-}else{
-
-html+=
-'<div class="empty">No party payments</div>';
-
-}
-
-$("purchaseHistory").innerHTML=html;
-
 }
 
 
-/* =========================================================
+/* ================================
    RECEIPTS
-   ========================================================= */
+================================ */
 
 function saveReceipt(){
 
-let cid=$("rCustomer").value;
-let amt=n($("rAmount").value);
+const cid=$("rCustomer").value;
+const amount=n($("rAmount").value);
 
-if(!cid||amt<=0){
+if(!cid||amount<=0){
+
 toast("Enter customer and amount");
 return;
+
 }
 
-let edit=$("rEdit").value;
+const edit=$("rEdit").value;
 
-let data={
+const data={
+
 customerId:cid,
 date:$("rDate").value||today(),
-amount:amt,
+amount,
 mode:$("rMode").value,
-note:$("rNote").value.trim()
+note:$("rNote").value.trim(),
+updatedAt:Date.now()
+
 };
 
 if(edit){
 
-let r=db.receipts.find(
+const r=db.receipts.find(
 x=>x.id===edit
 );
 
@@ -2859,13 +2831,13 @@ $("rEdit").value="";
 
 function editReceipt(id){
 
-let r=db.receipts.find(
+const r=db.receipts.find(
 x=>x.id===id
 );
 
 if(!r)return;
 
-page("receipts");
+goPage("receipts");
 
 $("rCustomer").value=r.customerId||"";
 $("rDate").value=r.date||today();
@@ -2881,8 +2853,7 @@ function deleteReceipt(id){
 
 if(!confirm("Delete receipt?"))return;
 
-db.receipts=
-db.receipts.filter(
+db.receipts=db.receipts.filter(
 x=>x.id!==id
 );
 
@@ -2896,26 +2867,15 @@ toast("Receipt deleted");
 
 function renderReceipts(){
 
-let search=
-($("rSearch").value||"").toLowerCase();
+const search=(
+$("rSearch").value||""
+).toLowerCase();
 
-let arr=db.receipts.filter(function(r){
-
-return(
+const arr=db.receipts.filter(r=>
 cname(r.customerId)
 .toLowerCase()
 .includes(search)
-||
-(r.note||"")
-.toLowerCase()
-.includes(search)
-||
-(r.mode||"")
-.toLowerCase()
-.includes(search)
 );
-
-});
 
 if(!arr.length){
 
@@ -2932,6 +2892,7 @@ $("receiptList").innerHTML=`
 
 <table>
 
+<thead>
 <tr>
 <th>Date</th>
 <th>Customer</th>
@@ -2940,10 +2901,11 @@ $("receiptList").innerHTML=`
 <th>Note</th>
 <th>Action</th>
 </tr>
+</thead>
 
-${arr.map(function(r){
+<tbody>
 
-return`
+${arr.map(r=>`
 
 <tr>
 
@@ -2959,14 +2921,14 @@ return`
 
 <td>
 
-<button class="btn small gray"
-type="button"
+<button type="button"
+class="btn small gray"
 onclick="editReceipt('${r.id}')">
 Edit
 </button>
 
-<button class="btn small red"
-type="button"
+<button type="button"
+class="btn small red"
 onclick="deleteReceipt('${r.id}')">
 Delete
 </button>
@@ -2975,9 +2937,9 @@ Delete
 
 </tr>
 
-`;
+`).join("")}
 
-}).join("")}
+</tbody>
 
 </table>
 
@@ -2988,13 +2950,13 @@ Delete
 }
 
 
-/* =========================================================
+/* ================================
    GRADES
-   ========================================================= */
+================================ */
 
 function gradeTotals(cid){
 
-let issued={
+const issued={
 SMS:0,
 MIX:0,
 SMALL:0,
@@ -3002,7 +2964,7 @@ E1:0,
 E2:0
 };
 
-let received={
+const received={
 SMS:0,
 MIX:0,
 SMALL:0,
@@ -3011,15 +2973,13 @@ E2:0
 };
 
 db.bills
-.filter(function(x){
-return x.customerId===cid;
-})
-.forEach(function(b){
+.filter(x=>x.customerId===cid)
+.forEach(b=>{
 
-let g=b.grades||{};
-let r=b.gradeReceived||{};
+const g=b.grades||{};
+const r=b.gradeReceived||{};
 
-Object.keys(issued).forEach(function(k){
+Object.keys(issued).forEach(k=>{
 
 issued[k]+=n(g[k]);
 received[k]+=n(r[k]);
@@ -3029,8 +2989,8 @@ received[k]+=n(r[k]);
 });
 
 return{
-issued:issued,
-received:received
+issued,
+received
 };
 
 }
@@ -3043,22 +3003,22 @@ r=r||{};
 
 return`
 SMS ${n(g.SMS)}/${n(r.SMS)}
- • MIX ${n(g.MIX)}/${n(r.MIX)}
- • SMALL ${n(g.SMALL)}/${n(r.SMALL)}
- • E1 ${n(g.E1)}/${n(r.E1)}
- • E2 ${n(g.E2)}/${n(r.E2)}
+ | MIX ${n(g.MIX)}/${n(r.MIX)}
+ | SMALL ${n(g.SMALL)}/${n(r.SMALL)}
+ | E1 ${n(g.E1)}/${n(r.E1)}
+ | E2 ${n(g.E2)}/${n(r.E2)}
 `;
 
 }
 
 
-/* =========================================================
+/* ================================
    HISTORY
-   ========================================================= */
+================================ */
 
 function renderCustomerHistory(){
 
-let cid=$("historyCustomer").value;
+const cid=$("historyCustomer").value;
 
 if(!cid){
 
@@ -3069,7 +3029,7 @@ return;
 
 }
 
-let c=customer(cid);
+const c=customer(cid);
 
 if(!c){
 
@@ -3080,14 +3040,16 @@ return;
 
 }
 
-let a=account(cid);
-let g=gradeTotals(cid);
+const a=account(cid);
+const g=gradeTotals(cid);
 
 $("customerHistory").innerHTML=`
 
 <div class="historyHead">
 
-<h2>${esc(c.name)}</h2>
+<h2 style="margin-top:0">
+${esc(c.name)}
+</h2>
 
 <div>
 ${esc(c.phone||"")}
@@ -3097,10 +3059,10 @@ ${esc(c.address||"")}
 
 <div class="actions">
 
-<button class="btn green"
-type="button"
+<button type="button"
+class="btn green"
 onclick="downloadHistoryPDF('${cid}')">
-Download Full PDF
+Download PDF
 </button>
 
 </div>
@@ -3108,35 +3070,32 @@ Download Full PDF
 </div>
 
 
-<div class="summary">
+<div class="grid4">
 
-<div class="line">
-<span>Opening Balance</span>
-<b>${money(a.opening)}</b>
+<div class="stat">
+<small>Total Sales</small>
+<strong>${money(a.sales)}</strong>
 </div>
 
-<div class="line">
-<span>Total Sales</span>
-<b>${money(a.sales)}</b>
+<div class="stat">
+<small>Total Received</small>
+<strong>${money(a.received)}</strong>
 </div>
 
-<div class="line">
-<span>Bill Payments</span>
-<b>${money(a.billReceived)}</b>
+<div class="stat">
+<small>Opening Balance</small>
+<strong>${money(a.opening)}</strong>
 </div>
 
-<div class="line">
-<span>Other Receipts</span>
-<b>${money(a.receiptReceived)}</b>
-</div>
-
-<div class="line total">
-<span>Current Balance</span>
-<b>${money(a.outstanding)}</b>
+<div class="stat">
+<small>Current Balance</small>
+<strong>${money(a.outstanding)}</strong>
 </div>
 
 </div>
 
+
+<div class="card">
 
 <h3>Grade / Crate Balance</h3>
 
@@ -3144,41 +3103,48 @@ Download Full PDF
 
 <table>
 
+<thead>
 <tr>
 <th>Grade</th>
 <th>Issued</th>
 <th>Received</th>
 <th>Balance</th>
 </tr>
+</thead>
 
-${["SMS","MIX","SMALL","E1","E2"].map(function(k){
+<tbody>
 
-return`
+${["SMS","MIX","SMALL","E1","E2"].map(k=>`
 
 <tr>
-
 <td>${k}</td>
 <td>${g.issued[k]}</td>
 <td>${g.received[k]}</td>
-<td><b>${g.issued[k]-g.received[k]}</b></td>
-
+<td>${g.issued[k]-g.received[k]}</td>
 </tr>
 
-`;
+`).join("")}
 
-}).join("")}
+</tbody>
 
 </table>
 
 </div>
 
+</div>
+
+
+<div class="card">
 
 <h3>Sales History</h3>
+
+${a.bills.length?`
 
 <div class="table">
 
 <table>
 
+<thead>
 <tr>
 <th>Date</th>
 <th>Bill</th>
@@ -3189,17 +3155,11 @@ return`
 <th>Grades</th>
 <th>Action</th>
 </tr>
+</thead>
 
-${a.bills.length?
+<tbody>
 
-a.bills.map(function(b){
-
-let billBalance=
-n(b.previousBalance)+
-n(b.total)-
-n(b.paymentAmount);
-
-return`
+${a.bills.map(b=>`
 
 <tr>
 
@@ -3208,14 +3168,11 @@ return`
 <td>${esc(b.billNo||"-")}</td>
 
 <td>
-${(b.vegetables||[]).map(function(v){
 
-return`
+${(b.vegetables||[]).map(v=>`
 ${esc(v.name)}
 ${n(v.qty)} × ${money(v.rate)}
-`;
-
-}).join("<br>")}
+`).join("<br>")}
 
 </td>
 
@@ -3223,29 +3180,34 @@ ${n(v.qty)} × ${money(v.rate)}
 
 <td>${money(b.paymentAmount)}</td>
 
-<td>${money(Math.max(0,billBalance))}</td>
+<td>
+${money(
+n(b.previousBalance)+
+n(b.total)-
+n(b.paymentAmount)
+)}
+</td>
 
-<td>${esc(gradeText(
-b.grades,
-b.gradeReceived
-))}</td>
+<td>
+${gradeText(b.grades,b.gradeReceived)}
+</td>
 
 <td>
 
-<button class="btn small"
-type="button"
+<button type="button"
+class="btn small"
 onclick="viewBill('${b.id}')">
 View
 </button>
 
-<button class="btn small gray"
-type="button"
+<button type="button"
+class="btn small gray"
 onclick="editBill('${b.id}')">
 Edit
 </button>
 
-<button class="btn small red"
-type="button"
+<button type="button"
+class="btn small red"
 onclick="deleteBill('${b.id}')">
 Delete
 </button>
@@ -3254,35 +3216,31 @@ Delete
 
 </tr>
 
-`;
+`).join("")}
 
-}).join("")
-
-:
-
-`<tr>
-<td colspan="8" class="empty">
-No sales bills
-</td>
-</tr>`
-
-}
+</tbody>
 
 </table>
 
 </div>
 
+`:
+'<div class="empty">No sales bills</div>'}
 
-<h3>Receipts</h3>
+</div>
 
-${a.receipts.length?
 
-`
+<div class="card">
+
+<h3>Receipt History</h3>
+
+${a.receipts.length?`
 
 <div class="table">
 
 <table>
 
+<thead>
 <tr>
 <th>Date</th>
 <th>Amount</th>
@@ -3290,10 +3248,11 @@ ${a.receipts.length?
 <th>Note</th>
 <th>Action</th>
 </tr>
+</thead>
 
-${a.receipts.map(function(r){
+<tbody>
 
-return`
+${a.receipts.map(r=>`
 
 <tr>
 
@@ -3304,14 +3263,14 @@ return`
 
 <td>
 
-<button class="btn small gray"
-type="button"
+<button type="button"
+class="btn small gray"
 onclick="editReceipt('${r.id}')">
 Edit
 </button>
 
-<button class="btn small red"
-type="button"
+<button type="button"
+class="btn small red"
 onclick="deleteReceipt('${r.id}')">
 Delete
 </button>
@@ -3320,55 +3279,52 @@ Delete
 
 </tr>
 
-`;
+`).join("")}
 
-}).join("")}
+</tbody>
 
 </table>
 
 </div>
 
-`
+`:
+'<div class="empty">No receipts</div>'}
 
-:
-
-'<div class="empty">No receipts</div>'
-
-}
+</div>
 
 `;
 
 }
 
 
-function showHistory(cid){
+function showHistory(id){
 
-page("history");
+goPage("history");
 
-$("historyCustomer").value=cid;
+setTimeout(()=>{
 
+$("historyCustomer").value=id;
 renderCustomerHistory();
+
+},50);
 
 }
 
 
 function renderBills(){
 
-let search=
-($("billSearch").value||"").toLowerCase();
+const search=(
+$("billSearch").value||""
+).toLowerCase();
 
-let arr=db.bills.filter(function(b){
+const arr=db.bills.filter(b=>{
 
 return(
 cname(b.customerId)
 .toLowerCase()
-.includes(search)
-||
+.includes(search)||
 (b.billNo||"")
 .toLowerCase()
-.includes(search)
-||
-(b.date||"")
 .includes(search)
 );
 
@@ -3389,28 +3345,21 @@ $("allBills").innerHTML=`
 
 <table>
 
+<thead>
 <tr>
 <th>Date</th>
 <th>Customer</th>
 <th>Bill</th>
 <th>Amount</th>
 <th>Received</th>
-<th>Balance</th>
 <th>Grades</th>
 <th>Action</th>
 </tr>
+</thead>
 
-${arr.map(function(b){
+<tbody>
 
-let balance=
-Math.max(
-0,
-n(b.previousBalance)+
-n(b.total)-
-n(b.paymentAmount)
-);
-
-return`
+${arr.map(b=>`
 
 <tr>
 
@@ -3424,29 +3373,24 @@ return`
 
 <td>${money(b.paymentAmount)}</td>
 
-<td>${money(balance)}</td>
-
-<td>${esc(gradeText(
-b.grades,
-b.gradeReceived
-))}</td>
+<td>${gradeText(b.grades,b.gradeReceived)}</td>
 
 <td>
 
-<button class="btn small"
-type="button"
+<button type="button"
+class="btn small"
 onclick="viewBill('${b.id}')">
 View
 </button>
 
-<button class="btn small gray"
-type="button"
+<button type="button"
+class="btn small gray"
 onclick="editBill('${b.id}')">
 Edit
 </button>
 
-<button class="btn small red"
-type="button"
+<button type="button"
+class="btn small red"
 onclick="deleteBill('${b.id}')">
 Delete
 </button>
@@ -3455,9 +3399,9 @@ Delete
 
 </tr>
 
-`;
+`).join("")}
 
-}).join("")}
+</tbody>
 
 </table>
 
@@ -3468,90 +3412,87 @@ Delete
 }
 
 
-/* =========================================================
-   BILL PREVIEW
-   ========================================================= */
+/* ================================
+   BILL VIEW
+================================ */
+
+let currentBillId="";
+
 
 function viewBill(id){
 
-let b=db.bills.find(
+const b=db.bills.find(
 x=>x.id===id
 );
 
 if(!b)return;
 
-let c=customer(b.customerId);
+currentBillId=id;
 
-currentBillPreviewId=id;
+const c=customer(b.customerId);
 
-let html=`
+$("billPreview").innerHTML=`
 
-<div class="bill-preview">
+<div style="text-align:center">
 
-<h2>${esc(db.billSettings.header)}</h2>
+<h2 style="margin:0">
+${esc(db.billSettings.header)}
+</h2>
 
-<p style="text-align:center">
-${esc(db.billSettings.subHeader)}
-</p>
+<div>${esc(db.billSettings.subHeader)}</div>
 
 ${db.billSettings.contact?
-`<p style="text-align:center">
-${esc(db.billSettings.contact)}
-</p>`:""}
+`<div>${esc(db.billSettings.contact)}</div>`:""}
+
+</div>
 
 <hr>
 
-<div class="grid">
+<p>
+<b>Customer:</b> ${esc(c?.name||"")}
+</p>
 
-<div>
-<b>Customer</b><br>
-${esc(c?.name||"")}
-</div>
+<p>
+<b>Date:</b> ${esc(b.date)}
+&nbsp;&nbsp;
+<b>Bill No:</b> ${esc(b.billNo||"-")}
+</p>
 
-<div>
-<b>Date</b><br>
-${esc(b.date)}
-</div>
-
-<div>
-<b>Bill No</b><br>
-${esc(b.billNo||"-")}
-</div>
-
-<div>
-<b>Payment Mode</b><br>
-${esc(b.paymentMode||"-")}
-</div>
-
-</div>
-
-<h3>Vegetables</h3>
-
-<table>
+<table style="width:100%;border-collapse:collapse">
 
 <tr>
-<th>Vegetable</th>
-<th>Qty</th>
-<th>Rate</th>
-<th>Amount</th>
+<th style="border:1px solid #ddd;padding:7px">Vegetable</th>
+<th style="border:1px solid #ddd;padding:7px">Qty</th>
+<th style="border:1px solid #ddd;padding:7px">Rate</th>
+<th style="border:1px solid #ddd;padding:7px">Amount</th>
 </tr>
 
-${(b.vegetables||[]).map(function(v){
-
-return`
+${(b.vegetables||[]).map(v=>`
 
 <tr>
-<td>${esc(v.name)}</td>
-<td>${n(v.qty)}</td>
-<td>${money(v.rate)}</td>
-<td>${money(v.amount)}</td>
+
+<td style="border:1px solid #ddd;padding:7px">
+${esc(v.name)}
+</td>
+
+<td style="border:1px solid #ddd;padding:7px">
+${n(v.qty)}
+</td>
+
+<td style="border:1px solid #ddd;padding:7px">
+${money(v.rate)}
+</td>
+
+<td style="border:1px solid #ddd;padding:7px">
+${money(v.amount)}
+</td>
+
 </tr>
 
-`;
-
-}).join("")}
+`).join("")}
 
 </table>
+
 
 <div class="summary">
 
@@ -3591,7 +3532,10 @@ n(b.paymentAmount)
 
 </div>
 
-<h3>Grade / Crate Details</h3>
+
+<h3>Grade / Crate</h3>
+
+<div class="table">
 
 <table>
 
@@ -3602,10 +3546,10 @@ n(b.paymentAmount)
 <th>Balance</th>
 </tr>
 
-${["SMS","MIX","SMALL","E1","E2"].map(function(k){
+${["SMS","MIX","SMALL","E1","E2"].map(k=>{
 
-let issued=n((b.grades||{})[k]);
-let received=n((b.gradeReceived||{})[k]);
+const issued=n((b.grades||{})[k]);
+const received=n((b.gradeReceived||{})[k]);
 
 return`
 
@@ -3622,233 +3566,143 @@ return`
 
 </table>
 
+</div>
+
 <p style="text-align:center;margin-top:25px">
 ${esc(db.billSettings.footer)}
 </p>
 
-</div>
-
 `;
-
-$("billPreview").innerHTML=html;
 
 $("billModal").classList.add("show");
 
 }
 
 
-function closeBillModal(){
+function closeModal(){
 
 $("billModal").classList.remove("show");
 
 }
 
 
-function printBill(){
+function printCurrentBill(){
 
-let content=$("billPreview").innerHTML;
+const content=$("billPreview").innerHTML;
 
-let w=window.open(
-"",
-"_blank",
-"width=800,height=900"
-);
+const win=window.open("","_blank");
 
-if(!w){
+if(!win){
 
-toast("Allow popup to print bill");
-
+toast("Popup blocked. Allow popup.");
 return;
 
 }
 
-w.document.write(`
+win.document.write(`
 <html>
 <head>
 <title>SMS Bill</title>
 <style>
-body{font-family:Arial;padding:20px}
-table{width:100%;border-collapse:collapse}
-th,td{border:1px solid #ddd;padding:8px;font-size:12px}
-.summary{background:#f5f5f5;padding:10px}
-.line{display:flex;justify-content:space-between;padding:5px}
-.total{font-weight:bold;border-top:2px solid #222}
+body{
+font-family:Arial;
+padding:20px
+}
+table{
+width:100%;
+border-collapse:collapse
+}
+th,td{
+border:1px solid #ddd;
+padding:7px
+}
 </style>
 </head>
 <body>
 ${content}
+<script>
+window.onload=function(){
+window.print();
+}
+<\/script>
 </body>
 </html>
 `);
 
-w.document.close();
-
-setTimeout(function(){
-w.focus();
-w.print();
-},500);
+win.document.close();
 
 }
 
 
-function downloadBillPDF(){
+function downloadBillText(){
 
-let b=db.bills.find(
-x=>x.id===currentBillPreviewId
+const b=db.bills.find(
+x=>x.id===currentBillId
 );
 
 if(!b)return;
 
-if(!window.jspdf){
+const c=customer(b.customerId);
 
-toast("PDF library not loaded");
+let text=
+db.billSettings.header+"\n"+
+db.billSettings.subHeader+"\n\n"+
+"Customer: "+(c?.name||"")+"\n"+
+"Date: "+b.date+"\n"+
+"Bill No: "+(b.billNo||"-")+"\n\n";
 
-return;
+(b.vegetables||[]).forEach(v=>{
 
-}
-
-let doc=new window.jspdf.jsPDF();
-
-let c=customer(b.customerId);
-
-let y=15;
-
-doc.setFontSize(17);
-
-doc.text(
-db.billSettings.header,
-14,y
-);
-
-y+=7;
-
-doc.setFontSize(10);
-
-doc.text(
-db.billSettings.subHeader,
-14,y
-);
-
-y+=8;
-
-doc.text(
-"Customer: "+(c?.name||""),
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Date: "+b.date+"   Bill No: "+(b.billNo||"-"),
-14,y
-);
-
-y+=10;
-
-doc.setFontSize(11);
-
-doc.text(
-"Vegetables",
-14,y
-);
-
-y+=7;
-
-doc.setFontSize(9);
-
-(b.vegetables||[]).forEach(function(v){
-
-if(y>275){
-doc.addPage();
-y=15;
-}
-
-doc.text(
-`${v.name} | Qty ${v.qty} | Rate ${v.rate} | Amount ${v.amount}`,
-14,y
-);
-
-y+=6;
+text+=
+v.name+" | "+
+v.qty+" x "+
+v.rate+" = "+
+v.amount+"\n";
 
 });
 
-y+=5;
-
-doc.text(
-"Previous: "+money(b.previousBalance),
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Current Bill: "+money(b.total),
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Received: "+money(b.paymentAmount),
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Balance: "+money(
-Math.max(
-0,
+text+=
+"\nPrevious: "+b.previousBalance+
+"\nCurrent Bill: "+b.total+
+"\nReceived: "+b.paymentAmount+
+"\nBalance: "+
+(
 n(b.previousBalance)+
 n(b.total)-
 n(b.paymentAmount)
-)
-),
-14,y
 );
 
-y+=10;
-
-doc.text(
-"Grades:",
-14,y
+const blob=new Blob(
+[text],
+{type:"text/plain"}
 );
 
-y+=6;
+const a=document.createElement("a");
 
-["SMS","MIX","SMALL","E1","E2"].forEach(function(k){
+a.href=URL.createObjectURL(blob);
+a.download="SMS_Bill_"+(b.billNo||b.id)+".txt";
+a.click();
 
-let i=n((b.grades||{})[k]);
-let r=n((b.gradeReceived||{})[k]);
+setTimeout(()=>{
+URL.revokeObjectURL(a.href);
+},500);
 
-doc.text(
-`${k}: Issued ${i} | Received ${r} | Balance ${i-r}`,
-14,y
-);
-
-y+=6;
-
-});
-
-doc.save(
-"SMS_Bill_"+(b.billNo||b.date)+".pdf"
-);
+toast("Bill downloaded");
 
 }
 
 
-/* =========================================================
+/* ================================
    VEHICLE RENT
-   ========================================================= */
+================================ */
 
 function calcRent(){
 
-let rent=n($("vrRent").value);
-let paid=n($("vrPaid").value);
+const rent=n($("vrRent").value);
+const paid=n($("vrPaid").value);
 
 $("vrRentShow").textContent=money(rent);
 $("vrPaidShow").textContent=money(paid);
-
 $("vrBalanceShow").textContent=
 money(Math.max(0,rent-paid));
 
@@ -3857,21 +3711,15 @@ money(Math.max(0,rent-paid));
 
 function saveVehicleRent(){
 
-let edit=$("vrEdit").value;
-
-let vehicle=$("vrVehicleNo")
-.value.trim();
-
-let driver=$("vrDriverName")
-.value.trim();
-
-let rent=n($("vrRent").value);
-let paid=n($("vrPaid").value);
+const vehicle=$("vrVehicleNo").value.trim();
+const driver=$("vrDriverName").value.trim();
+const rent=n($("vrRent").value);
+const paid=n($("vrPaid").value);
+const edit=$("vrEdit").value;
 
 if(!vehicle&&!driver){
 
 toast("Vehicle Number or Driver Name enter pannunga");
-
 return;
 
 }
@@ -3879,59 +3727,38 @@ return;
 if(rent<=0){
 
 toast("Rent amount enter pannunga");
-
 return;
 
 }
 
 if(paid>rent){
 
-toast("Paid amount rent amount-ஐ விட அதிகமாக இருக்கக்கூடாது");
-
+toast("Paid amount cannot be greater than rent");
 return;
 
 }
 
-let data={
+const data={
 
 date:$("vrDate").value||today(),
-
 vehicleNo:vehicle,
-
-vehicleType:
-$("vrVehicleType").value.trim(),
-
 driverName:driver,
-
-driverPhone:
-$("vrDriverPhone").value.trim(),
-
-from:
-$("vrFrom").value.trim(),
-
-to:
-$("vrTo").value.trim(),
-
-purpose:
-$("vrPurpose").value.trim(),
-
-rent:rent,
-
-paid:paid,
-
+driverPhone:$("vrDriverPhone").value.trim(),
+from:$("vrFrom").value.trim(),
+to:$("vrTo").value.trim(),
+purpose:$("vrPurpose").value.trim(),
+rent,
+paid,
 balance:rent-paid,
-
-paymentMode:
-$("vrPaymentMode").value,
-
-note:
-$("vrNote").value.trim()
+paymentMode:$("vrPaymentMode").value,
+note:$("vrNote").value.trim(),
+updatedAt:Date.now()
 
 };
 
 if(edit){
 
-let r=db.vehicleRents.find(
+const r=db.vehicleRents.find(
 x=>x.id===edit
 );
 
@@ -3942,11 +3769,9 @@ toast("Vehicle Rent updated");
 }else{
 
 db.vehicleRents.unshift({
-
 id:uid(),
 ...data,
 createdAt:Date.now()
-
 });
 
 toast("Vehicle Rent saved");
@@ -3965,7 +3790,6 @@ function clearVehicleRent(){
 
 $("vrDate").value=today();
 $("vrVehicleNo").value="";
-$("vrVehicleType").value="";
 $("vrDriverName").value="";
 $("vrDriverPhone").value="";
 $("vrFrom").value="";
@@ -3987,17 +3811,16 @@ calcRent();
 
 function editVehicleRent(id){
 
-let r=db.vehicleRents.find(
+const r=db.vehicleRents.find(
 x=>x.id===id
 );
 
 if(!r)return;
 
-page("vehicleRent");
+goPage("vehicleRent");
 
 $("vrDate").value=r.date||today();
 $("vrVehicleNo").value=r.vehicleNo||"";
-$("vrVehicleType").value=r.vehicleType||"";
 $("vrDriverName").value=r.driverName||"";
 $("vrDriverPhone").value=r.driverPhone||"";
 $("vrFrom").value=r.from||"";
@@ -4019,11 +3842,8 @@ calcRent();
 
 function deleteVehicleRent(id){
 
-if(!confirm(
-"Delete this vehicle rent?"
-)){
+if(!confirm("Delete this vehicle rent?"))
 return;
-}
 
 db.vehicleRents=
 db.vehicleRents.filter(
@@ -4040,21 +3860,21 @@ toast("Vehicle rent deleted");
 
 function renderVehicleRent(){
 
-let search=
-($("vrSearch").value||"").toLowerCase();
+const search=(
+$("vrSearch").value||""
+).toLowerCase();
 
-let filterDate=
+const filterDate=
 $("vrFilterDate").value;
 
-let arr=db.vehicleRents.filter(function(r){
+const arr=db.vehicleRents.filter(r=>{
 
-let dateOK=
+const dateOK=
 !filterDate||
 r.date===filterDate;
 
-let text=[
+const text=[
 r.vehicleNo,
-r.vehicleType,
 r.driverName,
 r.driverPhone,
 r.from,
@@ -4065,20 +3885,23 @@ r.note
 .join(" ")
 .toLowerCase();
 
-return dateOK&&
-(!search||text.includes(search));
+const searchOK=
+!search||
+text.includes(search);
+
+return dateOK&&searchOK;
 
 });
 
-let totalRent=arr.reduce(
+const totalRent=arr.reduce(
 (a,r)=>a+n(r.rent),0
 );
 
-let totalPaid=arr.reduce(
+const totalPaid=arr.reduce(
 (a,r)=>a+n(r.paid),0
 );
 
-let totalBalance=arr.reduce(
+const totalBalance=arr.reduce(
 (a,r)=>a+n(r.balance),0
 );
 
@@ -4113,11 +3936,13 @@ $("vehicleRentSummary").innerHTML=`
 if(!arr.length){
 
 $("vehicleRentList").innerHTML=`
+
 <tr>
-<td colspan="10" class="empty">
+<td colspan="9" class="empty">
 No Vehicle Rent Records
 </td>
 </tr>
+
 `;
 
 return;
@@ -4125,25 +3950,18 @@ return;
 }
 
 $("vehicleRentList").innerHTML=
-arr.map(function(r){
+arr.map(r=>{
 
-let balance=n(r.balance);
+let status="Pending";
+let cls="status-pending";
 
-let status=
-balance<=0
-?"Paid"
-:
-n(r.paid)>0
-?"Part Paid"
-:"Pending";
-
-let statusClass=
-status==="Paid"
-?"status-paid"
-:
-status==="Pending"
-?"status-pending"
-:"status-part";
+if(n(r.balance)<=0){
+status="Paid";
+cls="status-paid";
+}else if(n(r.paid)>0){
+status="Part Paid";
+cls="status-part";
+}
 
 return`
 
@@ -4154,7 +3972,7 @@ return`
 <td>
 <b>${esc(r.vehicleNo||"-")}</b>
 <br>
-<small>${esc(r.vehicleType||"")}</small>
+<small>${esc(r.purpose||"")}</small>
 </td>
 
 <td>
@@ -4176,25 +3994,27 @@ ${money(r.paid)}
 </td>
 
 <td>
-<b>${money(balance)}</b>
-</td>
 
-<td>
-<span class="${statusClass}">
+<b>${money(r.balance)}</b>
+
+<br>
+
+<span class="${cls}">
 ${status}
 </span>
+
 </td>
 
 <td>
 
-<button class="btn small gray"
-type="button"
+<button type="button"
+class="btn small gray"
 onclick="editVehicleRent('${r.id}')">
 Edit
 </button>
 
-<button class="btn small red"
-type="button"
+<button type="button"
+class="btn small red"
 onclick="deleteVehicleRent('${r.id}')">
 Delete
 </button>
@@ -4210,61 +4030,64 @@ Delete
 }
 
 
-/* =========================================================
+/* ================================
    DASHBOARD
-   ========================================================= */
+================================ */
 
 function dashboard(){
 
-let sc=salesCustomers();
+const sc=salesCustomers();
 
-let sales=db.bills.reduce(
+const sales=db.bills.reduce(
 (a,b)=>a+n(b.total),0
 );
 
-let purchase=db.purchases.reduce(
+const purchase=db.purchases.reduce(
 (a,b)=>a+n(b.amount),0
 );
 
-let out=sc.reduce(
+const outstanding=sc.reduce(
 (a,c)=>a+account(c.id).outstanding,
 0
 );
 
-let pay=parties().reduce(
+const payable=parties().reduce(
 (a,c)=>a+partyAccount(c.id).balance,
 0
 );
 
-let rents=db.vehicleRents;
+const rents=db.vehicleRents;
 
-let totalRent=rents.reduce(
-(a,x)=>a+n(x.rent),0
+const rentTotal=rents.reduce(
+(a,r)=>a+n(r.rent),0
 );
 
-let totalPaid=rents.reduce(
-(a,x)=>a+n(x.paid),0
+const rentPaid=rents.reduce(
+(a,r)=>a+n(r.paid),0
 );
 
-let totalBalance=rents.reduce(
-(a,x)=>a+n(x.balance),0
+const rentBalance=rents.reduce(
+(a,r)=>a+n(r.balance),0
 );
 
 $("dCustomers").textContent=sc.length;
 
 $("dWeekly").textContent=
-sc.filter(function(x){
-return x.type==="Weekly";
-}).length;
+sc.filter(x=>x.type==="Weekly").length;
 
 $("dParties").textContent=
 parties().length;
 
 $("dSales").textContent=money(sales);
+
 $("dPurchase").textContent=money(purchase);
-$("dOut").textContent=money(out);
-$("dPayable").textContent=money(pay);
+
+$("dOut").textContent=money(outstanding);
+
+$("dPayable").textContent=money(payable);
+
 $("dBills").textContent=db.bills.length;
+
 
 $("dashboardRent").innerHTML=`
 
@@ -4277,147 +4100,104 @@ $("dashboardRent").innerHTML=`
 
 <div class="rent-stat">
 <small>Total Rent</small>
-<b>${money(totalRent)}</b>
+<b>${money(rentTotal)}</b>
 </div>
 
 <div class="rent-stat">
 <small>Paid</small>
-<b>${money(totalPaid)}</b>
+<b>${money(rentPaid)}</b>
 </div>
 
 <div class="rent-stat">
 <small>Balance</small>
-<b>${money(totalBalance)}</b>
+<b>${money(rentBalance)}</b>
 </div>
 
 </div>
 
 `;
 
-let weekly=sc.filter(function(x){
-return x.type==="Weekly";
-});
+
+const weekly=sc.filter(
+x=>x.type==="Weekly"
+);
 
 $("weeklyBox").innerHTML=
 weekly.length?
-
-weekly.map(function(c){
-
-return`
+weekly.map(c=>`
 
 <div class="customer">
 
 <b>${esc(c.name)}</b>
 
 <div class="muted">
-${esc(c.phone||"")}
+Phone: ${esc(c.phone||"-")}
 </div>
 
-<div class="summary">
-
-<div class="line">
-<span>Balance</span>
-<b>${money(
-account(c.id).outstanding
-)}</b>
+<div style="margin-top:7px">
+Balance:
+<b>${money(account(c.id).outstanding)}</b>
 </div>
 
 </div>
 
-</div>
-
-`;
-
-}).join("")
-
+`).join("")
 :
-
 '<div class="empty">No weekly customers</div>';
 
 
-let partyList=parties();
+const ps=parties();
 
 $("partyBalanceBox").innerHTML=
-partyList.length?
-
-partyList.map(function(c){
-
-return`
+ps.length?
+ps.map(c=>`
 
 <div class="customer">
 
 <b>${esc(c.name)}</b>
 
-<div class="summary">
-
-<div class="line">
-<span>Purchase</span>
-<b>${money(
-partyAccount(c.id).purchase
-)}</b>
-</div>
-
-<div class="line">
-<span>Paid</span>
-<b>${money(
-partyAccount(c.id).paid
-)}</b>
-</div>
-
-<div class="line total">
-<span>Payable</span>
-<b>${money(
-partyAccount(c.id).balance
-)}</b>
+<div style="margin-top:7px">
+Payable:
+<b>${money(partyAccount(c.id).balance)}</b>
 </div>
 
 </div>
 
-</div>
-
-`;
-
-}).join("")
-
+`).join("")
 :
-
 '<div class="empty">No purchase parties</div>';
 
 }
 
 
-/* =========================================================
-   BACKUP / RESTORE
-   ========================================================= */
+/* ================================
+   BACKUP
+================================ */
 
 function backup(){
 
 try{
 
-let blob=new Blob(
-[
-JSON.stringify(db,null,2)
-],
-{
-type:"application/json"
-}
+const data=JSON.stringify(db,null,2);
+
+const blob=new Blob(
+[data],
+{type:"application/json"}
 );
 
-let url=URL.createObjectURL(blob);
+const url=URL.createObjectURL(blob);
 
-let a=document.createElement("a");
+const a=document.createElement("a");
 
 a.href=url;
 a.download=
 "SMS_Mandi_Backup_"+today()+".json";
 
 document.body.appendChild(a);
-
 a.click();
-
 a.remove();
 
-setTimeout(function(){
+setTimeout(()=>{
 URL.revokeObjectURL(url);
 },1000);
 
@@ -4425,7 +4205,6 @@ toast("Backup downloaded");
 
 }catch(e){
 
-console.error(e);
 toast("Backup failed");
 
 }
@@ -4435,62 +4214,47 @@ toast("Backup failed");
 
 function restore(event){
 
-let file=
-event.target.files&&
-event.target.files[0];
+const file=
+event.target.files&&event.target.files[0];
 
 if(!file)return;
 
-let reader=new FileReader();
+const reader=new FileReader();
 
 reader.onload=function(){
 
 try{
 
-let x=JSON.parse(reader.result);
+const x=JSON.parse(reader.result);
 
 if(!x||typeof x!=="object"){
+
 throw new Error("Invalid backup");
+
 }
 
 db={
-...db,
-...x
-};
-
-db.customers=
-Array.isArray(x.customers)
-?x.customers:[];
-
-db.bills=
-Array.isArray(x.bills)
-?x.bills:[];
-
-db.receipts=
-Array.isArray(x.receipts)
-?x.receipts:[];
-
-db.purchases=
-Array.isArray(x.purchases)
-?x.purchases:[];
-
-db.partyPayments=
-Array.isArray(x.partyPayments)
-?x.partyPayments:[];
-
-db.vehicleRents=
-Array.isArray(x.vehicleRents)
-?x.vehicleRents:[];
-
-db.billSettings={
-...db.billSettings,
+customers:Array.isArray(x.customers)?x.customers:[],
+bills:Array.isArray(x.bills)?x.bills:[],
+receipts:Array.isArray(x.receipts)?x.receipts:[],
+purchases:Array.isArray(x.purchases)?x.purchases:[],
+partyPayments:Array.isArray(x.partyPayments)?x.partyPayments:[],
+vehicleRents:Array.isArray(x.vehicleRents)?x.vehicleRents:[],
+billSettings:{
+header:"SMS COMMISSION MANDI",
+subHeader:"Customer Accounts & Billing",
+contact:"",
+footer:"Thank You",
 ...(x.billSettings||{})
+}
 };
 
 save();
 refresh();
 
 toast("Backup restored successfully");
+
+event.target.value="";
 
 }catch(e){
 
@@ -4503,19 +4267,16 @@ toast("Invalid backup file");
 
 reader.readAsText(file);
 
-event.target.value="";
-
 }
 
 
-/* =========================================================
+/* ================================
    SETTINGS
-   ========================================================= */
+================================ */
 
 function saveSettings(){
 
 db.billSettings={
-
 header:$("setHeader").value.trim()||
 "SMS COMMISSION MANDI",
 
@@ -4526,11 +4287,9 @@ contact:$("setContact").value.trim(),
 
 footer:$("setFooter").value.trim()||
 "Thank You"
-
 };
 
 save();
-
 refresh();
 
 toast("Settings saved");
@@ -4538,20 +4297,20 @@ toast("Settings saved");
 }
 
 
-/* =========================================================
+/* ================================
    DELETE ALL
-   ========================================================= */
+================================ */
 
 function deleteAll(){
 
 if(!confirm(
-"ALL DATA DELETE ஆகும். Continue?"
+"ALL SMS MANDI DATA DELETE ஆகும். Continue?"
 )){
 return;
 }
 
 if(!confirm(
-"Final confirmation. Delete EVERYTHING?"
+"Final confirmation. Delete everything?"
 )){
 return;
 }
@@ -4563,13 +4322,13 @@ location.reload();
 }
 
 
-/* =========================================================
-   GOOGLE SHEETS CLOUD
-   ========================================================= */
+/* ================================
+   CLOUD
+================================ */
 
 function saveApi(){
 
-let url=$("apiUrl").value.trim();
+const url=$("apiUrl").value.trim();
 
 localStorage.setItem(
 "SMS_API_URL",
@@ -4577,9 +4336,9 @@ url
 );
 
 toast(
-url
-?"Cloud URL saved"
-:"Cloud URL cleared"
+url?
+"Cloud URL saved":
+"Cloud URL cleared"
 );
 
 }
@@ -4587,25 +4346,30 @@ url
 
 async function cloudPush(){
 
-let url=$("apiUrl").value.trim();
+const url=$("apiUrl").value.trim();
 
 if(!url){
 
 toast("Enter Google Apps Script URL");
-
 return;
 
 }
 
 try{
 
-let response=await fetch(url,{
+const response=await fetch(url,{
 method:"POST",
 headers:{
 "Content-Type":"text/plain;charset=utf-8"
 },
 body:JSON.stringify(db)
 });
+
+if(!response.ok){
+
+throw new Error("HTTP "+response.status);
+
+}
 
 toast("Cloud sync completed");
 
@@ -4614,7 +4378,7 @@ toast("Cloud sync completed");
 console.error(e);
 
 toast(
-"Upload failed. Check Apps Script URL."
+"Cloud upload failed. Check Apps Script URL."
 );
 
 }
@@ -4624,21 +4388,26 @@ toast(
 
 async function cloudPull(){
 
-let url=$("apiUrl").value.trim();
+const url=$("apiUrl").value.trim();
 
 if(!url){
 
 toast("Enter Google Apps Script URL");
-
 return;
 
 }
 
 try{
 
-let response=await fetch(url);
+const response=await fetch(url);
 
-let data=await response.json();
+if(!response.ok){
+
+throw new Error("HTTP "+response.status);
+
+}
+
+const data=await response.json();
 
 if(!data||typeof data!=="object"){
 
@@ -4647,37 +4416,16 @@ throw new Error("Invalid cloud data");
 }
 
 db={
-...db,
-...data
-};
-
-db.customers=
-Array.isArray(data.customers)
-?data.customers:[];
-
-db.bills=
-Array.isArray(data.bills)
-?data.bills:[];
-
-db.receipts=
-Array.isArray(data.receipts)
-?data.receipts:[];
-
-db.purchases=
-Array.isArray(data.purchases)
-?data.purchases:[];
-
-db.partyPayments=
-Array.isArray(data.partyPayments)
-?data.partyPayments:[];
-
-db.vehicleRents=
-Array.isArray(data.vehicleRents)
-?data.vehicleRents:[];
-
-db.billSettings={
+customers:Array.isArray(data.customers)?data.customers:[],
+bills:Array.isArray(data.bills)?data.bills:[],
+receipts:Array.isArray(data.receipts)?data.receipts:[],
+purchases:Array.isArray(data.purchases)?data.purchases:[],
+partyPayments:Array.isArray(data.partyPayments)?data.partyPayments:[],
+vehicleRents:Array.isArray(data.vehicleRents)?data.vehicleRents:[],
+billSettings:{
 ...db.billSettings,
 ...(data.billSettings||{})
+}
 };
 
 save();
@@ -4690,7 +4438,7 @@ toast("Cloud data loaded");
 console.error(e);
 
 toast(
-"Download failed. Check Apps Script."
+"Cloud download failed. Check URL."
 );
 
 }
@@ -4698,240 +4446,128 @@ toast(
 }
 
 
-/* =========================================================
-   PDF - CUSTOMER HISTORY
-   ========================================================= */
+/* ================================
+   PDF - WITHOUT EXTRA LIBRARY
+================================ */
 
 function downloadHistoryPDF(cid){
 
-let c=customer(cid);
+const c=customer(cid);
 
 if(!c)return;
 
-if(!window.jspdf){
+const a=account(cid);
+const g=gradeTotals(cid);
 
-toast("PDF library not loaded");
+let text=
+db.billSettings.header+"\n"+
+db.billSettings.subHeader+"\n\n"+
+"Customer: "+c.name+"\n"+
+"Phone: "+(c.phone||"-")+"\n"+
+"Address: "+(c.address||"-")+"\n\n"+
+"Total Sales: "+money(a.sales)+"\n"+
+"Total Received: "+money(a.received)+"\n"+
+"Current Balance: "+money(a.outstanding)+"\n\n"+
+"GRADE / CRATE\n";
 
-return;
+["SMS","MIX","SMALL","E1","E2"].forEach(k=>{
 
-}
-
-let doc=
-new window.jspdf.jsPDF();
-
-let a=account(cid);
-let g=gradeTotals(cid);
-
-let y=15;
-
-doc.setFontSize(17);
-
-doc.text(
-db.billSettings.header,
-14,y
-);
-
-y+=7;
-
-doc.setFontSize(10);
-
-doc.text(
-"Customer Full History",
-14,y
-);
-
-y+=7;
-
-doc.text(
-"Customer: "+c.name,
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Phone: "+(c.phone||"-"),
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Address: "+(c.address||"-"),
-14,y
-);
-
-y+=8;
-
-doc.text(
-"Opening Balance: "+money(a.opening),
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Total Sales: "+money(a.sales),
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Total Received: "+money(a.received),
-14,y
-);
-
-y+=6;
-
-doc.text(
-"Current Balance: "+money(a.outstanding),
-14,y
-);
-
-y+=10;
-
-doc.setFontSize(11);
-
-doc.text(
-"Grade / Crate Summary",
-14,y
-);
-
-y+=7;
-
-doc.setFontSize(9);
-
-["SMS","MIX","SMALL","E1","E2"].forEach(function(k){
-
-let issued=g.issued[k];
-let received=g.received[k];
-
-doc.text(
-`${k}: Issued ${issued} | Received ${received} | Balance ${issued-received}`,
-14,y
-);
-
-y+=6;
+text+=
+k+
+" Issued: "+g.issued[k]+
+" Received: "+g.received[k]+
+" Balance: "+(g.issued[k]-g.received[k])+
+"\n";
 
 });
 
-y+=6;
+text+="\nSALES HISTORY\n";
 
-doc.setFontSize(11);
+a.bills.forEach(b=>{
 
-doc.text(
-"Sales Bills",
-14,y
-);
+text+=
+"\nDate: "+b.date+
+"\nBill: "+(b.billNo||"-")+
+"\nAmount: "+money(b.total)+
+"\nReceived: "+money(b.paymentAmount)+
+"\nBalance: "+
+money(
+n(b.previousBalance)+
+n(b.total)-
+n(b.paymentAmount)
+)+
+"\n";
 
-y+=7;
+(b.vegetables||[]).forEach(v=>{
 
-doc.setFontSize(9);
+text+=
+v.name+
+" | Qty "+v.qty+
+" | Rate "+money(v.rate)+
+" | Amount "+money(v.amount)+
+"\n";
 
-a.bills.forEach(function(b){
+});
 
-if(y>270){
-
-doc.addPage();
-y=15;
-
-}
-
-doc.text(
-`${b.date} | Bill ${b.billNo||"-"} | Amount ${money(b.total)} | Received ${money(b.paymentAmount)}`,
-14,y
-);
-
-y+=6;
-
-let vegetables=(b.vegetables||[])
-.map(function(v){
-
-return`${v.name} ${v.qty}x${v.rate}`;
-
-})
-.join("   ");
-
-if(vegetables){
-
-doc.text(
-vegetables,
-18,y
-);
-
-y+=6;
-
-}
-
-doc.text(
+text+=
 "Grades: "+
-gradeText(
-b.grades,
-b.gradeReceived
-),
-18,y
-);
-
-y+=8;
+gradeText(b.grades,b.gradeReceived)+
+"\n";
 
 });
 
-if(a.receipts.length){
+text+="\nRECEIPTS\n";
 
-if(y>260){
+a.receipts.forEach(r=>{
 
-doc.addPage();
-y=15;
-
-}
-
-doc.setFontSize(11);
-
-doc.text(
-"Receipts",
-14,y
-);
-
-y+=7;
-
-doc.setFontSize(9);
-
-a.receipts.forEach(function(r){
-
-if(y>275){
-
-doc.addPage();
-y=15;
-
-}
-
-doc.text(
-`${r.date} | ${money(r.amount)} | ${r.mode||""} | ${r.note||""}`,
-14,y
-);
-
-y+=6;
+text+=
+r.date+
+" | "+
+money(r.amount)+
+" | "+
+(r.mode||"")+
+" | "+
+(r.note||"")+
+"\n";
 
 });
 
-}
+const blob=new Blob(
+[text],
+{type:"text/plain;charset=utf-8"}
+);
 
-let filename=
+const url=URL.createObjectURL(blob);
+
+const link=document.createElement("a");
+
+link.href=url;
+
+link.download=
 (c.name||"Customer")
 .replace(/[^a-z0-9]/gi,"_")+
-"_Full_History.pdf";
+"_Full_History.txt";
 
-doc.save(filename);
+document.body.appendChild(link);
+link.click();
+link.remove();
+
+setTimeout(()=>{
+URL.revokeObjectURL(url);
+},1000);
+
+toast("Customer history downloaded");
 
 }
 
 
-/* =========================================================
+/* ================================
    REFRESH
-   ========================================================= */
+================================ */
 
 function refresh(){
+
+try{
 
 fillSelect(
 "billCustomer",
@@ -4966,9 +4602,9 @@ parties(),
 renderCustomers();
 renderReceipts();
 renderBills();
+renderPurchaseHistory();
 renderCustomerHistory();
 renderVehicleRent();
-renderPurchaseHistory();
 dashboard();
 
 if($("setHeader"))
@@ -4987,14 +4623,26 @@ if($("setFooter"))
 $("setFooter").value=
 db.billSettings.footer||"";
 
+}catch(e){
+
+console.error("Refresh error:",e);
+
+toast(
+"App error: "+e.message
+);
+
+}
+
 }
 
 
-/* =========================================================
+/* ================================
    START
-   ========================================================= */
+================================ */
 
 function init(){
+
+try{
 
 load();
 
@@ -5011,40 +4659,39 @@ clearVehicleRent();
 
 refresh();
 
-}
+}catch(e){
 
+console.error("INIT ERROR:",e);
 
-/* =========================================================
-   ERROR PROTECTION
-   ========================================================= */
-
-window.addEventListener(
-"error",
-function(e){
-
-console.error(
-"SMS APP ERROR:",
-e.error||e.message
+alert(
+"SMS Mandi App Error:\n\n"+
+e.message
 );
 
 }
-);
+
+}
 
 
-/* START ONLY AFTER HTML IS READY */
+/* ================================
+   GLOBAL ERROR DISPLAY
+================================ */
 
-if(document.readyState==="loading"){
+window.addEventListener("error",function(e){
+
+console.error(e.error||e.message);
+
+});
+
 
 document.addEventListener(
 "DOMContentLoaded",
-init
-);
-
-}else{
+function(){
 
 init();
 
 }
+);
 
 </script>
 
