@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+
 <title>SMS Commission Mandi</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
@@ -13,33 +17,76 @@ font-family:Arial,Helvetica,sans-serif;
 background:#f3f5f8;
 color:#172033
 }
-button,input,select,textarea{font:inherit}
+button,input,select{font:inherit}
 button{cursor:pointer}
+
+#loadingScreen{
+position:fixed;
+inset:0;
+background:#111827;
+z-index:99999;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+color:#fff;
+flex-direction:column
+}
+#loadingScreen img{
+width:125px;
+height:125px;
+object-fit:contain;
+border-radius:20px;
+margin-bottom:18px
+}
+#loadingScreen h2{
+margin:0;
+font-size:23px
+}
+#loadingScreen p{
+color:#cbd5e1;
+font-size:13px
+}
 
 .header{
 background:#111827;
 color:#fff;
 text-align:center;
-padding:17px;
+padding:15px;
 position:sticky;
 top:0;
 z-index:100
 }
-.header h1{margin:0;font-size:23px}
-.header p{margin:5px 0 0;color:#cbd5e1;font-size:12px}
+.headerLogo{
+width:48px;
+height:48px;
+object-fit:contain;
+vertical-align:middle;
+margin-right:8px;
+border-radius:8px;
+display:none
+}
+.header h1{
+margin:0;
+font-size:22px
+}
+.header p{
+margin:5px 0 0;
+color:#cbd5e1;
+font-size:12px
+}
 
 .nav{
 display:flex;
 overflow-x:auto;
 background:#fff;
 position:sticky;
-top:72px;
+top:70px;
 z-index:99;
-border-bottom:1px solid #ddd;
--webkit-overflow-scrolling:touch
+border-bottom:1px solid #ddd
 }
 .nav button{
-min-width:105px;
+min-width:100px;
 padding:13px 8px;
 border:0;
 background:#fff;
@@ -54,7 +101,7 @@ border-bottom:3px solid #111827
 
 .page{
 display:none;
-max-width:1200px;
+max-width:1100px;
 margin:auto;
 padding:15px
 }
@@ -73,11 +120,6 @@ display:grid;
 grid-template-columns:repeat(2,1fr);
 gap:10px
 }
-.grid3{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px
-}
 .grid4{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -92,7 +134,7 @@ color:#475569;
 margin-bottom:5px
 }
 
-input,select,textarea{
+input,select{
 width:100%;
 padding:10px;
 border:1px solid #cbd5e1;
@@ -100,7 +142,8 @@ border-radius:9px;
 background:#fff;
 outline:none
 }
-input:focus,select:focus,textarea:focus{
+
+input:focus,select:focus{
 border-color:#111827
 }
 
@@ -141,36 +184,8 @@ color:#64748b
 }
 .stat strong{
 display:block;
-font-size:21px;
+font-size:20px;
 margin-top:5px
-}
-
-.section-title{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:8px;
-flex-wrap:wrap
-}
-
-.badge{
-display:inline-block;
-padding:4px 8px;
-border-radius:20px;
-font-size:10px;
-font-weight:bold
-}
-.reg{
-background:#e2e8f0;
-color:#334155
-}
-.weekly{
-background:#dcfce7;
-color:#166534
-}
-.party{
-background:#fef3c7;
-color:#92400e
 }
 
 .customer{
@@ -191,46 +206,24 @@ padding:25px;
 color:#64748b
 }
 
-.tabs{
-display:flex;
-gap:7px;
-overflow:auto;
-margin:10px 0
-}
-.tabs button{
-white-space:nowrap;
-padding:8px 12px;
-border:1px solid #cbd5e1;
-background:#fff;
-border-radius:20px
-}
-.tabs button.active{
-background:#111827;
-color:#fff
-}
-
-.table{
-overflow-x:auto
-}
-table{
-width:100%;
-border-collapse:collapse;
-min-width:750px
-}
-th,td{
-padding:9px;
-border-bottom:1px solid #e5e7eb;
-text-align:left;
-font-size:12px;
-vertical-align:top
-}
-th{background:#f8fafc}
-
 .billrow{
 display:grid;
-grid-template-columns:2fr 1fr 1fr 1fr auto;
+grid-template-columns:2fr 1fr 1fr auto;
 gap:7px;
-margin-bottom:8px
+margin-bottom:8px;
+align-items:end
+}
+
+.receive-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:8px
+}
+
+.receive-box{
+background:#f8fafc;
+padding:10px;
+border-radius:8px
 }
 
 .summary{
@@ -264,115 +257,148 @@ background:#111827;
 color:#fff;
 padding:12px 18px;
 border-radius:8px;
-z-index:9999;
+z-index:99999;
 max-width:90%;
 text-align:center
 }
 .toast.show{display:block}
 
-.historyHead{
-background:#111827;
-color:#fff;
-padding:15px;
-border-radius:10px;
-margin-bottom:10px
-}
-
-.receive-grid{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:7px
-}
-
-.receive-box{
-background:#f8fafc;
-padding:10px;
-border-radius:8px
-}
-
-.receive-box input{
-margin-top:5px
-}
-
-.rent-summary{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:10px;
-margin-top:12px
-}
-
-.rent-stat{
-background:#f8fafc;
-border-radius:10px;
-padding:12px
-}
-.rent-stat small{color:#64748b}
-.rent-stat b{
-display:block;
-font-size:18px;
-margin-top:4px
-}
-
-.status-paid{
-color:#15803d;
-font-weight:bold
-}
-.status-pending{
-color:#dc2626;
-font-weight:bold
-}
-.status-part{
-color:#d97706;
-font-weight:bold
-}
-
 .modal{
 display:none;
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.65);
-z-index:500;
-padding:15px;
+background:rgba(0,0,0,.7);
+z-index:5000;
+padding:10px;
 overflow:auto
 }
 .modal.show{display:block}
 
 .modal-box{
 background:#fff;
-max-width:700px;
-margin:30px auto;
+max-width:750px;
+margin:15px auto;
 border-radius:14px;
-padding:20px
+padding:15px
 }
 
 .bill-preview{
 background:#fff;
-padding:20px;
-border:1px solid #ddd
+width:100%;
+padding:22px;
+color:#111;
+font-family:Arial,sans-serif
 }
 
-.danger{
-border:2px solid #fecaca;
-background:#fffafa
+.bill-head{
+text-align:center;
+border-bottom:2px solid #111;
+padding-bottom:12px;
+margin-bottom:12px
 }
 
-.success-box{
-background:#ecfdf5;
-border:1px solid #bbf7d0;
-padding:12px;
-border-radius:10px
+.bill-logo{
+width:85px;
+height:85px;
+object-fit:contain;
+display:block;
+margin:0 auto 8px
+}
+
+.bill-company{
+font-size:24px;
+font-weight:bold
+}
+
+.bill-sub{
+font-size:12px;
+color:#555;
+margin-top:4px
+}
+
+.bill-info{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:5px;
+font-size:13px;
+margin-bottom:12px
+}
+
+.bill-table{
+width:100%;
+border-collapse:collapse;
+font-size:12px
+}
+
+.bill-table th,
+.bill-table td{
+border:1px solid #bbb;
+padding:7px;
+text-align:left
+}
+
+.bill-table th{
+background:#f1f5f9
+}
+
+.bill-total{
+margin-top:12px;
+margin-left:auto;
+max-width:330px
+}
+
+.bill-total div{
+display:flex;
+justify-content:space-between;
+padding:5px
+}
+
+.bill-total .grand{
+font-size:17px;
+font-weight:bold;
+border-top:2px solid #111
+}
+
+.grade-table{
+margin-top:15px
+}
+
+.grade-table table{
+width:100%;
+border-collapse:collapse;
+font-size:12px
+}
+
+.grade-table th,
+.grade-table td{
+border:1px solid #bbb;
+padding:6px
+}
+
+.bill-footer{
+margin-top:20px;
+padding-top:10px;
+border-top:1px solid #ccc;
+text-align:center;
+font-size:11px;
+color:#555
+}
+
+.setting-logo{
+width:120px;
+height:120px;
+object-fit:contain;
+border:1px dashed #aaa;
+border-radius:10px;
+padding:5px;
+background:#fff
 }
 
 @media(max-width:700px){
 
 .grid,
-.grid3,
 .grid4{
 grid-template-columns:1fr
-}
-
-.receive-grid{
-grid-template-columns:repeat(2,1fr)
 }
 
 .billrow{
@@ -387,16 +413,20 @@ grid-column:1/-1
 grid-column:1/-1
 }
 
-.rent-summary{
-grid-template-columns:1fr 1fr
+.bill-info{
+grid-template-columns:1fr
+}
+
+.bill-preview{
+padding:14px
+}
+
+.bill-company{
+font-size:20px
 }
 
 .nav{
-top:72px
-}
-
-.card{
-padding:12px
+top:68px
 }
 }
 </style>
@@ -404,51 +434,51 @@ padding:12px
 
 <body>
 
+<!-- LOADING -->
+
+<div id="loadingScreen">
+
+<img id="loadingLogo" alt="SMS Logo">
+
+<h2>SMS COMMISSION MANDI</h2>
+
+<p>Loading...</p>
+
+</div>
+
+
 <header class="header">
-<h1>SMS COMMISSION MANDI</h1>
+
+<h1>
+<img id="headerLogo" class="headerLogo">
+SMS COMMISSION MANDI
+</h1>
+
 <p>Customer Accounts & Billing System</p>
+
 </header>
+
 
 <nav class="nav">
 
-<button type="button" class="active"
-onclick="goPage('dashboard',this)">
+<button class="active" onclick="goPage('dashboard',this)">
 Dashboard
 </button>
 
-<button type="button"
-onclick="goPage('customers',this)">
+<button onclick="goPage('customers',this)">
 Customers
 </button>
 
-<button type="button"
-onclick="goPage('billing',this)">
+<button onclick="goPage('billing',this)">
 Sales Bill
 </button>
 
-<button type="button"
-onclick="goPage('purchases',this)">
-Purchase
-</button>
-
-<button type="button"
-onclick="goPage('vehicleRent',this)">
-🚚 Vehicle Rent
-</button>
-
-<button type="button"
-onclick="goPage('receipts',this)">
-Receipts
-</button>
-
-<button type="button"
-onclick="goPage('history',this)">
+<button onclick="goPage('history',this)">
 History
 </button>
 
-<button type="button"
-onclick="goPage('backup',this)">
-Backup
+<button onclick="goPage('backup',this)">
+Backup / Settings
 </button>
 
 </nav>
@@ -466,33 +496,13 @@ Backup
 </div>
 
 <div class="stat">
-<small>Weekly Customers</small>
-<strong id="dWeekly">0</strong>
-</div>
-
-<div class="stat">
-<small>Purchase Parties</small>
-<strong id="dParties">0</strong>
-</div>
-
-<div class="stat">
-<small>Sales</small>
+<small>Total Sales</small>
 <strong id="dSales">₹0.00</strong>
 </div>
 
 <div class="stat">
-<small>Purchase</small>
-<strong id="dPurchase">₹0.00</strong>
-</div>
-
-<div class="stat">
-<small>Customer Outstanding</small>
+<small>Outstanding</small>
 <strong id="dOut">₹0.00</strong>
-</div>
-
-<div class="stat">
-<small>Party Payable</small>
-<strong id="dPayable">₹0.00</strong>
 </div>
 
 <div class="stat">
@@ -502,30 +512,23 @@ Backup
 
 </div>
 
-
 <div class="card">
 
-<h2>🚚 Vehicle Rent Summary</h2>
+<h2>Quick Actions</h2>
 
-<div id="dashboardRent"></div>
+<div class="actions">
+
+<button class="btn green"
+onclick="goPage('billing',document.querySelectorAll('.nav button')[2])">
++ New Sales Bill
+</button>
+
+<button class="btn blue"
+onclick="goPage('customers',document.querySelectorAll('.nav button')[1])">
++ Add Customer
+</button>
 
 </div>
-
-
-<div class="card">
-
-<h2>Weekly Customer Intimation</h2>
-
-<div id="weeklyBox"></div>
-
-</div>
-
-
-<div class="card">
-
-<h2>Purchase Party Payable</h2>
-
-<div id="partyBalanceBox"></div>
 
 </div>
 
@@ -538,24 +541,13 @@ Backup
 
 <div class="card">
 
-<h2>Add Customer / Purchase Party</h2>
+<h2>Add Customer</h2>
 
 <div class="grid">
 
 <div>
-<label>Name / Shop / Party</label>
+<label>Shop / Customer Name</label>
 <input id="cName">
-</div>
-
-<div>
-<label>Type</label>
-
-<select id="cType">
-<option value="Regular">Regular</option>
-<option value="Weekly">Weekly</option>
-<option value="Purchase Party">Purchase Party</option>
-</select>
-
 </div>
 
 <div>
@@ -577,15 +569,11 @@ Backup
 
 <div class="actions">
 
-<button type="button"
-class="btn green"
-onclick="saveCustomer()">
+<button class="btn green" onclick="saveCustomer()">
 Save Customer
 </button>
 
-<button type="button"
-class="btn gray"
-onclick="clearCustomer()">
+<button class="btn gray" onclick="clearCustomer()">
 Clear
 </button>
 
@@ -598,32 +586,7 @@ Clear
 
 <div class="card">
 
-<h2>Customer / Party Master</h2>
-
-<div class="tabs">
-
-<button type="button"
-class="active"
-onclick="filterCustomers('All',this)">
-All
-</button>
-
-<button type="button"
-onclick="filterCustomers('Regular',this)">
-Regular
-</button>
-
-<button type="button"
-onclick="filterCustomers('Weekly',this)">
-Weekly
-</button>
-
-<button type="button"
-onclick="filterCustomers('Purchase Party',this)">
-Purchase Parties
-</button>
-
-</div>
+<h2>Customer List</h2>
 
 <input
 id="cSearch"
@@ -637,24 +600,21 @@ oninput="renderCustomers()">
 </section>
 
 
-<!-- SALES BILL -->
+<!-- BILLING -->
 
 <section id="billing" class="page">
 
 <div class="card">
 
-<h2>Sales Bill</h2>
+<h2>🧾 New Sales Bill</h2>
 
 <div class="grid">
 
 <div>
 <label>Customer</label>
-
-<select
-id="billCustomer"
-onchange="loadCustomerBalance()">
+<select id="billCustomer" onchange="loadCustomerBalance()">
+<option value="">Select Customer</option>
 </select>
-
 </div>
 
 <div>
@@ -669,10 +629,7 @@ onchange="loadCustomerBalance()">
 
 <div>
 <label>Previous Balance</label>
-<input
-id="previousBalance"
-type="number"
-oninput="calcBill()">
+<input id="previousBalance" type="number" value="0" oninput="calcBill()">
 </div>
 
 </div>
@@ -682,13 +639,11 @@ oninput="calcBill()">
 
 <div class="card">
 
-<div class="section-title">
+<div style="display:flex;justify-content:space-between;align-items:center">
 
 <h2>Vegetables</h2>
 
-<button type="button"
-class="btn small"
-onclick="addVeg()">
+<button class="btn small blue" onclick="addVeg()">
 + Add Vegetable
 </button>
 
@@ -701,10 +656,10 @@ onclick="addVeg()">
 
 <div class="card">
 
-<h2>Grade / Crate Details</h2>
+<h2>📦 Grade / Crate Details</h2>
 
 <p class="muted">
-Crates have NO rate and NO amount. Only issued and received quantity is maintained.
+Crates are quantity only. No rate and no amount.
 </p>
 
 <div class="receive-grid">
@@ -712,9 +667,6 @@ Crates have NO rate and NO amount. Only issued and received quantity is maintain
 <div class="receive-box">
 <label>SMS Issued</label>
 <input id="gSMS" type="number" value="0" oninput="calcBill()">
-</div>
-
-<div class="receive-box">
 <label>SMS Received</label>
 <input id="rSMS" type="number" value="0" oninput="calcBill()">
 </div>
@@ -722,9 +674,6 @@ Crates have NO rate and NO amount. Only issued and received quantity is maintain
 <div class="receive-box">
 <label>MIX Issued</label>
 <input id="gMIX" type="number" value="0" oninput="calcBill()">
-</div>
-
-<div class="receive-box">
 <label>MIX Received</label>
 <input id="rMIX" type="number" value="0" oninput="calcBill()">
 </div>
@@ -732,9 +681,6 @@ Crates have NO rate and NO amount. Only issued and received quantity is maintain
 <div class="receive-box">
 <label>SMALL Issued</label>
 <input id="gSMALL" type="number" value="0" oninput="calcBill()">
-</div>
-
-<div class="receive-box">
 <label>SMALL Received</label>
 <input id="rSMALL" type="number" value="0" oninput="calcBill()">
 </div>
@@ -742,9 +688,6 @@ Crates have NO rate and NO amount. Only issued and received quantity is maintain
 <div class="receive-box">
 <label>EXTRA 1 Issued</label>
 <input id="gE1" type="number" value="0" oninput="calcBill()">
-</div>
-
-<div class="receive-box">
 <label>EXTRA 1 Received</label>
 <input id="rE1" type="number" value="0" oninput="calcBill()">
 </div>
@@ -752,9 +695,6 @@ Crates have NO rate and NO amount. Only issued and received quantity is maintain
 <div class="receive-box">
 <label>EXTRA 2 Issued</label>
 <input id="gE2" type="number" value="0" oninput="calcBill()">
-</div>
-
-<div class="receive-box">
 <label>EXTRA 2 Received</label>
 <input id="rE2" type="number" value="0" oninput="calcBill()">
 </div>
@@ -766,12 +706,12 @@ Crates have NO rate and NO amount. Only issued and received quantity is maintain
 
 <div class="card">
 
-<h2>Bill Summary</h2>
+<h2>💰 Bill Summary</h2>
 
 <div class="summary">
 
 <div class="line">
-<span>Previous</span>
+<span>Previous Balance</span>
 <b id="sPrev">₹0.00</b>
 </div>
 
@@ -792,8 +732,7 @@ Crates have NO rate and NO amount. Only issued and received quantity is maintain
 
 <div>
 <label>Amount Received</label>
-<input
-id="billReceived"
+<input id="billReceived"
 type="number"
 value="0"
 oninput="calcBill()">
@@ -801,14 +740,12 @@ oninput="calcBill()">
 
 <div>
 <label>Payment Mode</label>
-
 <select id="billMode">
 <option>Cash</option>
 <option>UPI</option>
 <option>Bank</option>
 <option>Other</option>
 </select>
-
 </div>
 
 </div>
@@ -826,477 +763,17 @@ oninput="calcBill()">
 
 <div class="actions">
 
-<button type="button"
-class="btn green"
-onclick="saveBill()">
-Save Bill
+<button class="btn green" onclick="saveBill()">
+💾 Save Bill
 </button>
 
-<button type="button"
-class="btn gray"
-onclick="newBill()">
+<button class="btn gray" onclick="newBill()">
 Clear
 </button>
 
 </div>
 
 <input type="hidden" id="billEdit">
-
-</div>
-
-</section>
-
-
-<!-- PURCHASE -->
-
-<section id="purchases" class="page">
-
-<div class="card">
-
-<h2>🍅 Purchase Entry</h2>
-
-<div class="grid">
-
-<div>
-<label>Purchase Party</label>
-<select id="pParty"></select>
-</div>
-
-<div>
-<label>Date</label>
-<input id="pDate" type="date">
-</div>
-
-<div>
-<label>Purchase Bill No</label>
-<input id="pBillNo">
-</div>
-
-<div>
-<label>Previous Payable</label>
-<input id="pPrevious" type="number" value="0">
-</div>
-
-<div>
-<label>Vegetable</label>
-<input id="pProduct" value="Tomato">
-</div>
-
-<div>
-<label>Quantity</label>
-<input
-id="pQty"
-type="number"
-oninput="calcPurchase()">
-</div>
-
-<div>
-<label>Unit</label>
-<select id="pUnit">
-<option>Box</option>
-<option>Kg</option>
-<option>Bag</option>
-<option>Piece</option>
-</select>
-</div>
-
-<div>
-<label>Rate</label>
-<input
-id="pRate"
-type="number"
-oninput="calcPurchase()">
-</div>
-
-<div>
-<label>Purchase Amount</label>
-<input id="pAmount" readonly>
-</div>
-
-<div>
-<label>Amount Paid</label>
-<input
-id="pPaid"
-type="number"
-value="0"
-oninput="calcPurchase()">
-</div>
-
-<div>
-<label>Payment Mode</label>
-<select id="pMode">
-<option>Cash</option>
-<option>UPI</option>
-<option>Bank</option>
-<option>Other</option>
-</select>
-</div>
-
-<div>
-<label>Note</label>
-<input id="pNote">
-</div>
-
-</div>
-
-
-<div class="summary">
-
-<div class="line">
-<span>Previous Payable</span>
-<b id="pPrevShow">₹0.00</b>
-</div>
-
-<div class="line">
-<span>Current Purchase</span>
-<b id="pCurrentShow">₹0.00</b>
-</div>
-
-<div class="line total">
-<span>Total Payable</span>
-<b id="pTotalShow">₹0.00</b>
-</div>
-
-<div class="line total">
-<span>Balance to Party</span>
-<b id="pBalanceShow">₹0.00</b>
-</div>
-
-</div>
-
-
-<div class="actions">
-
-<button type="button"
-class="btn green"
-onclick="savePurchase()">
-Save Purchase
-</button>
-
-<button type="button"
-class="btn gray"
-onclick="newPurchase()">
-Clear
-</button>
-
-</div>
-
-<input type="hidden" id="pEdit">
-
-</div>
-
-
-<div class="card">
-
-<h2>Party Payment / Settlement</h2>
-
-<div class="grid">
-
-<div>
-<label>Party</label>
-<select id="payParty"></select>
-</div>
-
-<div>
-<label>Date</label>
-<input id="payDate" type="date">
-</div>
-
-<div>
-<label>Amount Paid</label>
-<input id="payAmount" type="number">
-</div>
-
-<div>
-<label>Payment Mode</label>
-<select id="payMode">
-<option>Cash</option>
-<option>UPI</option>
-<option>Bank</option>
-<option>Other</option>
-</select>
-</div>
-
-<div style="grid-column:1/-1">
-<label>Note</label>
-<input id="payNote">
-</div>
-
-</div>
-
-<button type="button"
-class="btn green"
-onclick="savePartyPayment()">
-Save Payment
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h2>Purchase History</h2>
-
-<div id="purchaseHistory"></div>
-
-</div>
-
-</section>
-
-
-<!-- VEHICLE RENT -->
-
-<section id="vehicleRent" class="page">
-
-<div class="card">
-
-<h2>🚚 Vehicle Rent</h2>
-
-<p class="muted">
-Vehicle / Driver / Trip Rent & Payment Details
-</p>
-
-<div class="grid">
-
-<div>
-<label>Date</label>
-<input id="vrDate" type="date">
-</div>
-
-<div>
-<label>Vehicle Number</label>
-<input id="vrVehicleNo" placeholder="TN 00 AB 0000">
-</div>
-
-<div>
-<label>Driver Name</label>
-<input id="vrDriverName">
-</div>
-
-<div>
-<label>Driver Phone</label>
-<input id="vrDriverPhone" inputmode="tel">
-</div>
-
-<div>
-<label>From / எந்த ஊரிலிருந்து</label>
-<input id="vrFrom" placeholder="Kolar">
-</div>
-
-<div>
-<label>To / எந்த ஊருக்கு</label>
-<input id="vrTo" placeholder="Pattukkottai">
-</div>
-
-<div>
-<label>Trip / Purpose</label>
-<input id="vrPurpose" placeholder="Tomato Load">
-</div>
-
-<div>
-<label>Rent Amount</label>
-<input
-id="vrRent"
-type="number"
-oninput="calcRent()">
-</div>
-
-<div>
-<label>Amount Paid</label>
-<input
-id="vrPaid"
-type="number"
-oninput="calcRent()">
-</div>
-
-<div>
-<label>Payment Mode</label>
-<select id="vrPaymentMode">
-<option>Cash</option>
-<option>UPI</option>
-<option>Bank</option>
-<option>Other</option>
-</select>
-</div>
-
-<div style="grid-column:1/-1">
-<label>Note</label>
-<input id="vrNote">
-</div>
-
-</div>
-
-
-<div class="summary">
-
-<div class="line">
-<span>Total Rent</span>
-<b id="vrRentShow">₹0.00</b>
-</div>
-
-<div class="line">
-<span>Paid</span>
-<b id="vrPaidShow">₹0.00</b>
-</div>
-
-<div class="line total">
-<span>Balance</span>
-<b id="vrBalanceShow">₹0.00</b>
-</div>
-
-</div>
-
-
-<div class="actions">
-
-<button type="button"
-class="btn green"
-id="vrSaveBtn"
-onclick="saveVehicleRent()">
-Save Vehicle Rent
-</button>
-
-<button type="button"
-class="btn gray"
-onclick="clearVehicleRent()">
-Clear
-</button>
-
-</div>
-
-<input type="hidden" id="vrEdit">
-
-</div>
-
-
-<div class="card">
-
-<h2>Vehicle Rent History</h2>
-
-<div class="grid">
-
-<div>
-<label>Search</label>
-<input
-id="vrSearch"
-placeholder="Vehicle / Driver / Place"
-oninput="renderVehicleRent()">
-</div>
-
-<div>
-<label>Date Filter</label>
-<input
-id="vrFilterDate"
-type="date"
-onchange="renderVehicleRent()">
-</div>
-
-</div>
-
-<div id="vehicleRentSummary"></div>
-
-<div class="table">
-
-<table>
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Vehicle</th>
-<th>Driver</th>
-<th>From</th>
-<th>To</th>
-<th>Rent</th>
-<th>Paid</th>
-<th>Balance</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody id="vehicleRentList"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- RECEIPTS -->
-
-<section id="receipts" class="page">
-
-<div class="card">
-
-<h2>Customer Amount Received</h2>
-
-<div class="grid">
-
-<div>
-<label>Customer</label>
-<select id="rCustomer"></select>
-</div>
-
-<div>
-<label>Date</label>
-<input id="rDate" type="date">
-</div>
-
-<div>
-<label>Amount</label>
-<input id="rAmount" type="number">
-</div>
-
-<div>
-<label>Mode</label>
-<select id="rMode">
-<option>Cash</option>
-<option>UPI</option>
-<option>Bank</option>
-<option>Other</option>
-</select>
-</div>
-
-<div style="grid-column:1/-1">
-<label>Note</label>
-<input id="rNote">
-</div>
-
-</div>
-
-<div class="actions">
-
-<button type="button"
-class="btn green"
-onclick="saveReceipt()">
-Save Receipt
-</button>
-
-<button type="button"
-class="btn gray"
-onclick="clearReceipt()">
-Clear
-</button>
-
-</div>
-
-<input type="hidden" id="rEdit">
-
-</div>
-
-
-<div class="card">
-
-<h2>Receipt History</h2>
-
-<input
-id="rSearch"
-placeholder="Search customer"
-oninput="renderReceipts()">
-
-<div id="receiptList"></div>
 
 </div>
 
@@ -1311,9 +788,8 @@ oninput="renderReceipts()">
 
 <h2>Customer Full History</h2>
 
-<select
-id="historyCustomer"
-onchange="renderCustomerHistory()">
+<select id="historyCustomer" onchange="renderCustomerHistory()">
+<option value="">Select Customer</option>
 </select>
 
 <div id="customerHistory"></div>
@@ -1327,7 +803,7 @@ onchange="renderCustomerHistory()">
 
 <input
 id="billSearch"
-placeholder="Search bill/customer"
+placeholder="Search bill/customer..."
 oninput="renderBills()">
 
 <div id="allBills"></div>
@@ -1337,24 +813,97 @@ oninput="renderBills()">
 </section>
 
 
-<!-- BACKUP -->
+<!-- BACKUP SETTINGS -->
 
 <section id="backup" class="page">
 
 <div class="card">
 
-<h2>Backup & Restore</h2>
+<h2>🖼️ Company Logo</h2>
+
+<p class="muted">
+Upload your SMS Commission Mandi logo. It will appear on the opening screen and bills.
+</p>
+
+<div style="text-align:center">
+
+<img id="logoPreview"
+class="setting-logo"
+alt="Logo Preview">
+
+</div>
 
 <div class="actions">
 
-<button type="button"
-class="btn green"
-onclick="backup()">
-Download JSON Backup
+<label class="btn blue">
+Upload Logo
+<input
+type="file"
+accept="image/*"
+onchange="uploadLogo(event)"
+style="display:none">
+</label>
+
+<button class="btn red" onclick="removeLogo()">
+Remove Logo
+</button>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>🧾 Bill Settings</h2>
+
+<div class="grid">
+
+<div>
+<label>Company Header</label>
+<input id="setHeader" value="SMS COMMISSION MANDI">
+</div>
+
+<div>
+<label>Sub Header</label>
+<input id="setSub" value="Tomato & Vegetable Wholesale">
+</div>
+
+<div>
+<label>Contact</label>
+<input id="setContact">
+</div>
+
+<div>
+<label>Footer</label>
+<input id="setFooter" value="Thank You">
+</div>
+
+</div>
+
+<div class="actions">
+
+<button class="btn green" onclick="saveSettings()">
+Save Settings
+</button>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>💾 Backup & Restore</h2>
+
+<div class="actions">
+
+<button class="btn green" onclick="backup()">
+Download Backup
 </button>
 
 <label class="btn gray">
-Restore JSON
+Restore Backup
 <input
 type="file"
 accept=".json"
@@ -1367,91 +916,15 @@ style="display:none">
 </div>
 
 
-<div class="card">
-
-<h2>Google Sheets Cloud Sync</h2>
-
-<p class="muted">
-Paste your Google Apps Script Web App URL.
-</p>
-
-<input
-id="apiUrl"
-placeholder="https://script.google.com/macros/s/XXXXX/exec">
-
-<div class="actions">
-
-<button type="button"
-class="btn green"
-onclick="saveApi()">
-Save URL
-</button>
-
-<button type="button"
-class="btn orange"
-onclick="cloudPush()">
-Upload / Sync
-</button>
-
-<button type="button"
-class="btn gray"
-onclick="cloudPull()">
-Download
-</button>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h2>Bill Settings</h2>
-
-<div class="grid">
-
-<div>
-<label>Header</label>
-<input id="setHeader">
-</div>
-
-<div>
-<label>Sub Header</label>
-<input id="setSub">
-</div>
-
-<div>
-<label>Contact</label>
-<input id="setContact">
-</div>
-
-<div>
-<label>Footer</label>
-<input id="setFooter">
-</div>
-
-</div>
-
-<button type="button"
-class="btn green"
-onclick="saveSettings()">
-Save Settings
-</button>
-
-</div>
-
-
 <div class="card danger">
 
-<h2>Danger Zone</h2>
+<h2>⚠️ Danger Zone</h2>
 
 <p class="muted">
-Delete All Data permanently removes data stored in this browser.
+This deletes all customers and bills from this browser.
 </p>
 
-<button type="button"
-class="btn red"
-onclick="deleteAll()">
+<button class="btn red" onclick="deleteAll()">
 Delete All Data
 </button>
 
@@ -1466,32 +939,30 @@ Delete All Data
 
 <div class="modal-box">
 
-<div class="section-title">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
 
-<h2>Bill Preview</h2>
+<h2>Final Bill</h2>
 
-<button type="button"
-class="btn red small"
-onclick="closeModal()">
+<button class="btn red small" onclick="closeModal()">
 Close
 </button>
 
 </div>
 
-<div id="billPreview" class="bill-preview"></div>
+<div id="finalBill" class="bill-preview"></div>
 
 <div class="actions">
 
-<button type="button"
-class="btn green"
-onclick="printCurrentBill()">
-Print Bill
+<button class="btn blue" onclick="downloadBillImage()">
+📸 Download Image
 </button>
 
-<button type="button"
-class="btn blue"
-onclick="downloadBillText()">
-Download Bill
+<button class="btn orange" onclick="downloadBillPDF()">
+📄 Download PDF
+</button>
+
+<button class="btn green" onclick="shareBill()">
+📤 Share Bill
 </button>
 
 </div>
@@ -1506,485 +977,325 @@ Download Bill
 
 <script>
 
-"use strict";
+/* =========================
+   STORAGE
+========================= */
 
-
-/* ================================
-   DATABASE
-================================ */
-
-const KEY="SMS_COMMISSION_MANDI_FINAL_V2";
+const KEY="SMS_MANDI_COMPLETE_V1";
 
 let db={
 customers:[],
 bills:[],
-receipts:[],
-purchases:[],
-partyPayments:[],
-vehicleRents:[],
-billSettings:{
+settings:{
 header:"SMS COMMISSION MANDI",
-subHeader:"Customer Accounts & Billing",
+sub:"Tomato & Vegetable Wholesale",
 contact:"",
-footer:"Thank You"
+footer:"Thank You",
+logo:""
 }
 };
 
-let cFilter="All";
+let currentBill=null;
 
-const $=id=>document.getElementById(id);
 
-const uid=()=>{
-return Date.now().toString(36)+
-Math.random().toString(36).substring(2,10);
-};
+/* =========================
+   INIT
+========================= */
 
-const n=v=>{
-const x=parseFloat(v);
-return Number.isFinite(x)?x:0;
-};
+function loadDB(){
 
-const money=v=>{
-return "₹"+n(v).toLocaleString("en-IN",{
+try{
+
+const saved=localStorage.getItem(KEY);
+
+if(saved){
+
+const data=JSON.parse(saved);
+
+db=Object.assign(db,data);
+
+db.customers=db.customers||[];
+db.bills=db.bills||[];
+db.settings=Object.assign({
+header:"SMS COMMISSION MANDI",
+sub:"Tomato & Vegetable Wholesale",
+contact:"",
+footer:"Thank You",
+logo:""
+},db.settings||{});
+
+}
+
+}catch(e){
+
+console.log(e);
+
+}
+
+}
+
+function saveDB(){
+
+localStorage.setItem(KEY,JSON.stringify(db));
+
+}
+
+function money(n){
+
+return "₹"+Number(n||0).toLocaleString("en-IN",{
 minimumFractionDigits:2,
 maximumFractionDigits:2
 });
-};
+
+}
 
 function today(){
 
-const d=new Date();
-
-return d.getFullYear()+"-"+
-String(d.getMonth()+1).padStart(2,"0")+"-"+
-String(d.getDate()).padStart(2,"0");
+return new Date().toISOString().split("T")[0];
 
 }
-
-function esc(v){
-
-return String(v??"").replace(/[&<>"']/g,function(m){
-
-return {
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#39;"
-}[m];
-
-});
-
-}
-
-
-/* ================================
-   TOAST
-================================ */
 
 function toast(msg){
 
-const el=$("toast");
+const t=document.getElementById("toast");
 
-if(!el){
-alert(msg);
-return;
-}
+t.textContent=msg;
+t.classList.add("show");
 
-el.textContent=msg;
-el.classList.add("show");
-
-clearTimeout(window.__toastTimer);
-
-window.__toastTimer=setTimeout(()=>{
-el.classList.remove("show");
+setTimeout(()=>{
+t.classList.remove("show");
 },2200);
 
 }
 
 
-/* ================================
-   STORAGE
-================================ */
+/* =========================
+   LOGO
+========================= */
 
-function save(){
+function applyLogo(){
 
-try{
+const logo=db.settings.logo||"";
 
-localStorage.setItem(
-KEY,
-JSON.stringify(db)
-);
+const loading=document.getElementById("loadingLogo");
+const header=document.getElementById("headerLogo");
+const preview=document.getElementById("logoPreview");
 
-return true;
+if(logo){
 
-}catch(e){
+loading.src=logo;
+header.src=logo;
+header.style.display="inline-block";
+preview.src=logo;
 
-toast("Storage error: "+e.message);
-return false;
+}else{
+
+loading.style.display="none";
+header.style.display="none";
+preview.style.display="none";
 
 }
 
 }
 
+function uploadLogo(e){
 
-function load(){
+const file=e.target.files[0];
 
-try{
+if(!file)return;
 
-const raw=localStorage.getItem(KEY);
+if(!file.type.startsWith("image/")){
 
-if(raw){
+toast("Please select an image");
 
-const x=JSON.parse(raw);
+return;
 
-db.customers=Array.isArray(x.customers)?x.customers:[];
-db.bills=Array.isArray(x.bills)?x.bills:[];
-db.receipts=Array.isArray(x.receipts)?x.receipts:[];
-db.purchases=Array.isArray(x.purchases)?x.purchases:[];
-db.partyPayments=Array.isArray(x.partyPayments)?x.partyPayments:[];
-db.vehicleRents=Array.isArray(x.vehicleRents)?x.vehicleRents:[];
+}
 
-db.billSettings={
-...db.billSettings,
-...(x.billSettings||{})
+const reader=new FileReader();
+
+reader.onload=function(){
+
+db.settings.logo=reader.result;
+
+saveDB();
+
+applyLogo();
+
+toast("Logo saved successfully");
+
 };
 
-}
-
-}catch(e){
-
-console.error(e);
-toast("Saved data could not be loaded");
+reader.readAsDataURL(file);
 
 }
 
-const api=$("apiUrl");
+function removeLogo(){
 
-if(api){
-api.value=
-localStorage.getItem("SMS_API_URL")||"";
-}
+if(!confirm("Remove company logo?"))return;
 
-}
+db.settings.logo="";
 
+saveDB();
 
-/* ================================
-   BASIC HELPERS
-================================ */
+applyLogo();
 
-function customer(id){
-
-return db.customers.find(x=>x.id===id);
-
-}
-
-function cname(id){
-
-const c=customer(id);
-
-return c?c.name:"Unknown";
-
-}
-
-function salesCustomers(){
-
-return db.customers.filter(
-x=>x.type!=="Purchase Party"
-);
-
-}
-
-function parties(){
-
-return db.customers.filter(
-x=>x.type==="Purchase Party"
-);
+toast("Logo removed");
 
 }
 
 
-/* ================================
+/* =========================
    PAGE NAVIGATION
-================================ */
+========================= */
 
-function goPage(name,button){
+function goPage(id,btn){
 
-document.querySelectorAll(".page")
-.forEach(p=>{
+document.querySelectorAll(".page").forEach(p=>{
 p.classList.remove("active");
 });
 
-const target=$(name);
+document.getElementById(id).classList.add("active");
 
-if(!target){
-toast("Page not found");
-return;
-}
-
-target.classList.add("active");
-
-if(button){
-
-document.querySelectorAll(".nav button")
-.forEach(b=>b.classList.remove("active"));
-
-button.classList.add("active");
-
-}
-
-refresh();
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
+document.querySelectorAll(".nav button").forEach(b=>{
+b.classList.remove("active");
 });
 
-}
+if(btn)btn.classList.add("active");
 
-
-/* ================================
-   ACCOUNT
-================================ */
-
-function account(cid){
-
-const c=customer(cid);
-
-const bills=db.bills.filter(
-x=>x.customerId===cid
-);
-
-const receipts=db.receipts.filter(
-x=>x.customerId===cid
-);
-
-const sales=bills.reduce(
-(a,x)=>a+n(x.total),0
-);
-
-const billReceived=bills.reduce(
-(a,x)=>a+n(x.paymentAmount),0
-);
-
-const receiptReceived=receipts.reduce(
-(a,x)=>a+n(x.amount),0
-);
-
-const opening=n(c?.openingBalance);
-
-const received=
-billReceived+
-receiptReceived;
-
-return{
-bills,
-receipts,
-sales,
-received,
-opening,
-outstanding:opening+sales-received
-};
+refreshAll();
 
 }
 
 
-/* ================================
-   CUSTOMER
-================================ */
+/* =========================
+   CUSTOMERS
+========================= */
 
 function saveCustomer(){
 
-const name=$("cName").value.trim();
+const name=document.getElementById("cName").value.trim();
 
 if(!name){
 
 toast("Enter customer name");
-$("cName").focus();
+
 return;
 
 }
 
-const edit=$("cEdit").value;
-
-const data={
-name:name,
-type:$("cType").value,
-phone:$("cPhone").value.trim(),
-address:$("cAddress").value.trim(),
-openingBalance:n($("cOpening").value)
+const obj={
+id:document.getElementById("cEdit").value||Date.now().toString(),
+name,
+phone:document.getElementById("cPhone").value.trim(),
+address:document.getElementById("cAddress").value.trim(),
+opening:Number(document.getElementById("cOpening").value)||0
 };
+
+const edit=document.getElementById("cEdit").value;
 
 if(edit){
 
-const c=customer(edit);
+const i=db.customers.findIndex(x=>x.id===edit);
 
-if(c){
-
-Object.assign(c,data);
-toast("Customer updated");
-
-}
+if(i>=0)db.customers[i]=obj;
 
 }else{
 
-db.customers.unshift({
-id:uid(),
-...data,
-createdAt:Date.now()
-});
+db.customers.push(obj);
+
+}
+
+saveDB();
+
+clearCustomer();
+
+refreshAll();
 
 toast("Customer saved");
 
 }
 
-save();
-clearCustomer();
-refresh();
-
-}
-
-
 function clearCustomer(){
 
-$("cName").value="";
-$("cPhone").value="";
-$("cAddress").value="";
-$("cOpening").value="0";
-$("cType").value="Regular";
-$("cEdit").value="";
+document.getElementById("cName").value="";
+document.getElementById("cPhone").value="";
+document.getElementById("cAddress").value="";
+document.getElementById("cOpening").value=0;
+document.getElementById("cEdit").value="";
 
 }
 
+function customerBalance(id){
 
-function editCustomer(id){
+const c=db.customers.find(x=>x.id===id);
 
-const c=customer(id);
+if(!c)return 0;
 
-if(!c)return;
+let bal=Number(c.opening)||0;
 
-goPage("customers");
+db.bills.forEach(b=>{
 
-$("cName").value=c.name||"";
-$("cType").value=c.type||"Regular";
-$("cPhone").value=c.phone||"";
-$("cAddress").value=c.address||"";
-$("cOpening").value=n(c.openingBalance);
-$("cEdit").value=id;
+if(b.customerId===id){
 
-window.scrollTo({top:0,behavior:"smooth"});
+bal+=Number(b.total)||0;
+bal-=Number(b.received)||0;
 
 }
 
-
-function deleteCustomer(id){
-
-if(!confirm("Delete this customer?"))return;
-
-db.customers=db.customers.filter(
-x=>x.id!==id
-);
-
-save();
-refresh();
-toast("Customer deleted");
-
-}
-
-
-function filterCustomers(filter,button){
-
-cFilter=filter;
-
-document.querySelectorAll(
-"#customers .tabs button"
-).forEach(x=>{
-x.classList.remove("active");
 });
 
-if(button)button.classList.add("active");
-
-renderCustomers();
+return bal;
 
 }
-
 
 function renderCustomers(){
 
-const search=(
-$("cSearch").value||""
-).toLowerCase();
+const q=(document.getElementById("cSearch").value||"").toLowerCase();
 
-const list=db.customers.filter(c=>{
+const box=document.getElementById("customerList");
 
-const matchFilter=
-cFilter==="All"||
-c.type===cFilter;
-
-const matchSearch=
-!search||
-(c.name||"").toLowerCase().includes(search)||
-(c.phone||"").includes(search);
-
-return matchFilter&&matchSearch;
-
-});
+const list=db.customers.filter(c=>
+c.name.toLowerCase().includes(q) ||
+(c.phone||"").includes(q)
+);
 
 if(!list.length){
 
-$("customerList").innerHTML=
-'<div class="empty">No customers found</div>';
+box.innerHTML='<div class="empty">No customers found</div>';
 
 return;
 
 }
 
-$("customerList").innerHTML=list.map(c=>{
+box.innerHTML=list.map(c=>{
 
-const isParty=c.type==="Purchase Party";
-const a=isParty?null:account(c.id);
-
-const badgeClass=
-c.type==="Weekly"
-?"weekly":
-isParty
-?"party"
-:"reg";
+const bal=customerBalance(c.id);
 
 return`
 
 <div class="customer">
 
-<div class="section-title">
+<b>${esc(c.name)}</b>
 
-<div>
+<div class="muted">
+${esc(c.phone||"")}
+${c.address?" • "+esc(c.address):""}
+</div>
 
-<h3 style="margin:0 0 6px">
-${esc(c.name)}
-</h3>
-
-<span class="badge ${badgeClass}">
-${esc(c.type)}
-</span>
-
+<div style="margin-top:7px">
+Outstanding:
+<b>${money(bal)}</b>
 </div>
 
 <div class="actions">
 
-<button type="button"
-class="btn small"
-onclick="showHistory('${c.id}')">
-History
-</button>
-
-<button type="button"
-class="btn small gray"
+<button class="btn small blue"
 onclick="editCustomer('${c.id}')">
 Edit
 </button>
 
-<button type="button"
-class="btn small red"
+<button class="btn small red"
 onclick="deleteCustomer('${c.id}')">
 Delete
 </button>
@@ -1993,391 +1304,369 @@ Delete
 
 </div>
 
-<div class="muted" style="margin-top:8px">
-${esc(c.phone||"")}
-${c.phone&&c.address?" • ":""}
-${esc(c.address||"")}
-</div>
-
-${a?`
-
-<div class="summary">
-
-<div class="line">
-<span>Total Sales</span>
-<b>${money(a.sales)}</b>
-</div>
-
-<div class="line">
-<span>Total Received</span>
-<b>${money(a.received)}</b>
-</div>
-
-<div class="line total">
-<span>Balance</span>
-<b>${money(a.outstanding)}</b>
-</div>
-
-</div>
-
-`:""}
-
-</div>
-
 `;
 
 }).join("");
 
 }
 
+function editCustomer(id){
 
-/* ================================
-   SELECT
-================================ */
+const c=db.customers.find(x=>x.id===id);
 
-function fillSelect(id,list,placeholder){
+if(!c)return;
 
-const el=$(id);
+document.getElementById("cName").value=c.name;
+document.getElementById("cPhone").value=c.phone||"";
+document.getElementById("cAddress").value=c.address||"";
+document.getElementById("cOpening").value=c.opening||0;
+document.getElementById("cEdit").value=c.id;
 
-if(!el)return;
-
-const old=el.value;
-
-el.innerHTML=
-`<option value="">${esc(placeholder||"Select")}</option>`+
-list.map(c=>
-`<option value="${esc(c.id)}">
-${esc(c.name)}
-</option>`
-).join("");
-
-if(list.some(c=>c.id===old)){
-el.value=old;
-}
+window.scrollTo({top:0,behavior:"smooth"});
 
 }
 
+function deleteCustomer(id){
 
-/* ================================
-   SALES
-================================ */
+if(!confirm("Delete this customer?"))return;
+
+db.customers=db.customers.filter(c=>c.id!==id);
+
+saveDB();
+
+refreshAll();
+
+toast("Customer deleted");
+
+}
+
+
+/* =========================
+   BILL
+========================= */
+
+function setupBill(){
+
+const d=document.getElementById("billDate");
+
+if(!d.value)d.value=today();
+
+const no=document.getElementById("billNo");
+
+if(!no.value){
+
+no.value="SMS-"+String(Date.now()).slice(-6);
+
+}
+
+if(!document.querySelector(".vegrow")){
+
+addVeg();
+
+}
+
+populateCustomers();
+
+calcBill();
+
+}
+
+function populateCustomers(){
+
+const selects=[
+document.getElementById("billCustomer"),
+document.getElementById("historyCustomer")
+];
+
+selects.forEach(sel=>{
+
+if(!sel)return;
+
+const old=sel.value;
+
+sel.innerHTML='<option value="">Select Customer</option>';
+
+db.customers.forEach(c=>{
+
+const o=document.createElement("option");
+
+o.value=c.id;
+o.textContent=c.name;
+
+sel.appendChild(o);
+
+});
+
+sel.value=old;
+
+});
+
+}
 
 function loadCustomerBalance(){
 
-const cid=$("billCustomer").value;
+const id=document.getElementById("billCustomer").value;
 
-if(!cid){
+if(!id){
 
-$("previousBalance").value="0";
-calcBill();
-return;
+document.getElementById("previousBalance").value=0;
+
+}else{
+
+document.getElementById("previousBalance").value=
+customerBalance(id);
 
 }
-
-const a=account(cid);
-
-$("previousBalance").value=
-Math.max(0,a.outstanding).toFixed(2);
 
 calcBill();
 
 }
 
+function addVeg(data={}){
 
-function addVeg(data){
-
-data=data||{};
+const box=document.getElementById("vegRows");
 
 const row=document.createElement("div");
 
-row.className="billrow";
+row.className="billrow vegrow";
 
 row.innerHTML=`
 
 <div>
-<input
-class="vname"
-placeholder="Vegetable"
-value="${esc(data.name||"Tomato")}">
+<label>Vegetable</label>
+<input class="vname" value="${esc(data.name||"Tomato")}" placeholder="Tomato">
 </div>
 
 <div>
-<input
-class="vqty"
-type="number"
-min="0"
-placeholder="Qty"
-value="${n(data.qty)}"
-oninput="calcBill()">
+<label>Qty</label>
+<input class="vqty" type="number" value="${data.qty||""}" oninput="calcBill()">
 </div>
 
 <div>
-<input
-class="vrate"
-type="number"
-min="0"
-placeholder="Rate"
-value="${n(data.rate)}"
-oninput="calcBill()">
+<label>Rate</label>
+<input class="vrate" type="number" value="${data.rate||""}" oninput="calcBill()">
 </div>
 
 <div>
-<input
-class="vamount"
-type="number"
-readonly
-value="${n(data.amount).toFixed(2)}">
+<label>Amount</label>
+<input class="vamount" readonly value="0">
 </div>
 
-<button
-type="button"
-class="btn red small"
-onclick="removeVeg(this)">
+<button class="btn red small" onclick="this.parentElement.remove();calcBill()">
 Remove
 </button>
 
 `;
 
-$("vegRows").appendChild(row);
+box.appendChild(row);
 
 calcBill();
 
 }
 
+function num(id){
 
-function removeVeg(button){
-
-const row=button.closest(".billrow");
-
-if(row)row.remove();
-
-if(!$("vegRows").children.length){
-addVeg();
-}else{
-calcBill();
-}
+return Number(document.getElementById(id).value)||0;
 
 }
 
+function calcBill(){
 
-function getVeg(){
+let current=0;
 
-const rows=[
-...document.querySelectorAll("#vegRows .billrow")
-];
+document.querySelectorAll(".vegrow").forEach(row=>{
 
-return rows.map(row=>{
+const qty=Number(row.querySelector(".vqty").value)||0;
+const rate=Number(row.querySelector(".vrate").value)||0;
 
-const name=row.querySelector(".vname").value.trim();
-const qty=n(row.querySelector(".vqty").value);
-const rate=n(row.querySelector(".vrate").value);
+const amount=qty*rate;
 
-return{
-name,
-qty,
-rate,
-amount:qty*rate
-};
+row.querySelector(".vamount").value=amount.toFixed(2);
 
-}).filter(x=>
-x.name||x.qty||x.rate
-);
+current+=amount;
+
+});
+
+const prev=num("previousBalance");
+const received=num("billReceived");
+
+const total=prev+current;
+const out=total-received;
+
+document.getElementById("sPrev").textContent=money(prev);
+document.getElementById("sCurrent").textContent=money(current);
+document.getElementById("sTotal").textContent=money(total);
+document.getElementById("sOut").textContent=money(out);
+
+return{prev,current,total,received,out};
 
 }
-
 
 function getGrades(){
 
 return{
-SMS:n($("gSMS").value),
-MIX:n($("gMIX").value),
-SMALL:n($("gSMALL").value),
-E1:n($("gE1").value),
-E2:n($("gE2").value)
+
+SMS:{
+issued:num("gSMS"),
+received:num("rSMS")
+},
+
+MIX:{
+issued:num("gMIX"),
+received:num("rMIX")
+},
+
+SMALL:{
+issued:num("gSMALL"),
+received:num("rSMALL")
+},
+
+"EXTRA 1":{
+issued:num("gE1"),
+received:num("rE1")
+},
+
+"EXTRA 2":{
+issued:num("gE2"),
+received:num("rE2")
+}
+
 };
 
 }
-
-
-function getGradeReceived(){
-
-return{
-SMS:n($("rSMS").value),
-MIX:n($("rMIX").value),
-SMALL:n($("rSMALL").value),
-E1:n($("rE1").value),
-E2:n($("rE2").value)
-};
-
-}
-
-
-function setGrades(g,r){
-
-g=g||{};
-r=r||{};
-
-$("gSMS").value=n(g.SMS);
-$("gMIX").value=n(g.MIX);
-$("gSMALL").value=n(g.SMALL);
-$("gE1").value=n(g.E1);
-$("gE2").value=n(g.E2);
-
-$("rSMS").value=n(r.SMS);
-$("rMIX").value=n(r.MIX);
-$("rSMALL").value=n(r.SMALL);
-$("rE1").value=n(r.E1);
-$("rE2").value=n(r.E2);
-
-}
-
-
-function calcBill(){
-
-const rows=getVeg();
-
-const total=rows.reduce(
-(a,x)=>a+x.amount,
-0
-);
-
-const domRows=[
-...document.querySelectorAll("#vegRows .billrow")
-];
-
-domRows.forEach((row,i)=>{
-
-if(rows[i]){
-
-row.querySelector(".vamount").value=
-rows[i].amount.toFixed(2);
-
-}
-
-});
-
-const prev=n($("previousBalance").value);
-const received=n($("billReceived").value);
-
-$("sPrev").textContent=money(prev);
-$("sCurrent").textContent=money(total);
-$("sTotal").textContent=money(prev+total);
-
-$("sOut").textContent=
-money(Math.max(0,prev+total-received));
-
-}
-
 
 function saveBill(){
 
-const cid=$("billCustomer").value;
+const customerId=document.getElementById("billCustomer").value;
 
-if(!cid){
+if(!customerId){
 
 toast("Select customer");
+
 return;
 
 }
 
-const vegetables=getVeg();
+const customer=db.customers.find(c=>c.id===customerId);
+
+const calc=calcBill();
+
+const vegetables=[];
+
+document.querySelectorAll(".vegrow").forEach(row=>{
+
+const name=row.querySelector(".vname").value.trim();
+const qty=Number(row.querySelector(".vqty").value)||0;
+const rate=Number(row.querySelector(".vrate").value)||0;
+
+if(name && qty){
+
+vegetables.push({
+name,
+qty,
+rate,
+amount:qty*rate
+});
+
+}
+
+});
 
 if(!vegetables.length){
 
 toast("Add at least one vegetable");
+
 return;
 
 }
 
-const total=vegetables.reduce(
-(a,x)=>a+x.amount,
-0
-);
+const bill={
 
-const received=n($("billReceived").value);
+id:document.getElementById("billEdit").value||Date.now().toString(),
 
-if(received>n($("previousBalance").value)+total){
+billNo:document.getElementById("billNo").value.trim(),
 
-toast("Received amount is greater than total");
-return;
+date:document.getElementById("billDate").value,
 
-}
+customerId,
 
-const edit=$("billEdit").value;
-
-const data={
-
-customerId:cid,
-
-date:$("billDate").value||today(),
-
-billNo:$("billNo").value.trim(),
-
-previousBalance:n(
-$("previousBalance").value
-),
+customerName:customer.name,
 
 vegetables,
 
-total,
-
-paymentAmount:received,
-
-paymentMode:$("billMode").value,
-
 grades:getGrades(),
 
-gradeReceived:getGradeReceived(),
+previous:calc.prev,
 
-updatedAt:Date.now()
+current:calc.current,
+
+total:calc.total,
+
+received:calc.received,
+
+outstanding:calc.out,
+
+mode:document.getElementById("billMode").value,
+
+createdAt:new Date().toISOString()
 
 };
 
+const edit=document.getElementById("billEdit").value;
+
 if(edit){
 
-const bill=db.bills.find(
-x=>x.id===edit
-);
+const i=db.bills.findIndex(x=>x.id===edit);
 
-if(bill){
-
-Object.assign(bill,data);
-
-toast("Bill updated");
-
-}
+if(i>=0)db.bills[i]=bill;
 
 }else{
 
-db.bills.unshift({
-id:uid(),
-...data,
-createdAt:Date.now()
-});
-
-toast("Bill saved");
+db.bills.push(bill);
 
 }
 
-save();
+saveDB();
+
+currentBill=bill;
+
+renderFinalBill(bill);
+
+document.getElementById("billModal").classList.add("show");
+
 newBill();
-refresh();
+
+refreshAll();
+
+toast("Bill saved successfully");
 
 }
-
 
 function newBill(){
 
-$("billDate").value=today();
-$("billNo").value="";
-$("previousBalance").value="0";
-$("billReceived").value="0";
-$("billMode").value="Cash";
-$("billEdit").value="";
+document.getElementById("billEdit").value="";
 
-setGrades();
+document.getElementById("billReceived").value=0;
 
-$("vegRows").innerHTML="";
+document.getElementById("previousBalance").value=0;
+
+document.getElementById("vegRows").innerHTML="";
+
+document.getElementById("gSMS").value=0;
+document.getElementById("rSMS").value=0;
+document.getElementById("gMIX").value=0;
+document.getElementById("rMIX").value=0;
+document.getElementById("gSMALL").value=0;
+document.getElementById("rSMALL").value=0;
+document.getElementById("gE1").value=0;
+document.getElementById("rE1").value=0;
+document.getElementById("gE2").value=0;
+document.getElementById("rE2").value=0;
+
+document.getElementById("billDate").value=today();
+
+document.getElementById("billNo").value=
+"SMS-"+String(Date.now()).slice(-6);
 
 addVeg();
 
@@ -2386,1797 +1675,538 @@ calcBill();
 }
 
 
-function editBill(id){
+/* =========================
+   FINAL BILL
+========================= */
 
-const b=db.bills.find(
-x=>x.id===id
+function renderFinalBill(b){
+
+const customer=db.customers.find(c=>c.id===b.customerId)||{};
+
+const logo=db.settings.logo;
+
+let html=`
+
+<div class="bill-head">
+
+${logo?`<img class="bill-logo" src="${logo}">`:""}
+
+<div class="bill-company">
+${esc(db.settings.header)}
+</div>
+
+<div class="bill-sub">
+${esc(db.settings.sub)}
+</div>
+
+${db.settings.contact?
+`<div class="bill-sub">${esc(db.settings.contact)}</div>`:""}
+
+</div>
+
+<div class="bill-info">
+
+<div>
+<b>Bill No:</b> ${esc(b.billNo)}
+</div>
+
+<div>
+<b>Date:</b> ${esc(b.date)}
+</div>
+
+<div>
+<b>Customer:</b> ${esc(customer.name||b.customerName)}
+</div>
+
+<div>
+<b>Phone:</b> ${esc(customer.phone||"")}
+</div>
+
+</div>
+
+<table class="bill-table">
+
+<thead>
+
+<tr>
+<th>#</th>
+<th>Vegetable</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+${b.vegetables.map((v,i)=>`
+
+<tr>
+<td>${i+1}</td>
+<td>${esc(v.name)}</td>
+<td>${v.qty}</td>
+<td>${money(v.rate)}</td>
+<td>${money(v.amount)}</td>
+</tr>
+
+`).join("")}
+
+</tbody>
+
+</table>
+
+<div class="grade-table">
+
+<h4>Grade / Crate Details</h4>
+
+<table>
+
+<thead>
+<tr>
+<th>Grade</th>
+<th>Issued</th>
+<th>Received</th>
+<th>Balance</th>
+</tr>
+</thead>
+
+<tbody>
+
+${Object.entries(b.grades).map(([name,g])=>`
+
+<tr>
+<td>${esc(name)}</td>
+<td>${g.issued}</td>
+<td>${g.received}</td>
+<td>${Math.max(0,g.issued-g.received)}</td>
+</tr>
+
+`).join("")}
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="bill-total">
+
+<div>
+<span>Previous Balance</span>
+<b>${money(b.previous)}</b>
+</div>
+
+<div>
+<span>Current Bill</span>
+<b>${money(b.current)}</b>
+</div>
+
+<div class="grand">
+<span>Total</span>
+<b>${money(b.total)}</b>
+</div>
+
+<div>
+<span>Received</span>
+<b>${money(b.received)}</b>
+</div>
+
+<div>
+<span>Balance</span>
+<b>${money(b.outstanding)}</b>
+</div>
+
+</div>
+
+<div class="bill-footer">
+
+${esc(db.settings.footer)}
+
+</div>
+
+`;
+
+document.getElementById("finalBill").innerHTML=html;
+
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+async function getBillCanvas(){
+
+const element=document.getElementById("finalBill");
+
+return await html2canvas(element,{
+scale:2,
+backgroundColor:"#ffffff",
+useCORS:true
+});
+
+}
+
+async function downloadBillImage(){
+
+if(!currentBill)return;
+
+try{
+
+const canvas=await getBillCanvas();
+
+const link=document.createElement("a");
+
+link.download=
+"SMS-Bill-"+currentBill.billNo+".png";
+
+link.href=canvas.toDataURL("image/png");
+
+link.click();
+
+toast("Bill image downloaded");
+
+}catch(e){
+
+console.error(e);
+
+toast("Image creation failed");
+
+}
+
+}
+
+
+/* =========================
+   PDF
+========================= */
+
+async function downloadBillPDF(){
+
+if(!currentBill)return;
+
+try{
+
+const canvas=await getBillCanvas();
+
+const img=canvas.toDataURL("image/png");
+
+const {jsPDF}=window.jspdf;
+
+const pdf=new jsPDF("p","mm","a4");
+
+const pageWidth=210;
+const margin=10;
+const width=pageWidth-(margin*2);
+
+const height=canvas.height*width/canvas.width;
+
+pdf.addImage(
+img,
+"PNG",
+margin,
+margin,
+width,
+height
 );
 
-if(!b)return;
-
-goPage("billing");
-
-$("billCustomer").value=b.customerId||"";
-$("billDate").value=b.date||today();
-$("billNo").value=b.billNo||"";
-$("previousBalance").value=n(b.previousBalance);
-$("billReceived").value=n(b.paymentAmount);
-$("billMode").value=b.paymentMode||"Cash";
-$("billEdit").value=id;
-
-setGrades(
-b.grades||{},
-b.gradeReceived||{}
+pdf.save(
+"SMS-Bill-"+currentBill.billNo+".pdf"
 );
 
-$("vegRows").innerHTML="";
+toast("PDF downloaded");
 
-if((b.vegetables||[]).length){
+}catch(e){
 
-b.vegetables.forEach(v=>addVeg(v));
+console.error(e);
+
+toast("PDF creation failed");
+
+}
+
+}
+
+
+/* =========================
+   SHARE
+========================= */
+
+async function shareBill(){
+
+if(!currentBill)return;
+
+try{
+
+const canvas=await getBillCanvas();
+
+canvas.toBlob(async blob=>{
+
+const file=new File(
+[blob],
+"SMS-Bill-"+currentBill.billNo+".png",
+{type:"image/png"}
+);
+
+if(navigator.share &&
+navigator.canShare &&
+navigator.canShare({files:[file]})){
+
+await navigator.share({
+title:"SMS Commission Mandi Bill",
+text:"Your bill from SMS Commission Mandi",
+files:[file]
+});
 
 }else{
 
-addVeg();
+const link=document.createElement("a");
+
+link.download=
+"SMS-Bill-"+currentBill.billNo+".png";
+
+link.href=URL.createObjectURL(blob);
+
+link.click();
+
+toast("Image downloaded. Share it on WhatsApp.");
 
 }
 
-calcBill();
+},"image/png");
+
+}catch(e){
+
+console.error(e);
+
+toast("Share not supported");
 
 }
 
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function renderBills(){
+
+const q=(document.getElementById("billSearch").value||"").toLowerCase();
+
+const box=document.getElementById("allBills");
+
+let list=db.bills.filter(b=>
+b.billNo.toLowerCase().includes(q) ||
+b.customerName.toLowerCase().includes(q)
+);
+
+list=[...list].reverse();
+
+if(!list.length){
+
+box.innerHTML='<div class="empty">No bills found</div>';
+
+return;
+
+}
+
+box.innerHTML=list.map(b=>`
+
+<div class="customer">
+
+<b>${esc(b.billNo)}</b>
+
+<div class="muted">
+${esc(b.date)} • ${esc(b.customerName)}
+</div>
+
+<div style="margin-top:7px">
+Bill:
+<b>${money(b.current)}</b>
+&nbsp; | &nbsp;
+Balance:
+<b>${money(b.outstanding)}</b>
+</div>
+
+<div class="actions">
+
+<button class="btn small blue"
+onclick="viewBill('${b.id}')">
+View
+</button>
+
+<button class="btn small red"
+onclick="deleteBill('${b.id}')">
+Delete
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+
+}
+
+function viewBill(id){
+
+const b=db.bills.find(x=>x.id===id);
+
+if(!b)return;
+
+currentBill=b;
+
+renderFinalBill(b);
+
+document.getElementById("billModal").classList.add("show");
+
+}
 
 function deleteBill(id){
 
 if(!confirm("Delete this bill?"))return;
 
-db.bills=db.bills.filter(
-x=>x.id!==id
-);
+db.bills=db.bills.filter(b=>b.id!==id);
 
-save();
-refresh();
+saveDB();
+
+refreshAll();
 
 toast("Bill deleted");
 
 }
 
-
-/* ================================
-   PURCHASE
-================================ */
-
-function calcPurchase(){
-
-const qty=n($("pQty").value);
-const rate=n($("pRate").value);
-const amount=qty*rate;
-const previous=n($("pPrevious").value);
-const paid=n($("pPaid").value);
-
-$("pAmount").value=amount.toFixed(2);
-
-$("pPrevShow").textContent=money(previous);
-$("pCurrentShow").textContent=money(amount);
-$("pTotalShow").textContent=money(previous+amount);
-
-$("pBalanceShow").textContent=
-money(Math.max(0,previous+amount-paid));
-
-}
-
-
-function savePurchase(){
-
-const party=$("pParty").value;
-
-if(!party){
-
-toast("Select purchase party");
-return;
-
-}
-
-const qty=n($("pQty").value);
-const rate=n($("pRate").value);
-const amount=qty*rate;
-const paid=n($("pPaid").value);
-const edit=$("pEdit").value;
-
-const data={
-
-partyId:party,
-date:$("pDate").value||today(),
-billNo:$("pBillNo").value.trim(),
-previous:n($("pPrevious").value),
-product:$("pProduct").value.trim()||"Tomato",
-qty,
-unit:$("pUnit").value,
-rate,
-amount,
-paid,
-paymentMode:$("pMode").value,
-note:$("pNote").value.trim(),
-updatedAt:Date.now()
-
-};
-
-if(edit){
-
-const p=db.purchases.find(
-x=>x.id===edit
-);
-
-if(p)Object.assign(p,data);
-
-toast("Purchase updated");
-
-}else{
-
-db.purchases.unshift({
-id:uid(),
-...data,
-createdAt:Date.now()
-});
-
-toast("Purchase saved");
-
-}
-
-save();
-newPurchase();
-refresh();
-
-}
-
-
-function newPurchase(){
-
-$("pDate").value=today();
-$("pBillNo").value="";
-$("pPrevious").value="0";
-$("pProduct").value="Tomato";
-$("pQty").value="";
-$("pRate").value="";
-$("pAmount").value="";
-$("pPaid").value="0";
-$("pMode").value="Cash";
-$("pNote").value="";
-$("pEdit").value="";
-
-calcPurchase();
-
-}
-
-
-function partyAccount(id){
-
-const purchases=db.purchases.filter(
-x=>x.partyId===id
-);
-
-const payments=db.partyPayments.filter(
-x=>x.partyId===id
-);
-
-const purchaseTotal=purchases.reduce(
-(a,x)=>a+n(x.amount),
-0
-);
-
-const purchasePaid=purchases.reduce(
-(a,x)=>a+n(x.paid),
-0
-);
-
-const extraPaid=payments.reduce(
-(a,x)=>a+n(x.amount),
-0
-);
-
-const opening=n(customer(id)?.openingBalance);
-
-return{
-purchase:purchaseTotal,
-paid:purchasePaid+extraPaid,
-balance:opening+purchaseTotal-purchasePaid-extraPaid
-};
-
-}
-
-
-function savePartyPayment(){
-
-const party=$("payParty").value;
-const amount=n($("payAmount").value);
-
-if(!party||amount<=0){
-
-toast("Enter party and amount");
-return;
-
-}
-
-db.partyPayments.unshift({
-
-id:uid(),
-partyId:party,
-date:$("payDate").value||today(),
-amount,
-mode:$("payMode").value,
-note:$("payNote").value.trim(),
-createdAt:Date.now()
-
-});
-
-save();
-
-$("payAmount").value="";
-$("payNote").value="";
-
-refresh();
-
-toast("Party payment saved");
-
-}
-
-
-function editPurchase(id){
-
-const p=db.purchases.find(
-x=>x.id===id
-);
-
-if(!p)return;
-
-goPage("purchases");
-
-$("pParty").value=p.partyId||"";
-$("pDate").value=p.date||today();
-$("pBillNo").value=p.billNo||"";
-$("pPrevious").value=n(p.previous);
-$("pProduct").value=p.product||"Tomato";
-$("pQty").value=n(p.qty);
-$("pUnit").value=p.unit||"Box";
-$("pRate").value=n(p.rate);
-$("pPaid").value=n(p.paid);
-$("pMode").value=p.paymentMode||"Cash";
-$("pNote").value=p.note||"";
-$("pEdit").value=id;
-
-calcPurchase();
-
-}
-
-
-function deletePurchase(id){
-
-if(!confirm("Delete purchase?"))return;
-
-db.purchases=db.purchases.filter(
-x=>x.id!==id
-);
-
-save();
-refresh();
-
-toast("Purchase deleted");
-
-}
-
-
-function renderPurchaseHistory(){
-
-const arr=[...db.purchases].sort(
-(a,b)=>
-String(b.date).localeCompare(String(a.date))
-);
-
-if(!arr.length){
-
-$("purchaseHistory").innerHTML=
-'<div class="empty">No purchase records</div>';
-
-return;
-
-}
-
-$("purchaseHistory").innerHTML=`
-
-<div class="table">
-
-<table>
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Party</th>
-<th>Bill</th>
-<th>Product</th>
-<th>Qty</th>
-<th>Amount</th>
-<th>Paid</th>
-<th>Balance</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody>
-
-${arr.map(p=>`
-
-<tr>
-
-<td>${esc(p.date)}</td>
-
-<td>${esc(cname(p.partyId))}</td>
-
-<td>${esc(p.billNo||"-")}</td>
-
-<td>${esc(p.product||"-")}</td>
-
-<td>${n(p.qty)} ${esc(p.unit||"")}</td>
-
-<td>${money(p.amount)}</td>
-
-<td>${money(p.paid)}</td>
-
-<td>
-${money(
-n(p.previous)+
-n(p.amount)-
-n(p.paid)
-)}
-</td>
-
-<td>
-
-<button type="button"
-class="btn small gray"
-onclick="editPurchase('${p.id}')">
-Edit
-</button>
-
-<button type="button"
-class="btn small red"
-onclick="deletePurchase('${p.id}')">
-Delete
-</button>
-
-</td>
-
-</tr>
-
-`).join("")}
-
-</tbody>
-
-</table>
-
-</div>
-
-`;
-
-}
-
-
-/* ================================
-   RECEIPTS
-================================ */
-
-function saveReceipt(){
-
-const cid=$("rCustomer").value;
-const amount=n($("rAmount").value);
-
-if(!cid||amount<=0){
-
-toast("Enter customer and amount");
-return;
-
-}
-
-const edit=$("rEdit").value;
-
-const data={
-
-customerId:cid,
-date:$("rDate").value||today(),
-amount,
-mode:$("rMode").value,
-note:$("rNote").value.trim(),
-updatedAt:Date.now()
-
-};
-
-if(edit){
-
-const r=db.receipts.find(
-x=>x.id===edit
-);
-
-if(r)Object.assign(r,data);
-
-toast("Receipt updated");
-
-}else{
-
-db.receipts.unshift({
-id:uid(),
-...data,
-createdAt:Date.now()
-});
-
-toast("Receipt saved");
-
-}
-
-save();
-clearReceipt();
-refresh();
-
-}
-
-
-function clearReceipt(){
-
-$("rDate").value=today();
-$("rAmount").value="";
-$("rMode").value="Cash";
-$("rNote").value="";
-$("rEdit").value="";
-
-}
-
-
-function editReceipt(id){
-
-const r=db.receipts.find(
-x=>x.id===id
-);
-
-if(!r)return;
-
-goPage("receipts");
-
-$("rCustomer").value=r.customerId||"";
-$("rDate").value=r.date||today();
-$("rAmount").value=n(r.amount);
-$("rMode").value=r.mode||"Cash";
-$("rNote").value=r.note||"";
-$("rEdit").value=id;
-
-}
-
-
-function deleteReceipt(id){
-
-if(!confirm("Delete receipt?"))return;
-
-db.receipts=db.receipts.filter(
-x=>x.id!==id
-);
-
-save();
-refresh();
-
-toast("Receipt deleted");
-
-}
-
-
-function renderReceipts(){
-
-const search=(
-$("rSearch").value||""
-).toLowerCase();
-
-const arr=db.receipts.filter(r=>
-cname(r.customerId)
-.toLowerCase()
-.includes(search)
-);
-
-if(!arr.length){
-
-$("receiptList").innerHTML=
-'<div class="empty">No receipts</div>';
-
-return;
-
-}
-
-$("receiptList").innerHTML=`
-
-<div class="table">
-
-<table>
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Customer</th>
-<th>Amount</th>
-<th>Mode</th>
-<th>Note</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody>
-
-${arr.map(r=>`
-
-<tr>
-
-<td>${esc(r.date)}</td>
-
-<td>${esc(cname(r.customerId))}</td>
-
-<td>${money(r.amount)}</td>
-
-<td>${esc(r.mode||"")}</td>
-
-<td>${esc(r.note||"")}</td>
-
-<td>
-
-<button type="button"
-class="btn small gray"
-onclick="editReceipt('${r.id}')">
-Edit
-</button>
-
-<button type="button"
-class="btn small red"
-onclick="deleteReceipt('${r.id}')">
-Delete
-</button>
-
-</td>
-
-</tr>
-
-`).join("")}
-
-</tbody>
-
-</table>
-
-</div>
-
-`;
-
-}
-
-
-/* ================================
-   GRADES
-================================ */
-
-function gradeTotals(cid){
-
-const issued={
-SMS:0,
-MIX:0,
-SMALL:0,
-E1:0,
-E2:0
-};
-
-const received={
-SMS:0,
-MIX:0,
-SMALL:0,
-E1:0,
-E2:0
-};
-
-db.bills
-.filter(x=>x.customerId===cid)
-.forEach(b=>{
-
-const g=b.grades||{};
-const r=b.gradeReceived||{};
-
-Object.keys(issued).forEach(k=>{
-
-issued[k]+=n(g[k]);
-received[k]+=n(r[k]);
-
-});
-
-});
-
-return{
-issued,
-received
-};
-
-}
-
-
-function gradeText(g,r){
-
-g=g||{};
-r=r||{};
-
-return`
-SMS ${n(g.SMS)}/${n(r.SMS)}
- | MIX ${n(g.MIX)}/${n(r.MIX)}
- | SMALL ${n(g.SMALL)}/${n(r.SMALL)}
- | E1 ${n(g.E1)}/${n(r.E1)}
- | E2 ${n(g.E2)}/${n(r.E2)}
-`;
-
-}
-
-
-/* ================================
-   HISTORY
-================================ */
-
 function renderCustomerHistory(){
 
-const cid=$("historyCustomer").value;
+const id=document.getElementById("historyCustomer").value;
 
-if(!cid){
+const box=document.getElementById("customerHistory");
 
-$("customerHistory").innerHTML=
-'<div class="empty">Select customer</div>';
+if(!id){
 
-return;
-
-}
-
-const c=customer(cid);
-
-if(!c){
-
-$("customerHistory").innerHTML=
-'<div class="empty">Customer not found</div>';
+box.innerHTML="";
 
 return;
 
 }
 
-const a=account(cid);
-const g=gradeTotals(cid);
+const c=db.customers.find(x=>x.id===id);
 
-$("customerHistory").innerHTML=`
+const bills=db.bills.filter(b=>b.customerId===id);
 
-<div class="historyHead">
+let total=0;
 
-<h2 style="margin-top:0">
-${esc(c.name)}
-</h2>
+let received=0;
 
-<div>
-${esc(c.phone||"")}
-${c.phone&&c.address?" • ":""}
-${esc(c.address||"")}
-</div>
-
-<div class="actions">
-
-<button type="button"
-class="btn green"
-onclick="downloadHistoryPDF('${cid}')">
-Download PDF
-</button>
-
-</div>
-
-</div>
-
-
-<div class="grid4">
-
-<div class="stat">
-<small>Total Sales</small>
-<strong>${money(a.sales)}</strong>
-</div>
-
-<div class="stat">
-<small>Total Received</small>
-<strong>${money(a.received)}</strong>
-</div>
-
-<div class="stat">
-<small>Opening Balance</small>
-<strong>${money(a.opening)}</strong>
-</div>
-
-<div class="stat">
-<small>Current Balance</small>
-<strong>${money(a.outstanding)}</strong>
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h3>Grade / Crate Balance</h3>
-
-<div class="table">
-
-<table>
-
-<thead>
-<tr>
-<th>Grade</th>
-<th>Issued</th>
-<th>Received</th>
-<th>Balance</th>
-</tr>
-</thead>
-
-<tbody>
-
-${["SMS","MIX","SMALL","E1","E2"].map(k=>`
-
-<tr>
-<td>${k}</td>
-<td>${g.issued[k]}</td>
-<td>${g.received[k]}</td>
-<td>${g.issued[k]-g.received[k]}</td>
-</tr>
-
-`).join("")}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h3>Sales History</h3>
-
-${a.bills.length?`
-
-<div class="table">
-
-<table>
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Bill</th>
-<th>Vegetables</th>
-<th>Amount</th>
-<th>Received</th>
-<th>Balance</th>
-<th>Grades</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody>
-
-${a.bills.map(b=>`
-
-<tr>
-
-<td>${esc(b.date)}</td>
-
-<td>${esc(b.billNo||"-")}</td>
-
-<td>
-
-${(b.vegetables||[]).map(v=>`
-${esc(v.name)}
-${n(v.qty)} × ${money(v.rate)}
-`).join("<br>")}
-
-</td>
-
-<td>${money(b.total)}</td>
-
-<td>${money(b.paymentAmount)}</td>
-
-<td>
-${money(
-n(b.previousBalance)+
-n(b.total)-
-n(b.paymentAmount)
-)}
-</td>
-
-<td>
-${gradeText(b.grades,b.gradeReceived)}
-</td>
-
-<td>
-
-<button type="button"
-class="btn small"
-onclick="viewBill('${b.id}')">
-View
-</button>
-
-<button type="button"
-class="btn small gray"
-onclick="editBill('${b.id}')">
-Edit
-</button>
-
-<button type="button"
-class="btn small red"
-onclick="deleteBill('${b.id}')">
-Delete
-</button>
-
-</td>
-
-</tr>
-
-`).join("")}
-
-</tbody>
-
-</table>
-
-</div>
-
-`:
-'<div class="empty">No sales bills</div>'}
-
-</div>
-
-
-<div class="card">
-
-<h3>Receipt History</h3>
-
-${a.receipts.length?`
-
-<div class="table">
-
-<table>
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Amount</th>
-<th>Mode</th>
-<th>Note</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody>
-
-${a.receipts.map(r=>`
-
-<tr>
-
-<td>${esc(r.date)}</td>
-<td>${money(r.amount)}</td>
-<td>${esc(r.mode||"")}</td>
-<td>${esc(r.note||"")}</td>
-
-<td>
-
-<button type="button"
-class="btn small gray"
-onclick="editReceipt('${r.id}')">
-Edit
-</button>
-
-<button type="button"
-class="btn small red"
-onclick="deleteReceipt('${r.id}')">
-Delete
-</button>
-
-</td>
-
-</tr>
-
-`).join("")}
-
-</tbody>
-
-</table>
-
-</div>
-
-`:
-'<div class="empty">No receipts</div>'}
-
-</div>
-
-`;
-
-}
-
-
-function showHistory(id){
-
-goPage("history");
-
-setTimeout(()=>{
-
-$("historyCustomer").value=id;
-renderCustomerHistory();
-
-},50);
-
-}
-
-
-function renderBills(){
-
-const search=(
-$("billSearch").value||""
-).toLowerCase();
-
-const arr=db.bills.filter(b=>{
-
-return(
-cname(b.customerId)
-.toLowerCase()
-.includes(search)||
-(b.billNo||"")
-.toLowerCase()
-.includes(search)
-);
-
+bills.forEach(b=>{
+total+=Number(b.current)||0;
+received+=Number(b.received)||0;
 });
 
-if(!arr.length){
-
-$("allBills").innerHTML=
-'<div class="empty">No bills</div>';
-
-return;
-
-}
-
-$("allBills").innerHTML=`
-
-<div class="table">
-
-<table>
-
-<thead>
-<tr>
-<th>Date</th>
-<th>Customer</th>
-<th>Bill</th>
-<th>Amount</th>
-<th>Received</th>
-<th>Grades</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody>
-
-${arr.map(b=>`
-
-<tr>
-
-<td>${esc(b.date)}</td>
-
-<td>${esc(cname(b.customerId))}</td>
-
-<td>${esc(b.billNo||"-")}</td>
-
-<td>${money(b.total)}</td>
-
-<td>${money(b.paymentAmount)}</td>
-
-<td>${gradeText(b.grades,b.gradeReceived)}</td>
-
-<td>
-
-<button type="button"
-class="btn small"
-onclick="viewBill('${b.id}')">
-View
-</button>
-
-<button type="button"
-class="btn small gray"
-onclick="editBill('${b.id}')">
-Edit
-</button>
-
-<button type="button"
-class="btn small red"
-onclick="deleteBill('${b.id}')">
-Delete
-</button>
-
-</td>
-
-</tr>
-
-`).join("")}
-
-</tbody>
-
-</table>
-
-</div>
-
-`;
-
-}
-
-
-/* ================================
-   BILL VIEW
-================================ */
-
-let currentBillId="";
-
-
-function viewBill(id){
-
-const b=db.bills.find(
-x=>x.id===id
-);
-
-if(!b)return;
-
-currentBillId=id;
-
-const c=customer(b.customerId);
-
-$("billPreview").innerHTML=`
-
-<div style="text-align:center">
-
-<h2 style="margin:0">
-${esc(db.billSettings.header)}
-</h2>
-
-<div>${esc(db.billSettings.subHeader)}</div>
-
-${db.billSettings.contact?
-`<div>${esc(db.billSettings.contact)}</div>`:""}
-
-</div>
-
-<hr>
-
-<p>
-<b>Customer:</b> ${esc(c?.name||"")}
-</p>
-
-<p>
-<b>Date:</b> ${esc(b.date)}
-&nbsp;&nbsp;
-<b>Bill No:</b> ${esc(b.billNo||"-")}
-</p>
-
-<table style="width:100%;border-collapse:collapse">
-
-<tr>
-<th style="border:1px solid #ddd;padding:7px">Vegetable</th>
-<th style="border:1px solid #ddd;padding:7px">Qty</th>
-<th style="border:1px solid #ddd;padding:7px">Rate</th>
-<th style="border:1px solid #ddd;padding:7px">Amount</th>
-</tr>
-
-${(b.vegetables||[]).map(v=>`
-
-<tr>
-
-<td style="border:1px solid #ddd;padding:7px">
-${esc(v.name)}
-</td>
-
-<td style="border:1px solid #ddd;padding:7px">
-${n(v.qty)}
-</td>
-
-<td style="border:1px solid #ddd;padding:7px">
-${money(v.rate)}
-</td>
-
-<td style="border:1px solid #ddd;padding:7px">
-${money(v.amount)}
-</td>
-
-</tr>
-
-`).join("")}
-
-</table>
-
+box.innerHTML=`
 
 <div class="summary">
 
 <div class="line">
-<span>Previous Balance</span>
-<b>${money(b.previousBalance)}</b>
+<span>Opening Balance</span>
+<b>${money(c.opening)}</b>
 </div>
 
 <div class="line">
-<span>Current Bill</span>
-<b>${money(b.total)}</b>
-</div>
-
-<div class="line total">
-<span>Total</span>
-<b>${money(
-n(b.previousBalance)+n(b.total)
-)}</b>
+<span>Total Purchases</span>
+<b>${money(total)}</b>
 </div>
 
 <div class="line">
-<span>Received</span>
-<b>${money(b.paymentAmount)}</b>
+<span>Total Received</span>
+<b>${money(received)}</b>
 </div>
 
 <div class="line total">
-<span>Balance</span>
-<b>${money(
-Math.max(
-0,
-n(b.previousBalance)+
-n(b.total)-
-n(b.paymentAmount)
-)
-)}</b>
+<span>Outstanding</span>
+<b>${money(customerBalance(id))}</b>
 </div>
 
 </div>
 
-
-<h3>Grade / Crate</h3>
-
-<div class="table">
-
-<table>
-
-<tr>
-<th>Grade</th>
-<th>Issued</th>
-<th>Received</th>
-<th>Balance</th>
-</tr>
-
-${["SMS","MIX","SMALL","E1","E2"].map(k=>{
-
-const issued=n((b.grades||{})[k]);
-const received=n((b.gradeReceived||{})[k]);
-
-return`
-
-<tr>
-<td>${k}</td>
-<td>${issued}</td>
-<td>${received}</td>
-<td>${issued-received}</td>
-</tr>
-
-`;
-
-}).join("")}
-
-</table>
-
-</div>
-
-<p style="text-align:center;margin-top:25px">
-${esc(db.billSettings.footer)}
-</p>
-
-`;
-
-$("billModal").classList.add("show");
-
-}
-
-
-function closeModal(){
-
-$("billModal").classList.remove("show");
-
-}
-
-
-function printCurrentBill(){
-
-const content=$("billPreview").innerHTML;
-
-const win=window.open("","_blank");
-
-if(!win){
-
-toast("Popup blocked. Allow popup.");
-return;
-
-}
-
-win.document.write(`
-<html>
-<head>
-<title>SMS Bill</title>
-<style>
-body{
-font-family:Arial;
-padding:20px
-}
-table{
-width:100%;
-border-collapse:collapse
-}
-th,td{
-border:1px solid #ddd;
-padding:7px
-}
-</style>
-</head>
-<body>
-${content}
-<script>
-window.onload=function(){
-window.print();
-}
-<\/script>
-</body>
-</html>
-`);
-
-win.document.close();
-
-}
-
-
-function downloadBillText(){
-
-const b=db.bills.find(
-x=>x.id===currentBillId
-);
-
-if(!b)return;
-
-const c=customer(b.customerId);
-
-let text=
-db.billSettings.header+"\n"+
-db.billSettings.subHeader+"\n\n"+
-"Customer: "+(c?.name||"")+"\n"+
-"Date: "+b.date+"\n"+
-"Bill No: "+(b.billNo||"-")+"\n\n";
-
-(b.vegetables||[]).forEach(v=>{
-
-text+=
-v.name+" | "+
-v.qty+" x "+
-v.rate+" = "+
-v.amount+"\n";
-
-});
-
-text+=
-"\nPrevious: "+b.previousBalance+
-"\nCurrent Bill: "+b.total+
-"\nReceived: "+b.paymentAmount+
-"\nBalance: "+
-(
-n(b.previousBalance)+
-n(b.total)-
-n(b.paymentAmount)
-);
-
-const blob=new Blob(
-[text],
-{type:"text/plain"}
-);
-
-const a=document.createElement("a");
-
-a.href=URL.createObjectURL(blob);
-a.download="SMS_Bill_"+(b.billNo||b.id)+".txt";
-a.click();
-
-setTimeout(()=>{
-URL.revokeObjectURL(a.href);
-},500);
-
-toast("Bill downloaded");
-
-}
-
-
-/* ================================
-   VEHICLE RENT
-================================ */
-
-function calcRent(){
-
-const rent=n($("vrRent").value);
-const paid=n($("vrPaid").value);
-
-$("vrRentShow").textContent=money(rent);
-$("vrPaidShow").textContent=money(paid);
-$("vrBalanceShow").textContent=
-money(Math.max(0,rent-paid));
-
-}
-
-
-function saveVehicleRent(){
-
-const vehicle=$("vrVehicleNo").value.trim();
-const driver=$("vrDriverName").value.trim();
-const rent=n($("vrRent").value);
-const paid=n($("vrPaid").value);
-const edit=$("vrEdit").value;
-
-if(!vehicle&&!driver){
-
-toast("Vehicle Number or Driver Name enter pannunga");
-return;
-
-}
-
-if(rent<=0){
-
-toast("Rent amount enter pannunga");
-return;
-
-}
-
-if(paid>rent){
-
-toast("Paid amount cannot be greater than rent");
-return;
-
-}
-
-const data={
-
-date:$("vrDate").value||today(),
-vehicleNo:vehicle,
-driverName:driver,
-driverPhone:$("vrDriverPhone").value.trim(),
-from:$("vrFrom").value.trim(),
-to:$("vrTo").value.trim(),
-purpose:$("vrPurpose").value.trim(),
-rent,
-paid,
-balance:rent-paid,
-paymentMode:$("vrPaymentMode").value,
-note:$("vrNote").value.trim(),
-updatedAt:Date.now()
-
-};
-
-if(edit){
-
-const r=db.vehicleRents.find(
-x=>x.id===edit
-);
-
-if(r)Object.assign(r,data);
-
-toast("Vehicle Rent updated");
-
-}else{
-
-db.vehicleRents.unshift({
-id:uid(),
-...data,
-createdAt:Date.now()
-});
-
-toast("Vehicle Rent saved");
-
-}
-
-save();
-
-clearVehicleRent();
-refresh();
-
-}
-
-
-function clearVehicleRent(){
-
-$("vrDate").value=today();
-$("vrVehicleNo").value="";
-$("vrDriverName").value="";
-$("vrDriverPhone").value="";
-$("vrFrom").value="";
-$("vrTo").value="";
-$("vrPurpose").value="";
-$("vrRent").value="";
-$("vrPaid").value="";
-$("vrPaymentMode").value="Cash";
-$("vrNote").value="";
-$("vrEdit").value="";
-
-$("vrSaveBtn").textContent=
-"Save Vehicle Rent";
-
-calcRent();
-
-}
-
-
-function editVehicleRent(id){
-
-const r=db.vehicleRents.find(
-x=>x.id===id
-);
-
-if(!r)return;
-
-goPage("vehicleRent");
-
-$("vrDate").value=r.date||today();
-$("vrVehicleNo").value=r.vehicleNo||"";
-$("vrDriverName").value=r.driverName||"";
-$("vrDriverPhone").value=r.driverPhone||"";
-$("vrFrom").value=r.from||"";
-$("vrTo").value=r.to||"";
-$("vrPurpose").value=r.purpose||"";
-$("vrRent").value=n(r.rent);
-$("vrPaid").value=n(r.paid);
-$("vrPaymentMode").value=r.paymentMode||"Cash";
-$("vrNote").value=r.note||"";
-$("vrEdit").value=id;
-
-$("vrSaveBtn").textContent=
-"Update Vehicle Rent";
-
-calcRent();
-
-}
-
-
-function deleteVehicleRent(id){
-
-if(!confirm("Delete this vehicle rent?"))
-return;
-
-db.vehicleRents=
-db.vehicleRents.filter(
-x=>x.id!==id
-);
-
-save();
-refresh();
-
-toast("Vehicle rent deleted");
-
-}
-
-
-function renderVehicleRent(){
-
-const search=(
-$("vrSearch").value||""
-).toLowerCase();
-
-const filterDate=
-$("vrFilterDate").value;
-
-const arr=db.vehicleRents.filter(r=>{
-
-const dateOK=
-!filterDate||
-r.date===filterDate;
-
-const text=[
-r.vehicleNo,
-r.driverName,
-r.driverPhone,
-r.from,
-r.to,
-r.purpose,
-r.note
-]
-.join(" ")
-.toLowerCase();
-
-const searchOK=
-!search||
-text.includes(search);
-
-return dateOK&&searchOK;
-
-});
-
-const totalRent=arr.reduce(
-(a,r)=>a+n(r.rent),0
-);
-
-const totalPaid=arr.reduce(
-(a,r)=>a+n(r.paid),0
-);
-
-const totalBalance=arr.reduce(
-(a,r)=>a+n(r.balance),0
-);
-
-$("vehicleRentSummary").innerHTML=`
-
-<div class="rent-summary">
-
-<div class="rent-stat">
-<small>Total Trips</small>
-<b>${arr.length}</b>
-</div>
-
-<div class="rent-stat">
-<small>Total Rent</small>
-<b>${money(totalRent)}</b>
-</div>
-
-<div class="rent-stat">
-<small>Total Paid</small>
-<b>${money(totalPaid)}</b>
-</div>
-
-<div class="rent-stat">
-<small>Total Balance</small>
-<b>${money(totalBalance)}</b>
-</div>
-
-</div>
-
-`;
-
-if(!arr.length){
-
-$("vehicleRentList").innerHTML=`
-
-<tr>
-<td colspan="9" class="empty">
-No Vehicle Rent Records
-</td>
-</tr>
-
-`;
-
-return;
-
-}
-
-$("vehicleRentList").innerHTML=
-arr.map(r=>{
-
-let status="Pending";
-let cls="status-pending";
-
-if(n(r.balance)<=0){
-status="Paid";
-cls="status-paid";
-}else if(n(r.paid)>0){
-status="Part Paid";
-cls="status-part";
-}
-
-return`
-
-<tr>
-
-<td>${esc(r.date)}</td>
-
-<td>
-<b>${esc(r.vehicleNo||"-")}</b>
-<br>
-<small>${esc(r.purpose||"")}</small>
-</td>
-
-<td>
-<b>${esc(r.driverName||"-")}</b>
-<br>
-<small>${esc(r.driverPhone||"")}</small>
-</td>
-
-<td>${esc(r.from||"-")}</td>
-
-<td>${esc(r.to||"-")}</td>
-
-<td>${money(r.rent)}</td>
-
-<td>
-${money(r.paid)}
-<br>
-<small>${esc(r.paymentMode||"")}</small>
-</td>
-
-<td>
-
-<b>${money(r.balance)}</b>
-
-<br>
-
-<span class="${cls}">
-${status}
-</span>
-
-</td>
-
-<td>
-
-<button type="button"
-class="btn small gray"
-onclick="editVehicleRent('${r.id}')">
-Edit
-</button>
-
-<button type="button"
-class="btn small red"
-onclick="deleteVehicleRent('${r.id}')">
-Delete
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-}).join("");
-
-}
-
-
-/* ================================
-   DASHBOARD
-================================ */
-
-function dashboard(){
-
-const sc=salesCustomers();
-
-const sales=db.bills.reduce(
-(a,b)=>a+n(b.total),0
-);
-
-const purchase=db.purchases.reduce(
-(a,b)=>a+n(b.amount),0
-);
-
-const outstanding=sc.reduce(
-(a,c)=>a+account(c.id).outstanding,
-0
-);
-
-const payable=parties().reduce(
-(a,c)=>a+partyAccount(c.id).balance,
-0
-);
-
-const rents=db.vehicleRents;
-
-const rentTotal=rents.reduce(
-(a,r)=>a+n(r.rent),0
-);
-
-const rentPaid=rents.reduce(
-(a,r)=>a+n(r.paid),0
-);
-
-const rentBalance=rents.reduce(
-(a,r)=>a+n(r.balance),0
-);
-
-$("dCustomers").textContent=sc.length;
-
-$("dWeekly").textContent=
-sc.filter(x=>x.type==="Weekly").length;
-
-$("dParties").textContent=
-parties().length;
-
-$("dSales").textContent=money(sales);
-
-$("dPurchase").textContent=money(purchase);
-
-$("dOut").textContent=money(outstanding);
-
-$("dPayable").textContent=money(payable);
-
-$("dBills").textContent=db.bills.length;
-
-
-$("dashboardRent").innerHTML=`
-
-<div class="rent-summary">
-
-<div class="rent-stat">
-<small>Trips</small>
-<b>${rents.length}</b>
-</div>
-
-<div class="rent-stat">
-<small>Total Rent</small>
-<b>${money(rentTotal)}</b>
-</div>
-
-<div class="rent-stat">
-<small>Paid</small>
-<b>${money(rentPaid)}</b>
-</div>
-
-<div class="rent-stat">
-<small>Balance</small>
-<b>${money(rentBalance)}</b>
-</div>
-
-</div>
-
-`;
-
-
-const weekly=sc.filter(
-x=>x.type==="Weekly"
-);
-
-$("weeklyBox").innerHTML=
-weekly.length?
-weekly.map(c=>`
+${bills.reverse().map(b=>`
 
 <div class="customer">
 
-<b>${esc(c.name)}</b>
+<b>${esc(b.billNo)}</b>
 
 <div class="muted">
-Phone: ${esc(c.phone||"-")}
+${esc(b.date)}
 </div>
 
-<div style="margin-top:7px">
-Balance:
-<b>${money(account(c.id).outstanding)}</b>
+<div>
+Bill ${money(b.current)}
+•
+Received ${money(b.received)}
+•
+Balance ${money(b.outstanding)}
 </div>
 
-</div>
-
-`).join("")
-:
-'<div class="empty">No weekly customers</div>';
-
-
-const ps=parties();
-
-$("partyBalanceBox").innerHTML=
-ps.length?
-ps.map(c=>`
-
-<div class="customer">
-
-<b>${esc(c.name)}</b>
-
-<div style="margin-top:7px">
-Payable:
-<b>${money(partyAccount(c.id).balance)}</b>
-</div>
+<button class="btn small blue"
+onclick="viewBill('${b.id}')">
+View Bill
+</button>
 
 </div>
 
-`).join("")
-:
-'<div class="empty">No purchase parties</div>';
+`).join("")}
+
+`;
 
 }
 
 
-/* ================================
+/* =========================
+   SETTINGS
+========================= */
+
+function saveSettings(){
+
+db.settings.header=
+document.getElementById("setHeader").value.trim() ||
+"SMS COMMISSION MANDI";
+
+db.settings.sub=
+document.getElementById("setSub").value.trim();
+
+db.settings.contact=
+document.getElementById("setContact").value.trim();
+
+db.settings.footer=
+document.getElementById("setFooter").value.trim();
+
+saveDB();
+
+applyLogo();
+
+toast("Settings saved");
+
+}
+
+function loadSettings(){
+
+document.getElementById("setHeader").value=db.settings.header||"SMS COMMISSION MANDI";
+
+document.getElementById("setSub").value=db.settings.sub||"";
+
+document.getElementById("setContact").value=db.settings.contact||"";
+
+document.getElementById("setFooter").value=db.settings.footer||"";
+
+}
+
+
+/* =========================
    BACKUP
-================================ */
+========================= */
 
 function backup(){
-
-try{
 
 const data=JSON.stringify(db,null,2);
 
@@ -4190,32 +2220,21 @@ const url=URL.createObjectURL(blob);
 const a=document.createElement("a");
 
 a.href=url;
+
 a.download=
-"SMS_Mandi_Backup_"+today()+".json";
+"SMS-Commission-Mandi-Backup-"+today()+".json";
 
-document.body.appendChild(a);
 a.click();
-a.remove();
 
-setTimeout(()=>{
 URL.revokeObjectURL(url);
-},1000);
 
 toast("Backup downloaded");
 
-}catch(e){
-
-toast("Backup failed");
-
 }
 
-}
+function restore(e){
 
-
-function restore(event){
-
-const file=
-event.target.files&&event.target.files[0];
+const file=e.target.files[0];
 
 if(!file)return;
 
@@ -4225,41 +2244,31 @@ reader.onload=function(){
 
 try{
 
-const x=JSON.parse(reader.result);
+const data=JSON.parse(reader.result);
 
-if(!x||typeof x!=="object"){
+if(!data.customers ||
+!data.bills ||
+!data.settings){
 
 throw new Error("Invalid backup");
 
 }
 
-db={
-customers:Array.isArray(x.customers)?x.customers:[],
-bills:Array.isArray(x.bills)?x.bills:[],
-receipts:Array.isArray(x.receipts)?x.receipts:[],
-purchases:Array.isArray(x.purchases)?x.purchases:[],
-partyPayments:Array.isArray(x.partyPayments)?x.partyPayments:[],
-vehicleRents:Array.isArray(x.vehicleRents)?x.vehicleRents:[],
-billSettings:{
-header:"SMS COMMISSION MANDI",
-subHeader:"Customer Accounts & Billing",
-contact:"",
-footer:"Thank You",
-...(x.billSettings||{})
-}
-};
+if(!confirm("Restore this backup? Existing data will be replaced."))return;
 
-save();
-refresh();
+db=data;
 
-toast("Backup restored successfully");
+saveDB();
 
-event.target.value="";
+loadSettings();
+applyLogo();
+refreshAll();
 
-}catch(e){
+toast("Backup restored");
 
-console.error(e);
-toast("Invalid backup file");
+}catch(err){
+
+alert("Invalid backup file");
 
 }
 
@@ -4269,51 +2278,11 @@ reader.readAsText(file);
 
 }
 
-
-/* ================================
-   SETTINGS
-================================ */
-
-function saveSettings(){
-
-db.billSettings={
-header:$("setHeader").value.trim()||
-"SMS COMMISSION MANDI",
-
-subHeader:$("setSub").value.trim()||
-"Customer Accounts & Billing",
-
-contact:$("setContact").value.trim(),
-
-footer:$("setFooter").value.trim()||
-"Thank You"
-};
-
-save();
-refresh();
-
-toast("Settings saved");
-
-}
-
-
-/* ================================
-   DELETE ALL
-================================ */
-
 function deleteAll(){
 
-if(!confirm(
-"ALL SMS MANDI DATA DELETE ஆகும். Continue?"
-)){
-return;
-}
+if(!confirm("DELETE ALL DATA?"))return;
 
-if(!confirm(
-"Final confirmation. Delete everything?"
-)){
-return;
-}
+if(!confirm("This cannot be undone. Continue?"))return;
 
 localStorage.removeItem(KEY);
 
@@ -4322,376 +2291,103 @@ location.reload();
 }
 
 
-/* ================================
-   CLOUD
-================================ */
+/* =========================
+   DASHBOARD
+========================= */
 
-function saveApi(){
+function renderDashboard(){
 
-const url=$("apiUrl").value.trim();
+document.getElementById("dCustomers").textContent=
+db.customers.length;
 
-localStorage.setItem(
-"SMS_API_URL",
-url
-);
+let sales=0;
+let out=0;
 
-toast(
-url?
-"Cloud URL saved":
-"Cloud URL cleared"
-);
-
-}
-
-
-async function cloudPush(){
-
-const url=$("apiUrl").value.trim();
-
-if(!url){
-
-toast("Enter Google Apps Script URL");
-return;
-
-}
-
-try{
-
-const response=await fetch(url,{
-method:"POST",
-headers:{
-"Content-Type":"text/plain;charset=utf-8"
-},
-body:JSON.stringify(db)
+db.bills.forEach(b=>{
+sales+=Number(b.current)||0;
 });
 
-if(!response.ok){
-
-throw new Error("HTTP "+response.status);
-
-}
-
-toast("Cloud sync completed");
-
-}catch(e){
-
-console.error(e);
-
-toast(
-"Cloud upload failed. Check Apps Script URL."
-);
-
-}
-
-}
-
-
-async function cloudPull(){
-
-const url=$("apiUrl").value.trim();
-
-if(!url){
-
-toast("Enter Google Apps Script URL");
-return;
-
-}
-
-try{
-
-const response=await fetch(url);
-
-if(!response.ok){
-
-throw new Error("HTTP "+response.status);
-
-}
-
-const data=await response.json();
-
-if(!data||typeof data!=="object"){
-
-throw new Error("Invalid cloud data");
-
-}
-
-db={
-customers:Array.isArray(data.customers)?data.customers:[],
-bills:Array.isArray(data.bills)?data.bills:[],
-receipts:Array.isArray(data.receipts)?data.receipts:[],
-purchases:Array.isArray(data.purchases)?data.purchases:[],
-partyPayments:Array.isArray(data.partyPayments)?data.partyPayments:[],
-vehicleRents:Array.isArray(data.vehicleRents)?data.vehicleRents:[],
-billSettings:{
-...db.billSettings,
-...(data.billSettings||{})
-}
-};
-
-save();
-refresh();
-
-toast("Cloud data loaded");
-
-}catch(e){
-
-console.error(e);
-
-toast(
-"Cloud download failed. Check URL."
-);
-
-}
-
-}
-
-
-/* ================================
-   PDF - WITHOUT EXTRA LIBRARY
-================================ */
-
-function downloadHistoryPDF(cid){
-
-const c=customer(cid);
-
-if(!c)return;
-
-const a=account(cid);
-const g=gradeTotals(cid);
-
-let text=
-db.billSettings.header+"\n"+
-db.billSettings.subHeader+"\n\n"+
-"Customer: "+c.name+"\n"+
-"Phone: "+(c.phone||"-")+"\n"+
-"Address: "+(c.address||"-")+"\n\n"+
-"Total Sales: "+money(a.sales)+"\n"+
-"Total Received: "+money(a.received)+"\n"+
-"Current Balance: "+money(a.outstanding)+"\n\n"+
-"GRADE / CRATE\n";
-
-["SMS","MIX","SMALL","E1","E2"].forEach(k=>{
-
-text+=
-k+
-" Issued: "+g.issued[k]+
-" Received: "+g.received[k]+
-" Balance: "+(g.issued[k]-g.received[k])+
-"\n";
-
+db.customers.forEach(c=>{
+out+=customerBalance(c.id);
 });
 
-text+="\nSALES HISTORY\n";
+document.getElementById("dSales").textContent=money(sales);
 
-a.bills.forEach(b=>{
+document.getElementById("dOut").textContent=money(out);
 
-text+=
-"\nDate: "+b.date+
-"\nBill: "+(b.billNo||"-")+
-"\nAmount: "+money(b.total)+
-"\nReceived: "+money(b.paymentAmount)+
-"\nBalance: "+
-money(
-n(b.previousBalance)+
-n(b.total)-
-n(b.paymentAmount)
-)+
-"\n";
+document.getElementById("dBills").textContent=
+db.bills.length;
 
-(b.vegetables||[]).forEach(v=>{
+}
 
-text+=
-v.name+
-" | Qty "+v.qty+
-" | Rate "+money(v.rate)+
-" | Amount "+money(v.amount)+
-"\n";
 
-});
+/* =========================
+   REFRESH
+========================= */
 
-text+=
-"Grades: "+
-gradeText(b.grades,b.gradeReceived)+
-"\n";
+function refreshAll(){
 
-});
+renderDashboard();
+renderCustomers();
+populateCustomers();
+renderBills();
+renderCustomerHistory();
+loadSettings();
 
-text+="\nRECEIPTS\n";
+}
 
-a.receipts.forEach(r=>{
 
-text+=
-r.date+
-" | "+
-money(r.amount)+
-" | "+
-(r.mode||"")+
-" | "+
-(r.note||"")+
-"\n";
+/* =========================
+   ESCAPE
+========================= */
 
-});
+function esc(v){
 
-const blob=new Blob(
-[text],
-{type:"text/plain;charset=utf-8"}
-);
+return String(v??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
-const url=URL.createObjectURL(blob);
+}
 
-const link=document.createElement("a");
 
-link.href=url;
+/* =========================
+   MODAL
+========================= */
 
-link.download=
-(c.name||"Customer")
-.replace(/[^a-z0-9]/gi,"_")+
-"_Full_History.txt";
+function closeModal(){
 
-document.body.appendChild(link);
-link.click();
-link.remove();
+document.getElementById("billModal").classList.remove("show");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadDB();
+
+applyLogo();
+
+loadSettings();
+
+document.getElementById("billDate").value=today();
+
+document.getElementById("billNo").value=
+"SMS-"+String(Date.now()).slice(-6);
 
 setTimeout(()=>{
-URL.revokeObjectURL(url);
-},1000);
 
-toast("Customer history downloaded");
+document.getElementById("loadingScreen").style.display="none";
 
-}
+setupBill();
 
+refreshAll();
 
-/* ================================
-   REFRESH
-================================ */
-
-function refresh(){
-
-try{
-
-fillSelect(
-"billCustomer",
-salesCustomers(),
-"Select Customer"
-);
-
-fillSelect(
-"rCustomer",
-salesCustomers(),
-"Select Customer"
-);
-
-fillSelect(
-"historyCustomer",
-salesCustomers(),
-"Select Customer"
-);
-
-fillSelect(
-"pParty",
-parties(),
-"Select Party"
-);
-
-fillSelect(
-"payParty",
-parties(),
-"Select Party"
-);
-
-renderCustomers();
-renderReceipts();
-renderBills();
-renderPurchaseHistory();
-renderCustomerHistory();
-renderVehicleRent();
-dashboard();
-
-if($("setHeader"))
-$("setHeader").value=
-db.billSettings.header||"";
-
-if($("setSub"))
-$("setSub").value=
-db.billSettings.subHeader||"";
-
-if($("setContact"))
-$("setContact").value=
-db.billSettings.contact||"";
-
-if($("setFooter"))
-$("setFooter").value=
-db.billSettings.footer||"";
-
-}catch(e){
-
-console.error("Refresh error:",e);
-
-toast(
-"App error: "+e.message
-);
-
-}
-
-}
-
-
-/* ================================
-   START
-================================ */
-
-function init(){
-
-try{
-
-load();
-
-$("billDate").value=today();
-$("pDate").value=today();
-$("payDate").value=today();
-$("rDate").value=today();
-$("vrDate").value=today();
-
-newBill();
-newPurchase();
-clearReceipt();
-clearVehicleRent();
-
-refresh();
-
-}catch(e){
-
-console.error("INIT ERROR:",e);
-
-alert(
-"SMS Mandi App Error:\n\n"+
-e.message
-);
-
-}
-
-}
-
-
-/* ================================
-   GLOBAL ERROR DISPLAY
-================================ */
-
-window.addEventListener("error",function(e){
-
-console.error(e.error||e.message);
-
-});
-
-
-document.addEventListener(
-"DOMContentLoaded",
-function(){
-
-init();
-
-}
-);
+},1200);
 
 </script>
 
