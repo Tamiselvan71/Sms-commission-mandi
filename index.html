@@ -434,8 +434,8 @@ th{
             </div>
 
             <div>
-                <label>Previous Balance</label>
-                <input id="previousBalance" type="number" step="0.01" value="0" readonly>
+                <label>Previous Balance <span style="font-weight:normal;color:#98a2b3">(Editable)</span></label>
+                <input id="previousBalance" type="number" step="0.01" value="0" oninput="calculateBill()">
             </div>
         </div>
     </div>
@@ -630,6 +630,35 @@ th{
     </div>
 
     <div class="card">
+        <h2>Bill Customize</h2>
+        <div class="grid">
+            <div>
+                <label>Bill Header</label>
+                <input id="billSettingHeader" placeholder="SMS COMMISSION MANDI">
+            </div>
+            <div>
+                <label>Bill Sub Header</label>
+                <input id="billSettingSubHeader" placeholder="VEGETABLE WHOLESALE">
+            </div>
+            <div>
+                <label>Address / Contact</label>
+                <input id="billSettingContact" placeholder="Address / Phone">
+            </div>
+            <div>
+                <label>Footer Note</label>
+                <input id="billSettingFooter" placeholder="Thank you for your business.">
+            </div>
+        </div>
+        <div class="btnrow">
+            <button class="btn success" onclick="saveBillSettings()">Save Bill Design</button>
+            <button class="btn secondary" onclick="resetBillSettings()">Reset Design</button>
+        </div>
+        <div class="note" style="margin-top:12px">
+            Bill design change pannina customer details, bills, receipts, previous balance data delete aagathu.
+        </div>
+    </div>
+
+    <div class="card">
         <h2>Danger Zone</h2>
         <button class="btn danger" onclick="resetAllData()">Delete All Data</button>
     </div>
@@ -667,7 +696,13 @@ const STORAGE_KEY = "SMS_COMMISSION_MANDI_V5";
 let db = {
     customers: [],
     bills: [],
-    receipts: []
+    receipts: [],
+    billSettings: {
+        header: "SMS COMMISSION MANDI",
+        subHeader: "VEGETABLE WHOLESALE",
+        contact: "",
+        footer: "Thank you for your business."
+    }
 };
 
 let editingBillId = null;
@@ -682,6 +717,12 @@ function loadDB(){
                 db.customers = Array.isArray(parsed.customers) ? parsed.customers : [];
                 db.bills = Array.isArray(parsed.bills) ? parsed.bills : [];
                 db.receipts = Array.isArray(parsed.receipts) ? parsed.receipts : [];
+                db.billSettings = {
+                    header: parsed.billSettings?.header || "SMS COMMISSION MANDI",
+                    subHeader: parsed.billSettings?.subHeader || "VEGETABLE WHOLESALE",
+                    contact: parsed.billSettings?.contact || "",
+                    footer: parsed.billSettings?.footer || "Thank you for your business."
+                };
             }
         }
     }catch(e){
@@ -735,6 +776,57 @@ function toast(msg){
     el.textContent = msg;
     el.classList.add("show");
     setTimeout(()=>el.classList.remove("show"),1800);
+}
+
+function getBillSettings(){
+    if(!db.billSettings) db.billSettings = {};
+    return {
+        header: db.billSettings.header || "SMS COMMISSION MANDI",
+        subHeader: db.billSettings.subHeader || "VEGETABLE WHOLESALE",
+        contact: db.billSettings.contact || "",
+        footer: db.billSettings.footer || "Thank you for your business."
+    };
+}
+
+function loadBillSettings(){
+    const s = getBillSettings();
+    const map = {
+        billSettingHeader: s.header,
+        billSettingSubHeader: s.subHeader,
+        billSettingContact: s.contact,
+        billSettingFooter: s.footer
+    };
+    Object.keys(map).forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.value=map[id];
+    });
+}
+
+function saveBillSettings(){
+    db.billSettings = {
+        header: document.getElementById("billSettingHeader").value.trim() || "SMS COMMISSION MANDI",
+        subHeader: document.getElementById("billSettingSubHeader").value.trim() || "VEGETABLE WHOLESALE",
+        contact: document.getElementById("billSettingContact").value.trim(),
+        footer: document.getElementById("billSettingFooter").value.trim() || "Thank you for your business."
+    };
+    saveDB();
+    loadBillSettings();
+    toast("Bill design saved");
+    if(currentPreviewBill) showBillPreview(currentPreviewBill);
+}
+
+function resetBillSettings(){
+    if(!confirm("Bill design default-ku reset pannava? Existing customer/bill data change aagathu.")) return;
+    db.billSettings = {
+        header: "SMS COMMISSION MANDI",
+        subHeader: "VEGETABLE WHOLESALE",
+        contact: "",
+        footer: "Thank you for your business."
+    };
+    saveDB();
+    loadBillSettings();
+    toast("Bill design reset");
+    if(currentPreviewBill) showBillPreview(currentPreviewBill);
 }
 
 /* =========================
@@ -1310,7 +1402,6 @@ function editBill(id){
     }
 
     calculateBill();
-    loadCustomerBalance();
 
     window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -1713,6 +1804,7 @@ function showBillPreview(bill){
     currentPreviewBill=bill;
 
     const c=getCustomer(bill.customerId);
+    const settings=getBillSettings();
 
     const gradeRows=Object.entries(bill.grades || {})
         .filter(([name,qty])=>num(qty)>0)
@@ -1744,8 +1836,9 @@ function showBillPreview(bill){
         <div id="billCapture" class="billpaper">
 
             <div class="billhead">
-                <h1>SMS COMMISSION MANDI</h1>
-                <div>VEGETABLE WHOLESALE</div>
+                <h1>${esc(settings.header)}</h1>
+                <div>${esc(settings.subHeader)}</div>
+                ${settings.contact ? `<div style="margin-top:5px;font-size:12px">${esc(settings.contact)}</div>` : ""}
             </div>
 
             <div class="billmeta">
@@ -1831,7 +1924,7 @@ function showBillPreview(bill){
                     <strong>Payment</strong>
                     <p>Mode: ${esc(bill.paymentMode || "-")}</p>
                     <p style="margin-top:35px">
-                        Thank you for your business.
+                        ${esc(settings.footer)}
                     </p>
                 </div>
 
@@ -2042,7 +2135,13 @@ function restoreBackup(event){
             db={
                 customers:restored.customers,
                 bills:restored.bills,
-                receipts:restored.receipts
+                receipts:restored.receipts,
+                billSettings: restored.billSettings || {
+                    header: "SMS COMMISSION MANDI",
+                    subHeader: "VEGETABLE WHOLESALE",
+                    contact: "",
+                    footer: "Thank you for your business."
+                }
             };
 
             saveDB();
@@ -2075,7 +2174,13 @@ function resetAllData(){
     db={
         customers:[],
         bills:[],
-        receipts:[]
+        receipts:[],
+        billSettings:{
+            header:"SMS COMMISSION MANDI",
+            subHeader:"VEGETABLE WHOLESALE",
+            contact:"",
+            footer:"Thank you for your business."
+        }
     };
 
     refreshAll();
@@ -2113,6 +2218,7 @@ document.getElementById("billDate").value=today();
 document.getElementById("receiptDate").value=today();
 
 fillCustomerSelects();
+loadBillSettings();
 startNewBill();
 refreshAll();
 
