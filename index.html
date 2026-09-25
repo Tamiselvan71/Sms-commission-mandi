@@ -4,65 +4,383 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>SMS Commission Mandi</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f3f5f8;color:#172033}
-button,input,select,textarea{font:inherit}button{cursor:pointer}
-.header{background:#111827;color:#fff;text-align:center;padding:17px;position:sticky;top:0;z-index:20}
-.header h1{margin:0;font-size:23px}.header p{margin:5px 0 0;color:#cbd5e1;font-size:12px}
-.nav{display:flex;overflow:auto;background:#fff;position:sticky;top:72px;z-index:19;border-bottom:1px solid #ddd}
-.nav button{min-width:105px;padding:13px 8px;border:0;background:#fff;color:#64748b;font-weight:bold}
-.nav button.active{color:#111827;border-bottom:3px solid #111827}
-.page{display:none;max-width:1200px;margin:auto;padding:15px}.page.active{display:block}
-.card{background:#fff;border-radius:14px;padding:15px;margin-bottom:15px;box-shadow:0 3px 15px #0000000d}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-label{display:block;font-size:12px;font-weight:bold;color:#475569;margin-bottom:5px}
-input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:9px;background:#fff}
-.btn{border:0;border-radius:9px;padding:10px 14px;background:#111827;color:#fff;font-weight:bold}
-.btn.green{background:#15803d}.btn.red{background:#dc2626}.btn.gray{background:#64748b}
-.btn.orange{background:#d97706}.btn.wa{background:#16a34a}.btn.small{padding:7px 9px;font-size:12px}
-.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-.stat{background:#fff;padding:14px;border-radius:13px;box-shadow:0 3px 12px #0000000d}
-.stat small{display:block;color:#64748b}.stat strong{display:block;font-size:21px;margin-top:5px}
-.section-title{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:10px;font-weight:bold}
-.reg{background:#e2e8f0;color:#334155}.weekly{background:#dcfce7;color:#166534}.party{background:#fef3c7;color:#92400e}
-.customer{border:1px solid #e2e8f0;border-radius:12px;padding:13px;margin-top:9px}
-.muted{font-size:12px;color:#64748b}.empty{text-align:center;padding:25px;color:#64748b}
-.tabs{display:flex;gap:7px;overflow:auto;margin:10px 0}
-.tabs button{white-space:nowrap;padding:8px 12px;border:1px solid #cbd5e1;background:#fff;border-radius:20px}
-.tabs button.active{background:#111827;color:#fff}
-.table{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:750px}
-th,td{padding:9px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:12px}
-th{background:#f8fafc}
-.billrow{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:7px;margin-bottom:8px}
-.summary{background:#f8fafc;border-radius:10px;padding:12px;margin-top:10px}
-.line{display:flex;justify-content:space-between;padding:5px 0}
-.total{border-top:2px solid #cbd5e1;margin-top:5px;padding-top:9px;font-size:17px;font-weight:bold}
-.toast{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:8px;z-index:200}
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#f3f5f8;
+color:#172033
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+
+.header{
+background:#111827;
+color:#fff;
+text-align:center;
+padding:17px;
+position:sticky;
+top:0;
+z-index:20
+}
+.header h1{margin:0;font-size:23px}
+.header p{margin:5px 0 0;color:#cbd5e1;font-size:12px}
+
+.nav{
+display:flex;
+overflow:auto;
+background:#fff;
+position:sticky;
+top:72px;
+z-index:19;
+border-bottom:1px solid #ddd
+}
+.nav button{
+min-width:105px;
+padding:13px 8px;
+border:0;
+background:#fff;
+color:#64748b;
+font-weight:bold
+}
+.nav button.active{
+color:#111827;
+border-bottom:3px solid #111827
+}
+
+.page{
+display:none;
+max-width:1200px;
+margin:auto;
+padding:15px
+}
+.page.active{display:block}
+
+.card{
+background:#fff;
+border-radius:14px;
+padding:15px;
+margin-bottom:15px;
+box-shadow:0 3px 15px #0000000d
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px
+}
+.grid3{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px
+}
+.grid4{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px
+}
+
+label{
+display:block;
+font-size:12px;
+font-weight:bold;
+color:#475569;
+margin-bottom:5px
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+border:1px solid #cbd5e1;
+border-radius:9px;
+background:#fff;
+outline:none
+}
+input:focus,select:focus,textarea:focus{
+border-color:#111827
+}
+
+.btn{
+border:0;
+border-radius:9px;
+padding:10px 14px;
+background:#111827;
+color:#fff;
+font-weight:bold
+}
+.btn.green{background:#15803d}
+.btn.red{background:#dc2626}
+.btn.gray{background:#64748b}
+.btn.orange{background:#d97706}
+.btn.wa{background:#16a34a}
+.btn.small{
+padding:7px 9px;
+font-size:12px
+}
+
+.actions{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+margin-top:12px
+}
+
+.stat{
+background:#fff;
+padding:14px;
+border-radius:13px;
+box-shadow:0 3px 12px #0000000d
+}
+.stat small{
+display:block;
+color:#64748b
+}
+.stat strong{
+display:block;
+font-size:21px;
+margin-top:5px
+}
+
+.section-title{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:8px;
+flex-wrap:wrap
+}
+
+.badge{
+display:inline-block;
+padding:4px 8px;
+border-radius:20px;
+font-size:10px;
+font-weight:bold
+}
+.reg{
+background:#e2e8f0;
+color:#334155
+}
+.weekly{
+background:#dcfce7;
+color:#166534
+}
+.party{
+background:#fef3c7;
+color:#92400e
+}
+
+.customer{
+border:1px solid #e2e8f0;
+border-radius:12px;
+padding:13px;
+margin-top:9px
+}
+
+.muted{
+font-size:12px;
+color:#64748b
+}
+
+.empty{
+text-align:center;
+padding:25px;
+color:#64748b
+}
+
+.tabs{
+display:flex;
+gap:7px;
+overflow:auto;
+margin:10px 0
+}
+.tabs button{
+white-space:nowrap;
+padding:8px 12px;
+border:1px solid #cbd5e1;
+background:#fff;
+border-radius:20px
+}
+.tabs button.active{
+background:#111827;
+color:#fff
+}
+
+.table{
+overflow-x:auto
+}
+table{
+width:100%;
+border-collapse:collapse;
+min-width:750px
+}
+th,td{
+padding:9px;
+border-bottom:1px solid #e5e7eb;
+text-align:left;
+font-size:12px;
+vertical-align:top
+}
+th{
+background:#f8fafc
+}
+
+.billrow{
+display:grid;
+grid-template-columns:2fr 1fr 1fr 1fr auto;
+gap:7px;
+margin-bottom:8px
+}
+
+.summary{
+background:#f8fafc;
+border-radius:10px;
+padding:12px;
+margin-top:10px
+}
+.line{
+display:flex;
+justify-content:space-between;
+padding:5px 0;
+gap:10px
+}
+.total{
+border-top:2px solid #cbd5e1;
+margin-top:5px;
+padding-top:9px;
+font-size:17px;
+font-weight:bold
+}
+
+.toast{
+display:none;
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+background:#111827;
+color:#fff;
+padding:12px 18px;
+border-radius:8px;
+z-index:9999;
+max-width:90%;
+text-align:center
+}
 .toast.show{display:block}
-.historyHead{background:#111827;color:#fff;padding:15px;border-radius:10px;margin-bottom:10px}
-.gradebox{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
-.grade{background:#f8fafc;padding:10px;border-radius:8px;text-align:center}
-.grade b{display:block;font-size:18px}
-.rent-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
-.rent-stat{background:#f8fafc;border-radius:10px;padding:12px}
-.rent-stat small{color:#64748b}.rent-stat b{display:block;font-size:18px;margin-top:4px}
-.receive-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
-.receive-box{background:#f8fafc;padding:10px;border-radius:8px}
-.receive-box input{margin-top:5px}
+
+.historyHead{
+background:#111827;
+color:#fff;
+padding:15px;
+border-radius:10px;
+margin-bottom:10px
+}
+
+.receive-grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:7px
+}
+
+.receive-box{
+background:#f8fafc;
+padding:10px;
+border-radius:8px
+}
+.receive-box input{
+margin-top:5px
+}
+
+.rent-summary{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin-top:12px
+}
+.rent-stat{
+background:#f8fafc;
+border-radius:10px;
+padding:12px
+}
+.rent-stat small{
+color:#64748b
+}
+.rent-stat b{
+display:block;
+font-size:18px;
+margin-top:4px
+}
+
+.status-paid{
+color:#15803d;
+font-weight:bold
+}
+.status-pending{
+color:#dc2626;
+font-weight:bold
+}
+.status-part{
+color:#d97706;
+font-weight:bold
+}
+
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:#0009;
+z-index:500;
+padding:15px;
+overflow:auto
+}
+.modal.show{display:block}
+.modal-box{
+background:#fff;
+max-width:650px;
+margin:30px auto;
+border-radius:14px;
+padding:18px
+}
+.bill-preview{
+background:#fff;
+padding:20px;
+border:1px solid #ddd
+}
+.bill-preview h2{
+margin:0;
+text-align:center
+}
+.bill-preview table{
+min-width:0;
+margin-top:15px
+}
+.bill-preview th,
+.bill-preview td{
+font-size:11px
+}
+
 @media(max-width:700px){
-.grid,.grid3,.grid4{grid-template-columns:1fr}
-.gradebox,.receive-grid{grid-template-columns:repeat(2,1fr)}
-.billrow{grid-template-columns:1fr 1fr}
-.billrow>div:first-child{grid-column:1/-1}
-.billrow button{grid-column:1/-1}
-.rent-summary{grid-template-columns:1fr 1fr}
+.grid,.grid3,.grid4{
+grid-template-columns:1fr
+}
+.receive-grid{
+grid-template-columns:repeat(2,1fr)
+}
+.billrow{
+grid-template-columns:1fr 1fr
+}
+.billrow>div:first-child{
+grid-column:1/-1
+}
+.billrow button{
+grid-column:1/-1
+}
+.rent-summary{
+grid-template-columns:1fr 1fr
+}
 }
 </style>
 </head>
@@ -75,14 +393,47 @@ th{background:#f8fafc}
 </header>
 
 <nav class="nav">
-<button class="active" onclick="page('dashboard',this)">Dashboard</button>
-<button onclick="page('customers',this)">Customers</button>
-<button onclick="page('billing',this)">Sales Bill</button>
-<button onclick="page('purchases',this)">Purchase</button>
-<button onclick="page('vehicleRent',this)">🚚 Vehicle Rent</button>
-<button onclick="page('receipts',this)">Receipts</button>
-<button onclick="page('history',this)">History</button>
-<button onclick="page('backup',this)">Backup</button>
+
+<button class="active" type="button"
+onclick="page('dashboard',this)">
+Dashboard
+</button>
+
+<button type="button"
+onclick="page('customers',this)">
+Customers
+</button>
+
+<button type="button"
+onclick="page('billing',this)">
+Sales Bill
+</button>
+
+<button type="button"
+onclick="page('purchases',this)">
+Purchase
+</button>
+
+<button type="button"
+onclick="page('vehicleRent',this)">
+🚚 Vehicle Rent
+</button>
+
+<button type="button"
+onclick="page('receipts',this)">
+Receipts
+</button>
+
+<button type="button"
+onclick="page('history',this)">
+History
+</button>
+
+<button type="button"
+onclick="page('backup',this)">
+Backup
+</button>
+
 </nav>
 
 
@@ -90,14 +441,47 @@ th{background:#f8fafc}
 <section id="dashboard" class="page active">
 
 <div class="grid4">
-<div class="stat"><small>Customers</small><strong id="dCustomers">0</strong></div>
-<div class="stat"><small>Weekly Customers</small><strong id="dWeekly">0</strong></div>
-<div class="stat"><small>Purchase Parties</small><strong id="dParties">0</strong></div>
-<div class="stat"><small>Sales</small><strong id="dSales">₹0</strong></div>
-<div class="stat"><small>Purchase</small><strong id="dPurchase">₹0</strong></div>
-<div class="stat"><small>Customer Outstanding</small><strong id="dOut">₹0</strong></div>
-<div class="stat"><small>Party Payable</small><strong id="dPayable">₹0</strong></div>
-<div class="stat"><small>Total Bills</small><strong id="dBills">0</strong></div>
+
+<div class="stat">
+<small>Customers</small>
+<strong id="dCustomers">0</strong>
+</div>
+
+<div class="stat">
+<small>Weekly Customers</small>
+<strong id="dWeekly">0</strong>
+</div>
+
+<div class="stat">
+<small>Purchase Parties</small>
+<strong id="dParties">0</strong>
+</div>
+
+<div class="stat">
+<small>Sales</small>
+<strong id="dSales">₹0.00</strong>
+</div>
+
+<div class="stat">
+<small>Purchase</small>
+<strong id="dPurchase">₹0.00</strong>
+</div>
+
+<div class="stat">
+<small>Customer Outstanding</small>
+<strong id="dOut">₹0.00</strong>
+</div>
+
+<div class="stat">
+<small>Party Payable</small>
+<strong id="dPayable">₹0.00</strong>
+</div>
+
+<div class="stat">
+<small>Total Bills</small>
+<strong id="dBills">0</strong>
+</div>
+
 </div>
 
 <div class="card">
@@ -159,8 +543,17 @@ th{background:#f8fafc}
 </div>
 
 <div class="actions">
-<button class="btn green" onclick="saveCustomer()">Save</button>
-<button class="btn gray" onclick="clearCustomer()">Clear</button>
+
+<button class="btn green" type="button"
+onclick="saveCustomer()">
+Save
+</button>
+
+<button class="btn gray" type="button"
+onclick="clearCustomer()">
+Clear
+</button>
+
 </div>
 
 <input type="hidden" id="cEdit">
@@ -173,13 +566,32 @@ th{background:#f8fafc}
 <h2>Customer / Party Master</h2>
 
 <div class="tabs">
-<button class="active" onclick="filterCustomers('All',this)">All</button>
-<button onclick="filterCustomers('Regular',this)">Regular</button>
-<button onclick="filterCustomers('Weekly',this)">Weekly</button>
-<button onclick="filterCustomers('Purchase Party',this)">Purchase Parties</button>
+
+<button class="active" type="button"
+onclick="filterCustomers('All',this)">
+All
+</button>
+
+<button type="button"
+onclick="filterCustomers('Regular',this)">
+Regular
+</button>
+
+<button type="button"
+onclick="filterCustomers('Weekly',this)">
+Weekly
+</button>
+
+<button type="button"
+onclick="filterCustomers('Purchase Party',this)">
+Purchase Parties
+</button>
+
 </div>
 
-<input id="cSearch" placeholder="Search..." oninput="renderCustomers()">
+<input id="cSearch"
+placeholder="Search..."
+oninput="renderCustomers()">
 
 <div id="customerList"></div>
 
@@ -199,7 +611,9 @@ th{background:#f8fafc}
 
 <div>
 <label>Customer</label>
-<select id="billCustomer" onchange="loadCustomerBalance()"></select>
+<select id="billCustomer"
+onchange="loadCustomerBalance()">
+</select>
 </div>
 
 <div>
@@ -214,7 +628,9 @@ th{background:#f8fafc}
 
 <div>
 <label>Previous Balance</label>
-<input id="previousBalance" type="number" oninput="calcBill()">
+<input id="previousBalance"
+type="number"
+oninput="calcBill()">
 </div>
 
 </div>
@@ -225,8 +641,15 @@ th{background:#f8fafc}
 <div class="card">
 
 <div class="section-title">
+
 <h2>Vegetables</h2>
-<button class="btn small" onclick="addVeg()">+ Add</button>
+
+<button class="btn small"
+type="button"
+onclick="addVeg()">
++ Add
+</button>
+
 </div>
 
 <div id="vegRows"></div>
@@ -239,59 +662,59 @@ th{background:#f8fafc}
 <h2>Grade / Crate Details</h2>
 
 <p class="muted">
-Crates have NO rate and NO amount. Only quantity is maintained.
+Crates have NO rate and NO amount. Issued and received quantities are maintained separately.
 </p>
 
 <div class="receive-grid">
 
 <div class="receive-box">
 <label>SMS Issued</label>
-<input id="gSMS" type="number" value="0">
+<input id="gSMS" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>SMS Received</label>
-<input id="rSMS" type="number" value="0">
+<input id="rSMS" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>MIX Issued</label>
-<input id="gMIX" type="number" value="0">
+<input id="gMIX" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>MIX Received</label>
-<input id="rMIX" type="number" value="0">
+<input id="rMIX" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>SMALL Issued</label>
-<input id="gSMALL" type="number" value="0">
+<input id="gSMALL" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>SMALL Received</label>
-<input id="rSMALL" type="number" value="0">
+<input id="rSMALL" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>EXTRA 1 Issued</label>
-<input id="gE1" type="number" value="0">
+<input id="gE1" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>EXTRA 1 Received</label>
-<input id="rE1" type="number" value="0">
+<input id="rE1" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>EXTRA 2 Issued</label>
-<input id="gE2" type="number" value="0">
+<input id="gE2" type="number" value="0" oninput="calcBill()">
 </div>
 
 <div class="receive-box">
 <label>EXTRA 2 Received</label>
-<input id="rE2" type="number" value="0">
+<input id="rE2" type="number" value="0" oninput="calcBill()">
 </div>
 
 </div>
@@ -307,17 +730,17 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 <div class="line">
 <span>Previous</span>
-<b id="sPrev">₹0</b>
+<b id="sPrev">₹0.00</b>
 </div>
 
 <div class="line">
 <span>Current Bill</span>
-<b id="sCurrent">₹0</b>
+<b id="sCurrent">₹0.00</b>
 </div>
 
 <div class="line total">
 <span>Total</span>
-<b id="sTotal">₹0</b>
+<b id="sTotal">₹0.00</b>
 </div>
 
 </div>
@@ -326,7 +749,10 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 <div>
 <label>Amount Received</label>
-<input id="billReceived" type="number" value="0" oninput="calcBill()">
+<input id="billReceived"
+type="number"
+value="0"
+oninput="calcBill()">
 </div>
 
 <div>
@@ -345,14 +771,25 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 <div class="line total">
 <span>Current Outstanding</span>
-<b id="sOut">₹0</b>
+<b id="sOut">₹0.00</b>
 </div>
 
 </div>
 
 <div class="actions">
-<button class="btn green" onclick="saveBill()">Save Bill</button>
-<button class="btn gray" onclick="newBill()">Clear</button>
+
+<button class="btn green"
+type="button"
+onclick="saveBill()">
+Save Bill
+</button>
+
+<button class="btn gray"
+type="button"
+onclick="newBill()">
+Clear
+</button>
+
 </div>
 
 <input type="hidden" id="billEdit">
@@ -388,7 +825,10 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 <div>
 <label>Previous Payable</label>
-<input id="pPrevious" type="number" value="0">
+<input id="pPrevious"
+type="number"
+value="0"
+oninput="calcPurchase()">
 </div>
 
 <div>
@@ -398,7 +838,9 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 <div>
 <label>Quantity</label>
-<input id="pQty" type="number" oninput="calcPurchase()">
+<input id="pQty"
+type="number"
+oninput="calcPurchase()">
 </div>
 
 <div>
@@ -413,7 +855,9 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 <div>
 <label>Rate</label>
-<input id="pRate" type="number" oninput="calcPurchase()">
+<input id="pRate"
+type="number"
+oninput="calcPurchase()">
 </div>
 
 <div>
@@ -423,7 +867,10 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 <div>
 <label>Amount Paid</label>
-<input id="pPaid" type="number" value="0" oninput="calcPurchase()">
+<input id="pPaid"
+type="number"
+value="0"
+oninput="calcPurchase()">
 </div>
 
 <div>
@@ -447,29 +894,40 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 <div class="line">
 <span>Previous Payable</span>
-<b id="pPrevShow">₹0</b>
+<b id="pPrevShow">₹0.00</b>
 </div>
 
 <div class="line">
 <span>Current Purchase</span>
-<b id="pCurrentShow">₹0</b>
+<b id="pCurrentShow">₹0.00</b>
 </div>
 
 <div class="line total">
 <span>Total Payable</span>
-<b id="pTotalShow">₹0</b>
+<b id="pTotalShow">₹0.00</b>
 </div>
 
 <div class="line total">
 <span>Balance to Party</span>
-<b id="pBalanceShow">₹0</b>
+<b id="pBalanceShow">₹0.00</b>
 </div>
 
 </div>
 
 <div class="actions">
-<button class="btn green" onclick="savePurchase()">Save Purchase</button>
-<button class="btn gray" onclick="newPurchase()">Clear</button>
+
+<button class="btn green"
+type="button"
+onclick="savePurchase()">
+Save Purchase
+</button>
+
+<button class="btn gray"
+type="button"
+onclick="newPurchase()">
+Clear
+</button>
+
 </div>
 
 <input type="hidden" id="pEdit">
@@ -515,7 +973,20 @@ Crates have NO rate and NO amount. Only quantity is maintained.
 
 </div>
 
-<button class="btn green" onclick="savePartyPayment()">Save Payment</button>
+<button class="btn green"
+type="button"
+onclick="savePartyPayment()">
+Save Payment
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>Purchase History</h2>
+
+<div id="purchaseHistory"></div>
 
 </div>
 
@@ -542,7 +1013,14 @@ Vehicle / Driver / Trip Rent & Payment Details
 
 <div>
 <label>Vehicle Number</label>
-<input id="vrVehicleNo" placeholder="TN 00 AB 0000">
+<input id="vrVehicleNo"
+placeholder="TN 00 AB 0000">
+</div>
+
+<div>
+<label>Vehicle Type</label>
+<input id="vrVehicleType"
+placeholder="Lorry / Mini Truck / Tempo">
 </div>
 
 <div>
@@ -552,32 +1030,40 @@ Vehicle / Driver / Trip Rent & Payment Details
 
 <div>
 <label>Driver Phone</label>
-<input id="vrDriverPhone" inputmode="tel">
+<input id="vrDriverPhone"
+inputmode="tel">
 </div>
 
 <div>
 <label>From / எந்த ஊரிலிருந்து</label>
-<input id="vrFrom" placeholder="Kolar">
+<input id="vrFrom"
+placeholder="Kolar">
 </div>
 
 <div>
 <label>To / எந்த ஊருக்கு</label>
-<input id="vrTo" placeholder="Pattukkottai">
+<input id="vrTo"
+placeholder="Pattukkottai">
 </div>
 
 <div>
 <label>Trip / Purpose</label>
-<input id="vrPurpose" placeholder="Tomato Load">
+<input id="vrPurpose"
+placeholder="Tomato Load">
 </div>
 
 <div>
 <label>Rent Amount</label>
-<input id="vrRent" type="number" oninput="calcRent()">
+<input id="vrRent"
+type="number"
+oninput="calcRent()">
 </div>
 
 <div>
 <label>Amount Paid</label>
-<input id="vrPaid" type="number" oninput="calcRent()">
+<input id="vrPaid"
+type="number"
+oninput="calcRent()">
 </div>
 
 <div>
@@ -597,33 +1083,37 @@ Vehicle / Driver / Trip Rent & Payment Details
 
 </div>
 
-
 <div class="summary">
 
 <div class="line">
 <span>Total Rent</span>
-<b id="vrRentShow">₹0</b>
+<b id="vrRentShow">₹0.00</b>
 </div>
 
 <div class="line">
 <span>Paid</span>
-<b id="vrPaidShow">₹0</b>
+<b id="vrPaidShow">₹0.00</b>
 </div>
 
 <div class="line total">
 <span>Balance</span>
-<b id="vrBalanceShow">₹0</b>
+<b id="vrBalanceShow">₹0.00</b>
 </div>
 
 </div>
 
 <div class="actions">
 
-<button class="btn green" id="vrSaveBtn" onclick="saveVehicleRent()">
+<button class="btn green"
+type="button"
+id="vrSaveBtn"
+onclick="saveVehicleRent()">
 Save Vehicle Rent
 </button>
 
-<button class="btn gray" onclick="clearVehicleRent()">
+<button class="btn gray"
+type="button"
+onclick="clearVehicleRent()">
 Clear
 </button>
 
@@ -672,6 +1162,7 @@ onchange="renderVehicleRent()">
 <th>Rent</th>
 <th>Paid</th>
 <th>Balance</th>
+<th>Status</th>
 <th>Action</th>
 </tr>
 </thead>
@@ -729,8 +1220,19 @@ onchange="renderVehicleRent()">
 </div>
 
 <div class="actions">
-<button class="btn green" onclick="saveReceipt()">Save Receipt</button>
-<button class="btn gray" onclick="clearReceipt()">Clear</button>
+
+<button class="btn green"
+type="button"
+onclick="saveReceipt()">
+Save Receipt
+</button>
+
+<button class="btn gray"
+type="button"
+onclick="clearReceipt()">
+Clear
+</button>
+
 </div>
 
 <input type="hidden" id="rEdit">
@@ -744,7 +1246,7 @@ onchange="renderVehicleRent()">
 
 <input id="rSearch"
 placeholder="Search customer"
-oninput="renderReceipts">
+oninput="renderReceipts()">
 
 <div id="receiptList"></div>
 
@@ -761,7 +1263,8 @@ oninput="renderReceipts">
 <h2>Customer Full History</h2>
 
 <select id="historyCustomer"
-onchange="renderCustomerHistory()"></select>
+onchange="renderCustomerHistory()">
+</select>
 
 <div id="customerHistory"></div>
 
@@ -792,19 +1295,25 @@ oninput="renderBills()">
 
 <div class="actions">
 
-<button class="btn green" onclick="backup()">
+<button class="btn green"
+type="button"
+onclick="backup()">
 Download JSON Backup
 </button>
 
 <label class="btn gray">
 Restore JSON
 <input type="file"
-accept=".json"
+accept=".json,application/json"
 onchange="restore(event)"
 style="display:none">
 </label>
 
 </div>
+
+<p class="muted">
+Always keep a backup copy. Browser storage is device/browser based.
+</p>
 
 </div>
 
@@ -822,15 +1331,21 @@ placeholder="https://script.google.com/macros/s/XXXXX/exec">
 
 <div class="actions">
 
-<button class="btn green" onclick="saveApi()">
+<button class="btn green"
+type="button"
+onclick="saveApi()">
 Save URL
 </button>
 
-<button class="btn orange" onclick="cloudPush()">
+<button class="btn orange"
+type="button"
+onclick="cloudPush()">
 Upload / Sync
 </button>
 
-<button class="btn gray" onclick="cloudPull()">
+<button class="btn gray"
+type="button"
+onclick="cloudPull()">
 Download
 </button>
 
@@ -867,9 +1382,15 @@ Download
 
 </div>
 
-<button class="btn green" onclick="saveSettings()">
+<div class="actions">
+
+<button class="btn green"
+type="button"
+onclick="saveSettings()">
 Save
 </button>
+
+</div>
 
 </div>
 
@@ -878,7 +1399,9 @@ Save
 
 <h2>Danger Zone</h2>
 
-<button class="btn red" onclick="deleteAll()">
+<button class="btn red"
+type="button"
+onclick="deleteAll()">
 Delete All Data
 </button>
 
@@ -887,12 +1410,55 @@ Delete All Data
 </section>
 
 
+<!-- BILL MODAL -->
+<div id="billModal" class="modal">
+
+<div class="modal-box">
+
+<div class="section-title">
+<h2>Sales Bill</h2>
+
+<button class="btn red small"
+type="button"
+onclick="closeBillModal()">
+Close
+</button>
+</div>
+
+<div id="billPreview" class="bill-preview"></div>
+
+<div class="actions">
+
+<button class="btn green"
+type="button"
+onclick="printBill()">
+Print
+</button>
+
+<button class="btn orange"
+type="button"
+onclick="downloadBillPDF()">
+PDF
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
 <div id="toast" class="toast"></div>
 
 
 <script>
 
-const KEY="SMS_COMMISSION_MANDI_COMPLETE_V1";
+/* =========================================================
+   SMS COMMISSION MANDI
+   COMPLETE WORKING VERSION
+   ========================================================= */
+
+const KEY="SMS_COMMISSION_MANDI_COMPLETE_V2";
 
 let db={
 customers:[],
@@ -910,20 +1476,30 @@ footer:"Thank You"
 };
 
 let cFilter="All";
+let currentBillPreviewId="";
 
-const $=id=>document.getElementById(id);
 
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+/* BASIC HELPERS */
 
-const n=v=>{
+function $(id){
+return document.getElementById(id);
+}
+
+function uid(){
+return Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+}
+
+function n(v){
 let x=parseFloat(v);
 return Number.isFinite(x)?x:0;
-};
+}
 
-const money=v=>"₹"+n(v).toLocaleString("en-IN",{
+function money(v){
+return "₹"+n(v).toLocaleString("en-IN",{
 minimumFractionDigits:2,
 maximumFractionDigits:2
 });
+}
 
 function today(){
 
@@ -937,35 +1513,54 @@ String(d.getDate()).padStart(2,"0");
 
 function esc(v){
 
-return String(v??"").replace(/[&<>"']/g,m=>({
+return String(v??"").replace(/[&<>"']/g,function(m){
 
+return {
 "&":"&amp;",
 "<":"&lt;",
 ">":"&gt;",
 '"':"&quot;",
 "'":"&#39;"
+}[m];
 
-}[m]));
+});
 
 }
 
+function toast(msg){
 
-function toast(x){
+let t=$("toast");
 
-$("toast").textContent=x;
+if(!t)return;
 
-$("toast").classList.add("show");
+t.textContent=msg;
+t.classList.add("show");
 
-setTimeout(()=>{
-$("toast").classList.remove("show");
+clearTimeout(window.__toastTimer);
+
+window.__toastTimer=setTimeout(function(){
+t.classList.remove("show");
 },2200);
 
 }
 
 
+/* STORAGE */
+
 function save(){
 
-localStorage.setItem(KEY,JSON.stringify(db));
+try{
+
+localStorage.setItem(
+KEY,
+JSON.stringify(db)
+);
+
+}catch(e){
+
+toast("Storage error");
+
+}
 
 }
 
@@ -980,14 +1575,17 @@ localStorage.getItem(KEY)||"null"
 
 if(x){
 
-db={...db,...x};
+db={
+...db,
+...x
+};
 
-db.customers=x.customers||[];
-db.bills=x.bills||[];
-db.receipts=x.receipts||[];
-db.purchases=x.purchases||[];
-db.partyPayments=x.partyPayments||[];
-db.vehicleRents=x.vehicleRents||[];
+db.customers=Array.isArray(x.customers)?x.customers:[];
+db.bills=Array.isArray(x.bills)?x.bills:[];
+db.receipts=Array.isArray(x.receipts)?x.receipts:[];
+db.purchases=Array.isArray(x.purchases)?x.purchases:[];
+db.partyPayments=Array.isArray(x.partyPayments)?x.partyPayments:[];
+db.vehicleRents=Array.isArray(x.vehicleRents)?x.vehicleRents:[];
 
 db.billSettings={
 ...db.billSettings,
@@ -996,66 +1594,103 @@ db.billSettings={
 
 }
 
-}catch(e){}
+}catch(e){
 
-$("apiUrl").value=
+console.error(e);
+
+}
+
+let api=$("apiUrl");
+
+if(api){
+api.value=
 localStorage.getItem("SMS_API_URL")||"";
+}
 
 }
 
 
-function customer(i){
+/* MASTER */
 
-return db.customers.find(x=>x.id===i);
-
+function customer(id){
+return db.customers.find(x=>x.id===id);
 }
 
-
-function cname(i){
-
-return customer(i)?.name||"Unknown";
-
+function cname(id){
+return customer(id)?.name||"Unknown";
 }
-
 
 function salesCustomers(){
-
 return db.customers.filter(
 x=>x.type!=="Purchase Party"
 );
-
 }
 
-
 function parties(){
-
 return db.customers.filter(
 x=>x.type==="Purchase Party"
 );
-
 }
 
+
+/* PAGE NAVIGATION */
 
 function page(name,btn){
 
 document.querySelectorAll(".page")
-.forEach(x=>x.classList.remove("active"));
+.forEach(function(x){
+x.classList.remove("active");
+});
 
-$(name).classList.add("active");
+let target=$(name);
+
+if(target){
+target.classList.add("active");
+}
 
 if(btn){
 
 document.querySelectorAll(".nav button")
-.forEach(x=>x.classList.remove("active"));
+.forEach(function(x){
+x.classList.remove("active");
+});
 
 btn.classList.add("active");
+
+}else{
+
+document.querySelectorAll(".nav button")
+.forEach(function(x){
+x.classList.remove("active");
+});
+
+let navButtons=
+document.querySelectorAll(".nav button");
+
+navButtons.forEach(function(b){
+
+if(
+b.getAttribute("onclick")&&
+b.getAttribute("onclick").includes("'"+name+"'")
+){
+b.classList.add("active");
+}
+
+});
 
 }
 
 refresh();
 
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
 }
 
+
+/* ACCOUNT */
 
 function account(cid){
 
@@ -1073,31 +1708,35 @@ let sales=bills.reduce(
 (a,x)=>a+n(x.total),0
 );
 
-let received=
-bills.reduce(
+let billReceived=bills.reduce(
 (a,x)=>a+n(x.paymentAmount),0
-)+
-receipts.reduce(
+);
+
+let receiptReceived=receipts.reduce(
 (a,x)=>a+n(x.amount),0
 );
+
+let received=billReceived+receiptReceived;
 
 let opening=n(c?.openingBalance);
 
 return{
-
 bills,
 receipts,
 sales,
+billReceived,
+receiptReceived,
 received,
 opening,
 outstanding:opening+sales-received
-
 };
 
 }
 
 
-/* CUSTOMER */
+/* =========================================================
+   CUSTOMERS
+   ========================================================= */
 
 function saveCustomer(){
 
@@ -1111,7 +1750,7 @@ return;
 let edit=$("cEdit").value;
 
 let data={
-name,
+name:name,
 type:$("cType").value,
 phone:$("cPhone").value.trim(),
 address:$("cAddress").value.trim(),
@@ -1120,13 +1759,17 @@ openingBalance:n($("cOpening").value)
 
 if(edit){
 
-Object.assign(customer(edit),data);
+let c=customer(edit);
+
+if(c){
+Object.assign(c,data);
+}
 
 toast("Customer updated");
 
 }else{
 
-db.customers.push({
+db.customers.unshift({
 id:uid(),
 ...data,
 createdAt:Date.now()
@@ -1137,9 +1780,7 @@ toast("Customer saved");
 }
 
 save();
-
 clearCustomer();
-
 refresh();
 
 }
@@ -1150,44 +1791,47 @@ function clearCustomer(){
 $("cName").value="";
 $("cPhone").value="";
 $("cAddress").value="";
-$("cOpening").value=0;
+$("cOpening").value="0";
 $("cType").value="Regular";
 $("cEdit").value="";
 
 }
 
 
-function editCustomer(i){
+function editCustomer(id){
 
-let c=customer(i);
+let c=customer(id);
 
 if(!c)return;
 
-$("cName").value=c.name;
+page("customers");
+
+$("cName").value=c.name||"";
 $("cType").value=c.type||"Regular";
 $("cPhone").value=c.phone||"";
 $("cAddress").value=c.address||"";
-$("cOpening").value=c.openingBalance||0;
-$("cEdit").value=i;
+$("cOpening").value=n(c.openingBalance);
+$("cEdit").value=id;
 
-page("customers");
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
 
 }
 
 
-function deleteCustomer(i){
+function deleteCustomer(id){
 
 if(!confirm("Delete customer?"))return;
 
-db.customers=db.customers.filter(
-x=>x.id!==i
-);
+db.customers=
+db.customers.filter(x=>x.id!==id);
 
 save();
-
 refresh();
 
-toast("Deleted");
+toast("Customer deleted");
 
 }
 
@@ -1198,9 +1842,11 @@ cFilter=f;
 
 document.querySelectorAll(
 "#customers .tabs button"
-).forEach(x=>x.classList.remove("active"));
+).forEach(function(x){
+x.classList.remove("active");
+});
 
-b.classList.add("active");
+if(b)b.classList.add("active");
 
 renderCustomers();
 
@@ -1209,27 +1855,48 @@ renderCustomers();
 
 function renderCustomers(){
 
-let s=($("cSearch").value||"").toLowerCase();
+let search=
+($("cSearch").value||"").toLowerCase();
 
-let list=db.customers.filter(c=>
+let list=db.customers.filter(function(c){
 
-(cFilter==="All"||c.type===cFilter)&&
+let typeOK=
+cFilter==="All"||
+c.type===cFilter;
 
-(
-!s||
-c.name.toLowerCase().includes(s)||
-(c.phone||"").includes(s)
-)
+let searchOK=
+!search||
+(c.name||"").toLowerCase().includes(search)||
+(c.phone||"").toLowerCase().includes(search)||
+(c.address||"").toLowerCase().includes(search);
 
-);
+return typeOK&&searchOK;
 
-$("customerList").innerHTML=list.length?
+});
 
-list.map(c=>{
+if(!list.length){
 
-let a=c.type==="Purchase Party"
+$("customerList").innerHTML=
+'<div class="empty">No records</div>';
+
+return;
+
+}
+
+$("customerList").innerHTML=
+list.map(function(c){
+
+let a=
+c.type==="Purchase Party"
 ?null
 :account(c.id);
+
+let badgeClass=
+c.type==="Weekly"
+?"weekly":
+c.type==="Purchase Party"
+?"party":
+"reg";
 
 return`
 
@@ -1241,29 +1908,28 @@ return`
 
 <h3>${esc(c.name)}</h3>
 
-<span class="badge ${
-c.type==="Weekly"
-?"weekly":
-c.type==="Purchase Party"
-?"party":
-"reg"
-}">${esc(c.type)}</span>
+<span class="badge ${badgeClass}">
+${esc(c.type)}
+</span>
 
 </div>
 
 <div class="actions">
 
 <button class="btn small"
+type="button"
 onclick="showHistory('${c.id}')">
 History
 </button>
 
 <button class="btn small gray"
+type="button"
 onclick="editCustomer('${c.id}')">
 Edit
 </button>
 
 <button class="btn small red"
+type="button"
 onclick="deleteCustomer('${c.id}')">
 Delete
 </button>
@@ -1274,12 +1940,13 @@ Delete
 
 <div class="muted">
 ${esc(c.phone||"")}
+${c.phone&&c.address?" • ":""}
 ${esc(c.address||"")}
 </div>
 
-${a?
+${a?`
 
-`<div class="summary">
+<div class="summary">
 
 <div class="line">
 <span>Total Sales</span>
@@ -1296,24 +1963,22 @@ ${a?
 <b>${money(a.outstanding)}</b>
 </div>
 
-</div>`
+</div>
 
-:""}
+`:""}
 
 </div>
 
 `;
 
-}).join("")
-
-:'<div class="empty">No records</div>';
+}).join("");
 
 }
 
 
-/* SELECT */
+/* SELECTS */
 
-function fillSelect(id,list,placeholder="Select"){
+function fillSelect(id,list,placeholder){
 
 let el=$(id);
 
@@ -1322,38 +1987,55 @@ if(!el)return;
 let old=el.value;
 
 el.innerHTML=
-`<option value="">${placeholder}</option>`+
-list.map(c=>
-`<option value="${c.id}">
-${esc(c.name)}
-</option>`
-).join("");
+`<option value="">${esc(placeholder||"Select")}</option>`+
+list.map(function(c){
 
-if(list.some(c=>c.id===old))
+return`
+<option value="${esc(c.id)}">
+${esc(c.name)}
+</option>
+`;
+
+}).join("");
+
+if(list.some(function(c){
+return c.id===old;
+})){
 el.value=old;
+}
 
 }
 
 
-/* SALES BILL */
+/* =========================================================
+   SALES BILL
+   ========================================================= */
 
 function loadCustomerBalance(){
 
-let c=customer(
-$("billCustomer").value
-);
+let cid=$("billCustomer").value;
+
+if(!cid){
+
+$("previousBalance").value=0;
+calcBill();
+return;
+
+}
+
+let a=account(cid);
 
 $("previousBalance").value=
-c
-?Math.max(0,account(c.id).outstanding)
-:0;
+Math.max(0,a.outstanding);
 
 calcBill();
 
 }
 
 
-function addVeg(data={}){
+function addVeg(data){
+
+data=data||{};
 
 let row=document.createElement("div");
 
@@ -1370,6 +2052,7 @@ value="${esc(data.name||"Tomato")}">
 <div>
 <input class="vqty"
 type="number"
+min="0"
 placeholder="Qty"
 value="${n(data.qty)}"
 oninput="calcBill()">
@@ -1378,6 +2061,7 @@ oninput="calcBill()">
 <div>
 <input class="vrate"
 type="number"
+min="0"
 placeholder="Rate"
 value="${n(data.rate)}"
 oninput="calcBill()">
@@ -1387,12 +2071,13 @@ oninput="calcBill()">
 <input class="vamount"
 type="number"
 readonly
-value="${n(data.amount)}">
+value="${n(data.amount).toFixed(2)}">
 </div>
 
 <button class="btn red small"
+type="button"
 onclick="this.parentElement.remove();calcBill()">
-X
+Remove
 </button>
 
 `;
@@ -1406,11 +2091,11 @@ calcBill();
 
 function getVeg(){
 
-return[
-...document.querySelectorAll(
-"#vegRows .billrow"
-)
-].map(r=>{
+let rows=[
+...document.querySelectorAll("#vegRows .billrow")
+];
+
+return rows.map(function(r){
 
 let qty=n(
 r.querySelector(".vqty").value
@@ -1421,17 +2106,17 @@ r.querySelector(".vrate").value
 );
 
 return{
-
 name:r.querySelector(".vname").value.trim(),
-qty,
-rate,
+qty:qty,
+rate:rate,
 amount:qty*rate
-
 };
 
-}).filter(x=>
-x.name||x.qty||x.rate
-);
+}).filter(function(x){
+
+return x.name||x.qty||x.rate;
+
+});
 
 }
 
@@ -1439,13 +2124,11 @@ x.name||x.qty||x.rate
 function getGrades(){
 
 return{
-
 SMS:n($("gSMS").value),
 MIX:n($("gMIX").value),
 SMALL:n($("gSMALL").value),
 E1:n($("gE1").value),
 E2:n($("gE2").value)
-
 };
 
 }
@@ -1454,19 +2137,20 @@ E2:n($("gE2").value)
 function getGradeReceived(){
 
 return{
-
 SMS:n($("rSMS").value),
 MIX:n($("rMIX").value),
 SMALL:n($("rSMALL").value),
 E1:n($("rE1").value),
 E2:n($("rE2").value)
-
 };
 
 }
 
 
-function setGrades(g={},r={}){
+function setGrades(g,r){
+
+g=g||{};
+r=r||{};
 
 $("gSMS").value=n(g.SMS);
 $("gMIX").value=n(g.MIX);
@@ -1485,26 +2169,28 @@ $("rE2").value=n(r.E2);
 
 function calcBill(){
 
-let rows=getVeg();
+let rows=[
+...document.querySelectorAll("#vegRows .billrow")
+];
 
-let total=rows.reduce(
-(a,x)=>a+x.amount,0
+let total=0;
+
+rows.forEach(function(r){
+
+let qty=n(
+r.querySelector(".vqty").value
 );
 
-rows.forEach((x,i)=>{
+let rate=n(
+r.querySelector(".vrate").value
+);
 
-let r=
-document.querySelectorAll(
-"#vegRows .billrow"
-)[i];
+let amount=qty*rate;
 
-if(r){
+total+=amount;
 
-r.querySelector(
-".vamount"
-).value=x.amount.toFixed(2);
-
-}
+r.querySelector(".vamount").value=
+amount.toFixed(2);
 
 });
 
@@ -1512,7 +2198,7 @@ let prev=n(
 $("previousBalance").value
 );
 
-let rec=n(
+let received=n(
 $("billReceived").value
 );
 
@@ -1522,7 +2208,7 @@ $("sTotal").textContent=money(prev+total);
 
 $("sOut").textContent=
 money(
-Math.max(0,prev+total-rec)
+Math.max(0,prev+total-received)
 );
 
 }
@@ -1540,39 +2226,46 @@ return;
 let veg=getVeg();
 
 let total=veg.reduce(
-(a,x)=>a+x.amount,0
-);
+function(a,x){
+return a+x.amount;
+},0);
 
 let rec=n(
 $("billReceived").value
 );
+
+let prev=n(
+$("previousBalance").value
+);
+
+if(total<=0){
+
+toast("Add vegetable and rate");
+return;
+
+}
+
+if(rec>prev+total){
+
+toast("Received amount is higher than total");
+return;
+
+}
 
 let edit=$("billEdit").value;
 
 let data={
 
 customerId:cid,
-
 date:$("billDate").value||today(),
-
 billNo:$("billNo").value.trim(),
-
-previousBalance:n(
-$("previousBalance").value
-),
-
+previousBalance:prev,
 vegetables:veg,
-
-total,
-
+total:total,
 paymentAmount:rec,
-
 paymentMode:$("billMode").value,
-
 grades:getGrades(),
-
 gradeReceived:getGradeReceived(),
-
 createdAt:Date.now()
 
 };
@@ -1583,8 +2276,11 @@ let b=db.bills.find(
 x=>x.id===edit
 );
 
-if(b)
+if(b){
+
 Object.assign(b,data);
+
+}
 
 toast("Bill updated");
 
@@ -1600,9 +2296,7 @@ toast("Bill saved");
 }
 
 save();
-
 newBill();
-
 refresh();
 
 }
@@ -1611,15 +2305,10 @@ refresh();
 function newBill(){
 
 $("billDate").value=today();
-
 $("billNo").value="";
-
 $("previousBalance").value=0;
-
 $("billReceived").value=0;
-
 $("billMode").value="Cash";
-
 $("billEdit").value="";
 
 setGrades();
@@ -1633,30 +2322,23 @@ calcBill();
 }
 
 
-function editBill(i){
+function editBill(id){
 
-let b=db.bills.find(x=>x.id===i);
+let b=db.bills.find(
+x=>x.id===id
+);
 
 if(!b)return;
 
 page("billing");
 
-$("billCustomer").value=b.customerId;
-
-$("billDate").value=b.date;
-
+$("billCustomer").value=b.customerId||"";
+$("billDate").value=b.date||today();
 $("billNo").value=b.billNo||"";
-
-$("previousBalance").value=
-n(b.previousBalance);
-
-$("billReceived").value=
-n(b.paymentAmount);
-
-$("billMode").value=
-b.paymentMode||"Cash";
-
-$("billEdit").value=i;
+$("previousBalance").value=n(b.previousBalance);
+$("billReceived").value=n(b.paymentAmount);
+$("billMode").value=b.paymentMode||"Cash";
+$("billEdit").value=id;
 
 setGrades(
 b.grades||{},
@@ -1665,26 +2347,27 @@ b.gradeReceived||{}
 
 $("vegRows").innerHTML="";
 
-(b.vegetables||[]).forEach(
-v=>addVeg(v)
-);
+(b.vegetables||[]).forEach(function(v){
+addVeg(v);
+});
+
+if(!(b.vegetables||[]).length){
+addVeg();
+}
 
 calcBill();
 
 }
 
 
-function deleteBill(i){
+function deleteBill(id){
 
-if(!confirm("Delete this bill?"))
-return;
+if(!confirm("Delete this bill?"))return;
 
-db.bills=db.bills.filter(
-x=>x.id!==i
-);
+db.bills=
+db.bills.filter(x=>x.id!==id);
 
 save();
-
 refresh();
 
 toast("Bill deleted");
@@ -1692,7 +2375,9 @@ toast("Bill deleted");
 }
 
 
-/* PURCHASE */
+/* =========================================================
+   PURCHASE
+   ========================================================= */
 
 function calcPurchase(){
 
@@ -1711,14 +2396,9 @@ $("pPaid").value
 $("pAmount").value=
 amount.toFixed(2);
 
-$("pPrevShow").textContent=
-money(prev);
-
-$("pCurrentShow").textContent=
-money(amount);
-
-$("pTotalShow").textContent=
-money(prev+amount);
+$("pPrevShow").textContent=money(prev);
+$("pCurrentShow").textContent=money(amount);
+$("pTotalShow").textContent=money(prev+amount);
 
 $("pBalanceShow").textContent=
 money(
@@ -1738,68 +2418,62 @@ return;
 }
 
 let qty=n($("pQty").value);
-
 let rate=n($("pRate").value);
-
 let amount=qty*rate;
-
 let paid=n($("pPaid").value);
+
+if(amount<=0){
+toast("Enter quantity and rate");
+return;
+}
+
+if(paid>n($("pPrevious").value)+amount){
+toast("Paid amount is higher than payable");
+return;
+}
 
 let edit=$("pEdit").value;
 
 let data={
-
 partyId:party,
-
 date:$("pDate").value||today(),
-
-billNo:$("pBillNo").value,
-
+billNo:$("pBillNo").value.trim(),
 previous:n($("pPrevious").value),
-
-product:$("pProduct").value,
-
-qty,
-
+product:$("pProduct").value.trim(),
+qty:qty,
 unit:$("pUnit").value,
-
-rate,
-
-amount,
-
-paid,
-
+rate:rate,
+amount:amount,
+paid:paid,
 paymentMode:$("pMode").value,
-
-note:$("pNote").value
-
+note:$("pNote").value.trim()
 };
 
 if(edit){
 
-Object.assign(
-db.purchases.find(x=>x.id===edit),
-data
+let p=db.purchases.find(
+x=>x.id===edit
 );
+
+if(p)Object.assign(p,data);
+
+toast("Purchase updated");
 
 }else{
 
 db.purchases.unshift({
 id:uid(),
-...data
+...data,
+createdAt:Date.now()
 });
+
+toast("Purchase saved");
 
 }
 
 save();
-
 newPurchase();
-
 refresh();
-
-toast(edit
-?"Purchase updated"
-:"Purchase saved");
 
 }
 
@@ -1807,23 +2481,15 @@ toast(edit
 function newPurchase(){
 
 $("pDate").value=today();
-
 $("pBillNo").value="";
-
 $("pPrevious").value=0;
-
 $("pProduct").value="Tomato";
-
 $("pQty").value="";
-
 $("pRate").value="";
-
 $("pAmount").value="";
-
 $("pPaid").value=0;
-
+$("pMode").value="Cash";
 $("pNote").value="";
-
 $("pEdit").value="";
 
 calcPurchase();
@@ -1833,34 +2499,39 @@ calcPurchase();
 
 function partyAccount(id){
 
-let p=db.purchases.filter(
+let purchases=
+db.purchases.filter(
 x=>x.partyId===id
 );
 
-let pay=db.partyPayments.filter(
+let payments=
+db.partyPayments.filter(
 x=>x.partyId===id
 );
 
-let total=p.reduce(
+let purchaseTotal=
+purchases.reduce(
 (a,x)=>a+n(x.amount),0
 );
 
-let paid=
-p.reduce(
+let purchasePaid=
+purchases.reduce(
 (a,x)=>a+n(x.paid),0
-)+
-pay.reduce(
+);
+
+let settlement=
+payments.reduce(
 (a,x)=>a+n(x.amount),0
+);
+
+let opening=n(
+customer(id)?.openingBalance
 );
 
 return{
-
-purchase:total,
-paid,
-balance:
-n(customer(id)?.openingBalance)+
-total-paid
-
+purchase:purchaseTotal,
+paid:purchasePaid+settlement,
+balance:opening+purchaseTotal-purchasePaid-settlement
 };
 
 }
@@ -1869,10 +2540,7 @@ total-paid
 function savePartyPayment(){
 
 let id=$("payParty").value;
-
-let amt=n(
-$("payAmount").value
-);
+let amt=n($("payAmount").value);
 
 if(!id||amt<=0){
 toast("Enter party and amount");
@@ -1886,7 +2554,8 @@ partyId:id,
 date:$("payDate").value||today(),
 amount:amt,
 mode:$("payMode").value,
-note:$("payNote").value
+note:$("payNote").value.trim(),
+createdAt:Date.now()
 
 });
 
@@ -1902,15 +2571,236 @@ toast("Party payment saved");
 }
 
 
-/* RECEIPTS */
+function editPurchase(id){
+
+let p=db.purchases.find(
+x=>x.id===id
+);
+
+if(!p)return;
+
+page("purchases");
+
+$("pParty").value=p.partyId||"";
+$("pDate").value=p.date||today();
+$("pBillNo").value=p.billNo||"";
+$("pPrevious").value=n(p.previous);
+$("pProduct").value=p.product||"Tomato";
+$("pQty").value=n(p.qty);
+$("pUnit").value=p.unit||"Box";
+$("pRate").value=n(p.rate);
+$("pPaid").value=n(p.paid);
+$("pMode").value=p.paymentMode||"Cash";
+$("pNote").value=p.note||"";
+$("pEdit").value=id;
+
+calcPurchase();
+
+}
+
+
+function deletePurchase(id){
+
+if(!confirm("Delete purchase?"))return;
+
+db.purchases=
+db.purchases.filter(
+x=>x.id!==id
+);
+
+save();
+refresh();
+
+toast("Purchase deleted");
+
+}
+
+
+function deletePartyPayment(id){
+
+if(!confirm("Delete party payment?"))return;
+
+db.partyPayments=
+db.partyPayments.filter(
+x=>x.id!==id
+);
+
+save();
+refresh();
+
+toast("Party payment deleted");
+
+}
+
+
+function renderPurchaseHistory(){
+
+let arr=[
+...db.purchases
+].sort(function(a,b){
+
+return (b.date||"").localeCompare(a.date||"");
+
+});
+
+let payments=[
+...db.partyPayments
+].sort(function(a,b){
+
+return (b.date||"").localeCompare(a.date||"");
+
+});
+
+let html="";
+
+if(arr.length){
+
+html+=`
+
+<div class="table">
+
+<table>
+
+<tr>
+<th>Date</th>
+<th>Party</th>
+<th>Bill</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+<th>Paid</th>
+<th>Balance</th>
+<th>Action</th>
+</tr>
+
+${arr.map(function(p){
+
+let bal=
+n(p.previous)+n(p.amount)-n(p.paid);
+
+return`
+
+<tr>
+
+<td>${esc(p.date)}</td>
+<td>${esc(cname(p.partyId))}</td>
+<td>${esc(p.billNo||"-")}</td>
+<td>${esc(p.product||"-")}</td>
+<td>${n(p.qty)} ${esc(p.unit||"")}</td>
+<td>${money(p.rate)}</td>
+<td>${money(p.amount)}</td>
+<td>${money(p.paid)}</td>
+<td>${money(bal)}</td>
+
+<td>
+
+<button class="btn small gray"
+type="button"
+onclick="editPurchase('${p.id}')">
+Edit
+</button>
+
+<button class="btn small red"
+type="button"
+onclick="deletePurchase('${p.id}')">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+}).join("")}
+
+</table>
+
+</div>
+
+`;
+
+}else{
+
+html+=
+'<div class="empty">No purchase records</div>';
+
+}
+
+html+=`<h3>Party Payments</h3>`;
+
+if(payments.length){
+
+html+=`
+
+<div class="table">
+
+<table>
+
+<tr>
+<th>Date</th>
+<th>Party</th>
+<th>Amount</th>
+<th>Mode</th>
+<th>Note</th>
+<th>Action</th>
+</tr>
+
+${payments.map(function(p){
+
+return`
+
+<tr>
+
+<td>${esc(p.date)}</td>
+<td>${esc(cname(p.partyId))}</td>
+<td>${money(p.amount)}</td>
+<td>${esc(p.mode||"")}</td>
+<td>${esc(p.note||"")}</td>
+
+<td>
+
+<button class="btn small red"
+type="button"
+onclick="deletePartyPayment('${p.id}')">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+}).join("")}
+
+</table>
+
+</div>
+
+`;
+
+}else{
+
+html+=
+'<div class="empty">No party payments</div>';
+
+}
+
+$("purchaseHistory").innerHTML=html;
+
+}
+
+
+/* =========================================================
+   RECEIPTS
+   ========================================================= */
 
 function saveReceipt(){
 
 let cid=$("rCustomer").value;
-
-let amt=n(
-$("rAmount").value
-);
+let amt=n($("rAmount").value);
 
 if(!cid||amt<=0){
 toast("Enter customer and amount");
@@ -1920,40 +2810,38 @@ return;
 let edit=$("rEdit").value;
 
 let data={
-
 customerId:cid,
 date:$("rDate").value||today(),
 amount:amt,
 mode:$("rMode").value,
-note:$("rNote").value
-
+note:$("rNote").value.trim()
 };
 
 if(edit){
 
-Object.assign(
-db.receipts.find(x=>x.id===edit),
-data
+let r=db.receipts.find(
+x=>x.id===edit
 );
+
+if(r)Object.assign(r,data);
+
+toast("Receipt updated");
 
 }else{
 
 db.receipts.unshift({
 id:uid(),
-...data
+...data,
+createdAt:Date.now()
 });
+
+toast("Receipt saved");
 
 }
 
 save();
-
 clearReceipt();
-
 refresh();
-
-toast(edit
-?"Receipt updated"
-:"Receipt saved");
 
 }
 
@@ -1961,55 +2849,44 @@ toast(edit
 function clearReceipt(){
 
 $("rDate").value=today();
-
 $("rAmount").value="";
-
 $("rMode").value="Cash";
-
 $("rNote").value="";
-
 $("rEdit").value="";
 
 }
 
 
-function editReceipt(i){
+function editReceipt(id){
 
 let r=db.receipts.find(
-x=>x.id===i
+x=>x.id===id
 );
 
 if(!r)return;
 
 page("receipts");
 
-$("rCustomer").value=r.customerId;
-
-$("rDate").value=r.date;
-
-$("rAmount").value=r.amount;
-
-$("rMode").value=
-r.mode||"Cash";
-
+$("rCustomer").value=r.customerId||"";
+$("rDate").value=r.date||today();
+$("rAmount").value=n(r.amount);
+$("rMode").value=r.mode||"Cash";
 $("rNote").value=r.note||"";
-
-$("rEdit").value=i;
+$("rEdit").value=id;
 
 }
 
 
-function deleteReceipt(i){
+function deleteReceipt(id){
 
-if(!confirm("Delete receipt?"))
-return;
+if(!confirm("Delete receipt?"))return;
 
-db.receipts=db.receipts.filter(
-x=>x.id!==i
+db.receipts=
+db.receipts.filter(
+x=>x.id!==id
 );
 
 save();
-
 refresh();
 
 toast("Receipt deleted");
@@ -2019,21 +2896,39 @@ toast("Receipt deleted");
 
 function renderReceipts(){
 
-let s=(
-$("rSearch").value||""
-).toLowerCase();
+let search=
+($("rSearch").value||"").toLowerCase();
 
-let arr=db.receipts.filter(
-r=>cname(r.customerId)
+let arr=db.receipts.filter(function(r){
+
+return(
+cname(r.customerId)
 .toLowerCase()
-.includes(s)
+.includes(search)
+||
+(r.note||"")
+.toLowerCase()
+.includes(search)
+||
+(r.mode||"")
+.toLowerCase()
+.includes(search)
 );
 
+});
+
+if(!arr.length){
+
 $("receiptList").innerHTML=
+'<div class="empty">No receipts</div>';
 
-arr.length?
+return;
 
-`<div class="table">
+}
+
+$("receiptList").innerHTML=`
+
+<div class="table">
 
 <table>
 
@@ -2046,30 +2941,32 @@ arr.length?
 <th>Action</th>
 </tr>
 
-${arr.map(r=>`
+${arr.map(function(r){
+
+return`
 
 <tr>
 
-<td>${r.date}</td>
+<td>${esc(r.date)}</td>
 
-<td>${esc(
-cname(r.customerId)
-)}</td>
+<td>${esc(cname(r.customerId))}</td>
 
 <td>${money(r.amount)}</td>
 
-<td>${esc(r.mode)}</td>
+<td>${esc(r.mode||"")}</td>
 
-<td>${esc(r.note)}</td>
+<td>${esc(r.note||"")}</td>
 
 <td>
 
 <button class="btn small gray"
+type="button"
 onclick="editReceipt('${r.id}')">
 Edit
 </button>
 
 <button class="btn small red"
+type="button"
 onclick="deleteReceipt('${r.id}')">
 Delete
 </button>
@@ -2078,18 +2975,22 @@ Delete
 
 </tr>
 
-`).join("")}
+`;
+
+}).join("")}
 
 </table>
 
-</div>`
+</div>
 
-:'<div class="empty">No receipts</div>';
+`;
 
 }
 
 
-/* GRADES */
+/* =========================================================
+   GRADES
+   ========================================================= */
 
 function gradeTotals(cid){
 
@@ -2110,13 +3011,15 @@ E2:0
 };
 
 db.bills
-.filter(x=>x.customerId===cid)
-.forEach(b=>{
+.filter(function(x){
+return x.customerId===cid;
+})
+.forEach(function(b){
 
 let g=b.grades||{};
 let r=b.gradeReceived||{};
 
-Object.keys(issued).forEach(k=>{
+Object.keys(issued).forEach(function(k){
 
 issued[k]+=n(g[k]);
 received[k]+=n(r[k]);
@@ -2125,27 +3028,33 @@ received[k]+=n(r[k]);
 
 });
 
-return{issued,received};
+return{
+issued:issued,
+received:received
+};
 
 }
 
 
-function gradeText(g={},r={}){
+function gradeText(g,r){
+
+g=g||{};
+r=r||{};
 
 return`
-
 SMS ${n(g.SMS)}/${n(r.SMS)}
-&nbsp; MIX ${n(g.MIX)}/${n(r.MIX)}
-&nbsp; SMALL ${n(g.SMALL)}/${n(r.SMALL)}
-&nbsp; E1 ${n(g.E1)}/${n(r.E1)}
-&nbsp; E2 ${n(g.E2)}/${n(r.E2)}
-
+ • MIX ${n(g.MIX)}/${n(r.MIX)}
+ • SMALL ${n(g.SMALL)}/${n(r.SMALL)}
+ • E1 ${n(g.E1)}/${n(r.E1)}
+ • E2 ${n(g.E2)}/${n(r.E2)}
 `;
 
 }
 
 
-/* HISTORY */
+/* =========================================================
+   HISTORY
+   ========================================================= */
 
 function renderCustomerHistory(){
 
@@ -2160,13 +3069,19 @@ return;
 
 }
 
-let a=account(cid);
-
-let g=gradeTotals(cid);
-
 let c=customer(cid);
 
-let balance=a.outstanding;
+if(!c){
+
+$("customerHistory").innerHTML=
+'<div class="empty">Customer not found</div>';
+
+return;
+
+}
+
+let a=account(cid);
+let g=gradeTotals(cid);
 
 $("customerHistory").innerHTML=`
 
@@ -2176,12 +3091,14 @@ $("customerHistory").innerHTML=`
 
 <div>
 ${esc(c.phone||"")}
+${c.phone&&c.address?" • ":""}
 ${esc(c.address||"")}
 </div>
 
 <div class="actions">
 
 <button class="btn green"
+type="button"
 onclick="downloadHistoryPDF('${cid}')">
 Download Full PDF
 </button>
@@ -2194,18 +3111,28 @@ Download Full PDF
 <div class="summary">
 
 <div class="line">
+<span>Opening Balance</span>
+<b>${money(a.opening)}</b>
+</div>
+
+<div class="line">
 <span>Total Sales</span>
 <b>${money(a.sales)}</b>
 </div>
 
 <div class="line">
-<span>Total Received</span>
-<b>${money(a.received)}</b>
+<span>Bill Payments</span>
+<b>${money(a.billReceived)}</b>
+</div>
+
+<div class="line">
+<span>Other Receipts</span>
+<b>${money(a.receiptReceived)}</b>
 </div>
 
 <div class="line total">
 <span>Current Balance</span>
-<b>${money(balance)}</b>
+<b>${money(a.outstanding)}</b>
 </div>
 
 </div>
@@ -2224,16 +3151,22 @@ Download Full PDF
 <th>Balance</th>
 </tr>
 
-${["SMS","MIX","SMALL","E1","E2"].map(k=>`
+${["SMS","MIX","SMALL","E1","E2"].map(function(k){
+
+return`
 
 <tr>
+
 <td>${k}</td>
 <td>${g.issued[k]}</td>
 <td>${g.received[k]}</td>
-<td>${g.issued[k]-g.received[k]}</td>
+<td><b>${g.issued[k]-g.received[k]}</b></td>
+
 </tr>
 
-`).join("")}
+`;
+
+}).join("")}
 
 </table>
 
@@ -2257,48 +3190,62 @@ ${["SMS","MIX","SMALL","E1","E2"].map(k=>`
 <th>Action</th>
 </tr>
 
-${a.bills.map(b=>`
+${a.bills.length?
+
+a.bills.map(function(b){
+
+let billBalance=
+n(b.previousBalance)+
+n(b.total)-
+n(b.paymentAmount);
+
+return`
 
 <tr>
 
-<td>${b.date}</td>
+<td>${esc(b.date)}</td>
 
 <td>${esc(b.billNo||"-")}</td>
 
 <td>
-${(b.vegetables||[]).map(v=>
-`${esc(v.name)}
-${v.qty} × ${money(v.rate)}`
-).join("<br>")}
+${(b.vegetables||[]).map(function(v){
+
+return`
+${esc(v.name)}
+${n(v.qty)} × ${money(v.rate)}
+`;
+
+}).join("<br>")}
+
 </td>
 
 <td>${money(b.total)}</td>
 
 <td>${money(b.paymentAmount)}</td>
 
-<td>
-${money(
-n(b.previousBalance)+
-n(b.total)-
-n(b.paymentAmount)
-)}
-</td>
+<td>${money(Math.max(0,billBalance))}</td>
 
-<td>
-${gradeText(
+<td>${esc(gradeText(
 b.grades,
 b.gradeReceived
-)}
-</td>
+))}</td>
 
 <td>
 
+<button class="btn small"
+type="button"
+onclick="viewBill('${b.id}')">
+View
+</button>
+
 <button class="btn small gray"
+type="button"
 onclick="editBill('${b.id}')">
 Edit
 </button>
 
 <button class="btn small red"
+type="button"
 onclick="deleteBill('${b.id}')">
 Delete
 </button>
@@ -2307,7 +3254,19 @@ Delete
 
 </tr>
 
-`).join("")}
+`;
+
+}).join("")
+
+:
+
+`<tr>
+<td colspan="8" class="empty">
+No sales bills
+</td>
+</tr>`
+
+}
 
 </table>
 
@@ -2318,7 +3277,9 @@ Delete
 
 ${a.receipts.length?
 
-`<div class="table">
+`
+
+<div class="table">
 
 <table>
 
@@ -2327,26 +3288,53 @@ ${a.receipts.length?
 <th>Amount</th>
 <th>Mode</th>
 <th>Note</th>
+<th>Action</th>
 </tr>
 
-${a.receipts.map(r=>`
+${a.receipts.map(function(r){
+
+return`
 
 <tr>
 
-<td>${r.date}</td>
+<td>${esc(r.date)}</td>
 <td>${money(r.amount)}</td>
-<td>${esc(r.mode)}</td>
-<td>${esc(r.note)}</td>
+<td>${esc(r.mode||"")}</td>
+<td>${esc(r.note||"")}</td>
+
+<td>
+
+<button class="btn small gray"
+type="button"
+onclick="editReceipt('${r.id}')">
+Edit
+</button>
+
+<button class="btn small red"
+type="button"
+onclick="deleteReceipt('${r.id}')">
+Delete
+</button>
+
+</td>
 
 </tr>
 
-`).join("")}
+`;
+
+}).join("")}
 
 </table>
 
-</div>`
+</div>
 
-:'<div class="empty">No receipts</div>'}
+`
+
+:
+
+'<div class="empty">No receipts</div>'
+
+}
 
 `;
 
@@ -2366,27 +3354,38 @@ renderCustomerHistory();
 
 function renderBills(){
 
-let s=(
-$("billSearch").value||""
-).toLowerCase();
+let search=
+($("billSearch").value||"").toLowerCase();
 
-let arr=db.bills.filter(b=>
+let arr=db.bills.filter(function(b){
 
+return(
 cname(b.customerId)
 .toLowerCase()
-.includes(s)||
-
+.includes(search)
+||
 (b.billNo||"")
 .toLowerCase()
-.includes(s)
-
+.includes(search)
+||
+(b.date||"")
+.includes(search)
 );
 
+});
+
+if(!arr.length){
+
 $("allBills").innerHTML=
+'<div class="empty">No bills</div>';
 
-arr.length?
+return;
 
-`<div class="table">
+}
+
+$("allBills").innerHTML=`
+
+<div class="table">
 
 <table>
 
@@ -2396,50 +3395,58 @@ arr.length?
 <th>Bill</th>
 <th>Amount</th>
 <th>Received</th>
+<th>Balance</th>
 <th>Grades</th>
 <th>Action</th>
 </tr>
 
-${arr.map(b=>`
+${arr.map(function(b){
+
+let balance=
+Math.max(
+0,
+n(b.previousBalance)+
+n(b.total)-
+n(b.paymentAmount)
+);
+
+return`
 
 <tr>
 
-<td>${b.date}</td>
+<td>${esc(b.date)}</td>
 
-<td>${esc(
-cname(b.customerId)
-)}</td>
+<td>${esc(cname(b.customerId))}</td>
 
-<td>${esc(
-b.billNo||"-"
-)}</td>
+<td>${esc(b.billNo||"-")}</td>
 
 <td>${money(b.total)}</td>
 
-<td>${money(
-b.paymentAmount
-)}</td>
+<td>${money(b.paymentAmount)}</td>
 
-<td>
-${gradeText(
+<td>${money(balance)}</td>
+
+<td>${esc(gradeText(
 b.grades,
 b.gradeReceived
-)}
-</td>
+))}</td>
 
 <td>
 
 <button class="btn small"
+type="button"
 onclick="viewBill('${b.id}')">
 View
 </button>
 
 <button class="btn small gray"
+type="button"
 onclick="editBill('${b.id}')">
 Edit
 </button>
 
 <button class="btn small red"
+type="button"
 onclick="deleteBill('${b.id}')">
 Delete
 </button>
@@ -2448,85 +3455,399 @@ Delete
 
 </tr>
 
-`).join("")}
+`;
+
+}).join("")}
 
 </table>
 
-</div>`
+</div>
 
-:'<div class="empty">No bills</div>';
+`;
 
 }
 
 
-function viewBill(i){
+/* =========================================================
+   BILL PREVIEW
+   ========================================================= */
+
+function viewBill(id){
 
 let b=db.bills.find(
-x=>x.id===i
+x=>x.id===id
 );
 
 if(!b)return;
 
 let c=customer(b.customerId);
 
-let text=
+currentBillPreviewId=id;
 
-`${db.billSettings.header}
+let html=`
 
-${db.billSettings.subHeader}
+<div class="bill-preview">
 
-Customer: ${c?.name||""}
+<h2>${esc(db.billSettings.header)}</h2>
 
-Date: ${b.date}
+<p style="text-align:center">
+${esc(db.billSettings.subHeader)}
+</p>
 
-Bill No: ${b.billNo||"-"}
+${db.billSettings.contact?
+`<p style="text-align:center">
+${esc(db.billSettings.contact)}
+</p>`:""}
 
-${(b.vegetables||[])
-.map(v=>
-`${v.name} ${v.qty} × ${v.rate} = ${v.amount}`
-).join("\n")}
+<hr>
 
-Previous: ${b.previousBalance}
+<div class="grid">
 
-Current Bill: ${b.total}
+<div>
+<b>Customer</b><br>
+${esc(c?.name||"")}
+</div>
 
-Received: ${b.paymentAmount}
+<div>
+<b>Date</b><br>
+${esc(b.date)}
+</div>
 
-Balance:
-${n(b.previousBalance)+
+<div>
+<b>Bill No</b><br>
+${esc(b.billNo||"-")}
+</div>
+
+<div>
+<b>Payment Mode</b><br>
+${esc(b.paymentMode||"-")}
+</div>
+
+</div>
+
+<h3>Vegetables</h3>
+
+<table>
+
+<tr>
+<th>Vegetable</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+</tr>
+
+${(b.vegetables||[]).map(function(v){
+
+return`
+
+<tr>
+<td>${esc(v.name)}</td>
+<td>${n(v.qty)}</td>
+<td>${money(v.rate)}</td>
+<td>${money(v.amount)}</td>
+</tr>
+
+`;
+
+}).join("")}
+
+</table>
+
+<div class="summary">
+
+<div class="line">
+<span>Previous Balance</span>
+<b>${money(b.previousBalance)}</b>
+</div>
+
+<div class="line">
+<span>Current Bill</span>
+<b>${money(b.total)}</b>
+</div>
+
+<div class="line total">
+<span>Total</span>
+<b>${money(
+n(b.previousBalance)+n(b.total)
+)}</b>
+</div>
+
+<div class="line">
+<span>Received</span>
+<b>${money(b.paymentAmount)}</b>
+</div>
+
+<div class="line total">
+<span>Balance</span>
+<b>${money(
+Math.max(
+0,
+n(b.previousBalance)+
 n(b.total)-
-n(b.paymentAmount)}
+n(b.paymentAmount)
+)
+)}</b>
+</div>
 
-Grades:
-${gradeText(
-b.grades,
-b.gradeReceived
-)}
+</div>
 
-${db.billSettings.footer}`;
+<h3>Grade / Crate Details</h3>
 
-alert(text);
+<table>
+
+<tr>
+<th>Grade</th>
+<th>Issued</th>
+<th>Received</th>
+<th>Balance</th>
+</tr>
+
+${["SMS","MIX","SMALL","E1","E2"].map(function(k){
+
+let issued=n((b.grades||{})[k]);
+let received=n((b.gradeReceived||{})[k]);
+
+return`
+
+<tr>
+<td>${k}</td>
+<td>${issued}</td>
+<td>${received}</td>
+<td>${issued-received}</td>
+</tr>
+
+`;
+
+}).join("")}
+
+</table>
+
+<p style="text-align:center;margin-top:25px">
+${esc(db.billSettings.footer)}
+</p>
+
+</div>
+
+`;
+
+$("billPreview").innerHTML=html;
+
+$("billModal").classList.add("show");
 
 }
 
 
-/* VEHICLE RENT */
+function closeBillModal(){
+
+$("billModal").classList.remove("show");
+
+}
+
+
+function printBill(){
+
+let content=$("billPreview").innerHTML;
+
+let w=window.open(
+"",
+"_blank",
+"width=800,height=900"
+);
+
+if(!w){
+
+toast("Allow popup to print bill");
+
+return;
+
+}
+
+w.document.write(`
+<html>
+<head>
+<title>SMS Bill</title>
+<style>
+body{font-family:Arial;padding:20px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:8px;font-size:12px}
+.summary{background:#f5f5f5;padding:10px}
+.line{display:flex;justify-content:space-between;padding:5px}
+.total{font-weight:bold;border-top:2px solid #222}
+</style>
+</head>
+<body>
+${content}
+</body>
+</html>
+`);
+
+w.document.close();
+
+setTimeout(function(){
+w.focus();
+w.print();
+},500);
+
+}
+
+
+function downloadBillPDF(){
+
+let b=db.bills.find(
+x=>x.id===currentBillPreviewId
+);
+
+if(!b)return;
+
+if(!window.jspdf){
+
+toast("PDF library not loaded");
+
+return;
+
+}
+
+let doc=new window.jspdf.jsPDF();
+
+let c=customer(b.customerId);
+
+let y=15;
+
+doc.setFontSize(17);
+
+doc.text(
+db.billSettings.header,
+14,y
+);
+
+y+=7;
+
+doc.setFontSize(10);
+
+doc.text(
+db.billSettings.subHeader,
+14,y
+);
+
+y+=8;
+
+doc.text(
+"Customer: "+(c?.name||""),
+14,y
+);
+
+y+=6;
+
+doc.text(
+"Date: "+b.date+"   Bill No: "+(b.billNo||"-"),
+14,y
+);
+
+y+=10;
+
+doc.setFontSize(11);
+
+doc.text(
+"Vegetables",
+14,y
+);
+
+y+=7;
+
+doc.setFontSize(9);
+
+(b.vegetables||[]).forEach(function(v){
+
+if(y>275){
+doc.addPage();
+y=15;
+}
+
+doc.text(
+`${v.name} | Qty ${v.qty} | Rate ${v.rate} | Amount ${v.amount}`,
+14,y
+);
+
+y+=6;
+
+});
+
+y+=5;
+
+doc.text(
+"Previous: "+money(b.previousBalance),
+14,y
+);
+
+y+=6;
+
+doc.text(
+"Current Bill: "+money(b.total),
+14,y
+);
+
+y+=6;
+
+doc.text(
+"Received: "+money(b.paymentAmount),
+14,y
+);
+
+y+=6;
+
+doc.text(
+"Balance: "+money(
+Math.max(
+0,
+n(b.previousBalance)+
+n(b.total)-
+n(b.paymentAmount)
+)
+),
+14,y
+);
+
+y+=10;
+
+doc.text(
+"Grades:",
+14,y
+);
+
+y+=6;
+
+["SMS","MIX","SMALL","E1","E2"].forEach(function(k){
+
+let i=n((b.grades||{})[k]);
+let r=n((b.gradeReceived||{})[k]);
+
+doc.text(
+`${k}: Issued ${i} | Received ${r} | Balance ${i-r}`,
+14,y
+);
+
+y+=6;
+
+});
+
+doc.save(
+"SMS_Bill_"+(b.billNo||b.date)+".pdf"
+);
+
+}
+
+
+/* =========================================================
+   VEHICLE RENT
+   ========================================================= */
 
 function calcRent(){
 
-let rent=n(
-$("vrRent").value
-);
+let rent=n($("vrRent").value);
+let paid=n($("vrPaid").value);
 
-let paid=n(
-$("vrPaid").value
-);
-
-$("vrRentShow").textContent=
-money(rent);
-
-$("vrPaidShow").textContent=
-money(paid);
+$("vrRentShow").textContent=money(rent);
+$("vrPaidShow").textContent=money(paid);
 
 $("vrBalanceShow").textContent=
 money(Math.max(0,rent-paid));
@@ -2545,14 +3866,11 @@ let driver=$("vrDriverName")
 .value.trim();
 
 let rent=n($("vrRent").value);
-
 let paid=n($("vrPaid").value);
 
 if(!vehicle&&!driver){
 
-toast(
-"Vehicle Number or Driver Name enter pannunga"
-);
+toast("Vehicle Number or Driver Name enter pannunga");
 
 return;
 
@@ -2568,9 +3886,7 @@ return;
 
 if(paid>rent){
 
-toast(
-"Paid amount rent amount-ஐ விட அதிகமாக இருக்கக்கூடாது"
-);
+toast("Paid amount rent amount-ஐ விட அதிகமாக இருக்கக்கூடாது");
 
 return;
 
@@ -2581,6 +3897,9 @@ let data={
 date:$("vrDate").value||today(),
 
 vehicleNo:vehicle,
+
+vehicleType:
+$("vrVehicleType").value.trim(),
 
 driverName:driver,
 
@@ -2596,9 +3915,9 @@ $("vrTo").value.trim(),
 purpose:
 $("vrPurpose").value.trim(),
 
-rent,
+rent:rent,
 
-paid,
+paid:paid,
 
 balance:rent-paid,
 
@@ -2616,8 +3935,7 @@ let r=db.vehicleRents.find(
 x=>x.id===edit
 );
 
-if(r)
-Object.assign(r,data);
+if(r)Object.assign(r,data);
 
 toast("Vehicle Rent updated");
 
@@ -2638,7 +3956,6 @@ toast("Vehicle Rent saved");
 save();
 
 clearVehicleRent();
-
 refresh();
 
 }
@@ -2647,27 +3964,17 @@ refresh();
 function clearVehicleRent(){
 
 $("vrDate").value=today();
-
 $("vrVehicleNo").value="";
-
+$("vrVehicleType").value="";
 $("vrDriverName").value="";
-
 $("vrDriverPhone").value="";
-
 $("vrFrom").value="";
-
 $("vrTo").value="";
-
 $("vrPurpose").value="";
-
 $("vrRent").value="";
-
 $("vrPaid").value="";
-
 $("vrPaymentMode").value="Cash";
-
 $("vrNote").value="";
-
 $("vrEdit").value="";
 
 $("vrSaveBtn").textContent=
@@ -2678,49 +3985,29 @@ calcRent();
 }
 
 
-function editVehicleRent(i){
+function editVehicleRent(id){
 
 let r=db.vehicleRents.find(
-x=>x.id===i
+x=>x.id===id
 );
 
 if(!r)return;
 
 page("vehicleRent");
 
-$("vrDate").value=r.date;
-
-$("vrVehicleNo").value=
-r.vehicleNo||"";
-
-$("vrDriverName").value=
-r.driverName||"";
-
-$("vrDriverPhone").value=
-r.driverPhone||"";
-
-$("vrFrom").value=
-r.from||"";
-
-$("vrTo").value=
-r.to||"";
-
-$("vrPurpose").value=
-r.purpose||"";
-
-$("vrRent").value=
-r.rent||0;
-
-$("vrPaid").value=
-r.paid||0;
-
-$("vrPaymentMode").value=
-r.paymentMode||"Cash";
-
-$("vrNote").value=
-r.note||"";
-
-$("vrEdit").value=i;
+$("vrDate").value=r.date||today();
+$("vrVehicleNo").value=r.vehicleNo||"";
+$("vrVehicleType").value=r.vehicleType||"";
+$("vrDriverName").value=r.driverName||"";
+$("vrDriverPhone").value=r.driverPhone||"";
+$("vrFrom").value=r.from||"";
+$("vrTo").value=r.to||"";
+$("vrPurpose").value=r.purpose||"";
+$("vrRent").value=n(r.rent);
+$("vrPaid").value=n(r.paid);
+$("vrPaymentMode").value=r.paymentMode||"Cash";
+$("vrNote").value=r.note||"";
+$("vrEdit").value=id;
 
 $("vrSaveBtn").textContent=
 "Update Vehicle Rent";
@@ -2730,20 +4017,20 @@ calcRent();
 }
 
 
-function deleteVehicleRent(i){
+function deleteVehicleRent(id){
 
 if(!confirm(
 "Delete this vehicle rent?"
-))
+)){
 return;
+}
 
 db.vehicleRents=
 db.vehicleRents.filter(
-x=>x.id!==i
+x=>x.id!==id
 );
 
 save();
-
 refresh();
 
 toast("Vehicle rent deleted");
@@ -2753,20 +4040,21 @@ toast("Vehicle rent deleted");
 
 function renderVehicleRent(){
 
-let s=(
-$("vrSearch").value||""
-).toLowerCase();
+let search=
+($("vrSearch").value||"").toLowerCase();
 
-let fd=$("vrFilterDate").value;
+let filterDate=
+$("vrFilterDate").value;
 
-let arr=db.vehicleRents.filter(r=>
+let arr=db.vehicleRents.filter(function(r){
 
-(!fd||r.date===fd)&&
+let dateOK=
+!filterDate||
+r.date===filterDate;
 
-(
-!s||
-[
+let text=[
 r.vehicleNo,
+r.vehicleType,
 r.driverName,
 r.driverPhone,
 r.from,
@@ -2775,24 +4063,22 @@ r.purpose,
 r.note
 ]
 .join(" ")
-.toLowerCase()
-.includes(s)
-)
+.toLowerCase();
 
-);
+return dateOK&&
+(!search||text.includes(search));
 
-let totalRent=
-arr.reduce(
+});
+
+let totalRent=arr.reduce(
 (a,r)=>a+n(r.rent),0
 );
 
-let totalPaid=
-arr.reduce(
+let totalPaid=arr.reduce(
 (a,r)=>a+n(r.paid),0
 );
 
-let totalBalance=
-arr.reduce(
+let totalBalance=arr.reduce(
 (a,r)=>a+n(r.balance),0
 );
 
@@ -2824,20 +4110,51 @@ $("vehicleRentSummary").innerHTML=`
 
 `;
 
+if(!arr.length){
+
+$("vehicleRentList").innerHTML=`
+<tr>
+<td colspan="10" class="empty">
+No Vehicle Rent Records
+</td>
+</tr>
+`;
+
+return;
+
+}
+
 $("vehicleRentList").innerHTML=
+arr.map(function(r){
 
-arr.length?
+let balance=n(r.balance);
 
-arr.map(r=>`
+let status=
+balance<=0
+?"Paid"
+:
+n(r.paid)>0
+?"Part Paid"
+:"Pending";
+
+let statusClass=
+status==="Paid"
+?"status-paid"
+:
+status==="Pending"
+?"status-pending"
+:"status-part";
+
+return`
 
 <tr>
 
-<td>${r.date}</td>
+<td>${esc(r.date)}</td>
 
 <td>
 <b>${esc(r.vehicleNo||"-")}</b>
 <br>
-<small>${esc(r.purpose||"")}</small>
+<small>${esc(r.vehicleType||"")}</small>
 </td>
 
 <td>
@@ -2859,17 +4176,25 @@ ${money(r.paid)}
 </td>
 
 <td>
-<b>${money(r.balance)}</b>
+<b>${money(balance)}</b>
+</td>
+
+<td>
+<span class="${statusClass}">
+${status}
+</span>
 </td>
 
 <td>
 
 <button class="btn small gray"
+type="button"
 onclick="editVehicleRent('${r.id}')">
 Edit
 </button>
 
 <button class="btn small red"
+type="button"
 onclick="deleteVehicleRent('${r.id}')">
 Delete
 </button>
@@ -2878,89 +4203,68 @@ Delete
 
 </tr>
 
-`).join("")
+`;
 
-:
-
-`<tr>
-<td colspan="9"
-class="empty">
-No Vehicle Rent Records
-</td>
-</tr>`;
+}).join("");
 
 }
 
 
-/* DASHBOARD */
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
 
 function dashboard(){
 
 let sc=salesCustomers();
 
-let sales=
-db.bills.reduce(
+let sales=db.bills.reduce(
 (a,b)=>a+n(b.total),0
 );
 
-let purchase=
-db.purchases.reduce(
+let purchase=db.purchases.reduce(
 (a,b)=>a+n(b.amount),0
 );
 
-let out=
-sc.reduce(
+let out=sc.reduce(
 (a,c)=>a+account(c.id).outstanding,
 0
 );
 
-let pay=
-parties().reduce(
+let pay=parties().reduce(
 (a,c)=>a+partyAccount(c.id).balance,
 0
 );
 
 let rents=db.vehicleRents;
 
-let totalRent=
-rents.reduce(
+let totalRent=rents.reduce(
 (a,x)=>a+n(x.rent),0
 );
 
-let totalPaid=
-rents.reduce(
+let totalPaid=rents.reduce(
 (a,x)=>a+n(x.paid),0
 );
 
-let totalBalance=
-rents.reduce(
+let totalBalance=rents.reduce(
 (a,x)=>a+n(x.balance),0
 );
 
 $("dCustomers").textContent=sc.length;
 
 $("dWeekly").textContent=
-sc.filter(
-x=>x.type==="Weekly"
-).length;
+sc.filter(function(x){
+return x.type==="Weekly";
+}).length;
 
 $("dParties").textContent=
 parties().length;
 
-$("dSales").textContent=
-money(sales);
-
-$("dPurchase").textContent=
-money(purchase);
-
-$("dOut").textContent=
-money(out);
-
-$("dPayable").textContent=
-money(pay);
-
-$("dBills").textContent=
-db.bills.length;
+$("dSales").textContent=money(sales);
+$("dPurchase").textContent=money(purchase);
+$("dOut").textContent=money(out);
+$("dPayable").textContent=money(pay);
+$("dBills").textContent=db.bills.length;
 
 $("dashboardRent").innerHTML=`
 
@@ -2990,62 +4294,105 @@ $("dashboardRent").innerHTML=`
 
 `;
 
-$("weeklyBox").innerHTML=
+let weekly=sc.filter(function(x){
+return x.type==="Weekly";
+});
 
-sc.filter(
-x=>x.type==="Weekly"
-).map(c=>`
+$("weeklyBox").innerHTML=
+weekly.length?
+
+weekly.map(function(c){
+
+return`
 
 <div class="customer">
 
 <b>${esc(c.name)}</b>
 
-—
+<div class="muted">
+${esc(c.phone||"")}
+</div>
 
-Balance ${money(
+<div class="summary">
+
+<div class="line">
+<span>Balance</span>
+<b>${money(
 account(c.id).outstanding
-)}
+)}</b>
+</div>
 
 </div>
 
-`).join("")
+</div>
 
-||
+`;
 
-'<div class="empty">
-No weekly customers
-</div>';
+}).join("")
+
+:
+
+'<div class="empty">No weekly customers</div>';
+
+
+let partyList=parties();
 
 $("partyBalanceBox").innerHTML=
+partyList.length?
 
-parties().map(c=>`
+partyList.map(function(c){
+
+return`
 
 <div class="customer">
 
 <b>${esc(c.name)}</b>
 
-—
+<div class="summary">
 
-Payable ${money(
+<div class="line">
+<span>Purchase</span>
+<b>${money(
+partyAccount(c.id).purchase
+)}</b>
+</div>
+
+<div class="line">
+<span>Paid</span>
+<b>${money(
+partyAccount(c.id).paid
+)}</b>
+</div>
+
+<div class="line total">
+<span>Payable</span>
+<b>${money(
 partyAccount(c.id).balance
-)}
+)}</b>
+</div>
 
 </div>
 
-`).join("")
+</div>
 
-||
+`;
 
-'<div class="empty">
-No purchase parties
-</div>';
+}).join("")
+
+:
+
+'<div class="empty">No purchase parties</div>';
 
 }
 
 
-/* BACKUP */
+/* =========================================================
+   BACKUP / RESTORE
+   ========================================================= */
 
 function backup(){
+
+try{
 
 let blob=new Blob(
 [
@@ -3056,92 +4403,158 @@ type:"application/json"
 }
 );
 
+let url=URL.createObjectURL(blob);
+
 let a=document.createElement("a");
 
-a.href=URL.createObjectURL(blob);
-
+a.href=url;
 a.download=
 "SMS_Mandi_Backup_"+today()+".json";
 
+document.body.appendChild(a);
+
 a.click();
 
-URL.revokeObjectURL(a.href);
+a.remove();
+
+setTimeout(function(){
+URL.revokeObjectURL(url);
+},1000);
 
 toast("Backup downloaded");
+
+}catch(e){
+
+console.error(e);
+toast("Backup failed");
+
+}
 
 }
 
 
-function restore(e){
+function restore(event){
 
-let f=e.target.files[0];
+let file=
+event.target.files&&
+event.target.files[0];
 
-if(!f)return;
+if(!file)return;
 
-let r=new FileReader();
+let reader=new FileReader();
 
-r.onload=()=>{
+reader.onload=function(){
 
 try{
 
-let x=JSON.parse(r.result);
+let x=JSON.parse(reader.result);
 
-db={...db,...x};
+if(!x||typeof x!=="object"){
+throw new Error("Invalid backup");
+}
+
+db={
+...db,
+...x
+};
+
+db.customers=
+Array.isArray(x.customers)
+?x.customers:[];
+
+db.bills=
+Array.isArray(x.bills)
+?x.bills:[];
+
+db.receipts=
+Array.isArray(x.receipts)
+?x.receipts:[];
+
+db.purchases=
+Array.isArray(x.purchases)
+?x.purchases:[];
+
+db.partyPayments=
+Array.isArray(x.partyPayments)
+?x.partyPayments:[];
 
 db.vehicleRents=
-x.vehicleRents||[];
+Array.isArray(x.vehicleRents)
+?x.vehicleRents:[];
+
+db.billSettings={
+...db.billSettings,
+...(x.billSettings||{})
+};
 
 save();
-
 refresh();
 
-toast("Backup restored");
+toast("Backup restored successfully");
 
-}catch(err){
+}catch(e){
 
-toast("Invalid backup");
+console.error(e);
+toast("Invalid backup file");
 
 }
 
 };
 
-r.readAsText(f);
+reader.readAsText(file);
+
+event.target.value="";
 
 }
 
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
 
 function saveSettings(){
 
 db.billSettings={
 
-header:$("setHeader").value,
+header:$("setHeader").value.trim()||
+"SMS COMMISSION MANDI",
 
-subHeader:$("setSub").value,
+subHeader:$("setSub").value.trim()||
+"Customer Accounts & Billing",
 
-contact:$("setContact").value,
+contact:$("setContact").value.trim(),
 
-footer:$("setFooter").value
+footer:$("setFooter").value.trim()||
+"Thank You"
 
 };
 
 save();
+
+refresh();
 
 toast("Settings saved");
 
 }
 
 
+/* =========================================================
+   DELETE ALL
+   ========================================================= */
+
 function deleteAll(){
 
 if(!confirm(
 "ALL DATA DELETE ஆகும். Continue?"
-))
+)){
 return;
+}
 
 if(!confirm(
-"Final confirmation?"
-))
+"Final confirmation. Delete EVERYTHING?"
+)){
 return;
+}
 
 localStorage.removeItem(KEY);
 
@@ -3150,25 +4563,33 @@ location.reload();
 }
 
 
-/* CLOUD */
+/* =========================================================
+   GOOGLE SHEETS CLOUD
+   ========================================================= */
 
 function saveApi(){
 
+let url=$("apiUrl").value.trim();
+
 localStorage.setItem(
 "SMS_API_URL",
-$("apiUrl").value.trim()
+url
 );
 
-toast("Cloud URL saved");
+toast(
+url
+?"Cloud URL saved"
+:"Cloud URL cleared"
+);
 
 }
 
 
 async function cloudPush(){
 
-let u=$("apiUrl").value.trim();
+let url=$("apiUrl").value.trim();
 
-if(!u){
+if(!url){
 
 toast("Enter Google Apps Script URL");
 
@@ -3178,17 +4599,23 @@ return;
 
 try{
 
-await fetch(u,{
+let response=await fetch(url,{
 method:"POST",
-mode:"no-cors",
+headers:{
+"Content-Type":"text/plain;charset=utf-8"
+},
 body:JSON.stringify(db)
 });
 
-toast("Cloud sync sent");
+toast("Cloud sync completed");
 
 }catch(e){
 
-toast("Cloud upload failed");
+console.error(e);
+
+toast(
+"Upload failed. Check Apps Script URL."
+);
 
 }
 
@@ -3197,9 +4624,9 @@ toast("Cloud upload failed");
 
 async function cloudPull(){
 
-let u=$("apiUrl").value.trim();
+let url=$("apiUrl").value.trim();
 
-if(!u){
+if(!url){
 
 toast("Enter Google Apps Script URL");
 
@@ -3209,37 +4636,73 @@ return;
 
 try{
 
-let r=await fetch(u);
+let response=await fetch(url);
 
-let x=await r.json();
+let data=await response.json();
 
-if(x&&x.customers){
+if(!data||typeof data!=="object"){
 
-db={...db,...x};
+throw new Error("Invalid cloud data");
+
+}
+
+db={
+...db,
+...data
+};
+
+db.customers=
+Array.isArray(data.customers)
+?data.customers:[];
+
+db.bills=
+Array.isArray(data.bills)
+?data.bills:[];
+
+db.receipts=
+Array.isArray(data.receipts)
+?data.receipts:[];
+
+db.purchases=
+Array.isArray(data.purchases)
+?data.purchases:[];
+
+db.partyPayments=
+Array.isArray(data.partyPayments)
+?data.partyPayments:[];
 
 db.vehicleRents=
-x.vehicleRents||[];
+Array.isArray(data.vehicleRents)
+?data.vehicleRents:[];
+
+db.billSettings={
+...db.billSettings,
+...(data.billSettings||{})
+};
 
 save();
-
 refresh();
 
 toast("Cloud data loaded");
 
-}
-
 }catch(e){
 
-toast("Cloud download failed");
+console.error(e);
+
+toast(
+"Download failed. Check Apps Script."
+);
 
 }
 
 }
 
 
-/* PDF */
+/* =========================================================
+   PDF - CUSTOMER HISTORY
+   ========================================================= */
 
-async function downloadHistoryPDF(cid){
+function downloadHistoryPDF(cid){
 
 let c=customer(cid);
 
@@ -3257,93 +4720,120 @@ let doc=
 new window.jspdf.jsPDF();
 
 let a=account(cid);
-
 let g=gradeTotals(cid);
+
+let y=15;
 
 doc.setFontSize(17);
 
 doc.text(
 db.billSettings.header,
-14,15
+14,y
 );
+
+y+=7;
 
 doc.setFontSize(10);
 
 doc.text(
 "Customer Full History",
-14,23
+14,y
 );
+
+y+=7;
 
 doc.text(
 "Customer: "+c.name,
-14,32
+14,y
 );
+
+y+=6;
 
 doc.text(
 "Phone: "+(c.phone||"-"),
-14,38
+14,y
 );
+
+y+=6;
 
 doc.text(
 "Address: "+(c.address||"-"),
-14,44
+14,y
 );
+
+y+=8;
+
+doc.text(
+"Opening Balance: "+money(a.opening),
+14,y
+);
+
+y+=6;
 
 doc.text(
 "Total Sales: "+money(a.sales),
-14,52
+14,y
 );
+
+y+=6;
 
 doc.text(
 "Total Received: "+money(a.received),
-14,58
+14,y
 );
+
+y+=6;
 
 doc.text(
 "Current Balance: "+money(a.outstanding),
-14,64
+14,y
 );
+
+y+=10;
+
+doc.setFontSize(11);
 
 doc.text(
 "Grade / Crate Summary",
-14,74
+14,y
 );
 
-doc.text(
-`SMS Issued: ${g.issued.SMS}  Received: ${g.received.SMS}  Balance: ${g.issued.SMS-g.received.SMS}`,
-14,81
-);
-
-doc.text(
-`MIX Issued: ${g.issued.MIX}  Received: ${g.received.MIX}  Balance: ${g.issued.MIX-g.received.MIX}`,
-14,87
-);
-
-doc.text(
-`SMALL Issued: ${g.issued.SMALL}  Received: ${g.received.SMALL}  Balance: ${g.issued.SMALL-g.received.SMALL}`,
-14,93
-);
-
-doc.text(
-`EXTRA 1 Issued: ${g.issued.E1}  Received: ${g.received.E1}  Balance: ${g.issued.E1-g.received.E1}`,
-14,99
-);
-
-doc.text(
-`EXTRA 2 Issued: ${g.issued.E2}  Received: ${g.received.E2}  Balance: ${g.issued.E2-g.received.E2}`,
-14,105
-);
-
-let y=116;
+y+=7;
 
 doc.setFontSize(9);
 
-a.bills.forEach(b=>{
+["SMS","MIX","SMALL","E1","E2"].forEach(function(k){
 
-if(y>275){
+let issued=g.issued[k];
+let received=g.received[k];
+
+doc.text(
+`${k}: Issued ${issued} | Received ${received} | Balance ${issued-received}`,
+14,y
+);
+
+y+=6;
+
+});
+
+y+=6;
+
+doc.setFontSize(11);
+
+doc.text(
+"Sales Bills",
+14,y
+);
+
+y+=7;
+
+doc.setFontSize(9);
+
+a.bills.forEach(function(b){
+
+if(y>270){
 
 doc.addPage();
-
 y=15;
 
 }
@@ -3355,19 +4845,31 @@ doc.text(
 
 y+=6;
 
+let vegetables=(b.vegetables||[])
+.map(function(v){
+
+return`${v.name} ${v.qty}x${v.rate}`;
+
+})
+.join("   ");
+
+if(vegetables){
+
 doc.text(
-(b.vegetables||[])
-.map(v=>
-`${v.name} ${v.qty}x${v.rate}`
-)
-.join("   "),
+vegetables,
 18,y
 );
 
 y+=6;
 
+}
+
 doc.text(
-`Grades: ${gradeText(b.grades,b.gradeReceived)}`,
+"Grades: "+
+gradeText(
+b.grades,
+b.gradeReceived
+),
 18,y
 );
 
@@ -3380,7 +4882,6 @@ if(a.receipts.length){
 if(y>260){
 
 doc.addPage();
-
 y=15;
 
 }
@@ -3392,22 +4893,21 @@ doc.text(
 14,y
 );
 
-y+=8;
+y+=7;
 
 doc.setFontSize(9);
 
-a.receipts.forEach(r=>{
+a.receipts.forEach(function(r){
 
 if(y>275){
 
 doc.addPage();
-
 y=15;
 
 }
 
 doc.text(
-`${r.date} | ${money(r.amount)} | ${r.mode} | ${r.note||""}`,
+`${r.date} | ${money(r.amount)} | ${r.mode||""} | ${r.note||""}`,
 14,y
 );
 
@@ -3417,16 +4917,19 @@ y+=6;
 
 }
 
-doc.save(
+let filename=
 (c.name||"Customer")
-.replace(/[^a-z0-9]/gi,"_")
-+"_Full_History.pdf"
-);
+.replace(/[^a-z0-9]/gi,"_")+
+"_Full_History.pdf";
+
+doc.save(filename);
 
 }
 
 
-/* REFRESH */
+/* =========================================================
+   REFRESH
+   ========================================================= */
 
 function refresh(){
 
@@ -3465,28 +4968,31 @@ renderReceipts();
 renderBills();
 renderCustomerHistory();
 renderVehicleRent();
+renderPurchaseHistory();
 dashboard();
 
 if($("setHeader"))
 $("setHeader").value=
-db.billSettings.header;
+db.billSettings.header||"";
 
 if($("setSub"))
 $("setSub").value=
-db.billSettings.subHeader;
+db.billSettings.subHeader||"";
 
 if($("setContact"))
 $("setContact").value=
-db.billSettings.contact;
+db.billSettings.contact||"";
 
 if($("setFooter"))
 $("setFooter").value=
-db.billSettings.footer;
+db.billSettings.footer||"";
 
 }
 
 
-/* START */
+/* =========================================================
+   START
+   ========================================================= */
 
 function init(){
 
@@ -3507,7 +5013,38 @@ refresh();
 
 }
 
+
+/* =========================================================
+   ERROR PROTECTION
+   ========================================================= */
+
+window.addEventListener(
+"error",
+function(e){
+
+console.error(
+"SMS APP ERROR:",
+e.error||e.message
+);
+
+}
+);
+
+
+/* START ONLY AFTER HTML IS READY */
+
+if(document.readyState==="loading"){
+
+document.addEventListener(
+"DOMContentLoaded",
+init
+);
+
+}else{
+
 init();
+
+}
 
 </script>
 
